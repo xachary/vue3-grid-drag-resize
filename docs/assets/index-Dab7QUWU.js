@@ -5945,6 +5945,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       draggingChild.value = void 0;
     }
     document.body.addEventListener("mouseup", dragend);
+    window.addEventListener("mouseup", dragend);
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         class: "grid-drag-resize",
@@ -6066,7 +6067,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-10 19:03:36", git: { branch: "master", hash: "fcd4a3c2af054de3f06723f6568f9d07dd0f6e25", tag: "fcd4a3c2af054de3f06723f6568f9d07dd0f6e25-dirty" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-10 21:48:57", git: { branch: "master", hash: "7783634b05a6a11d8c32d20db65d7958071335cf", tag: "7783634b05a6a11d8c32d20db65d7958071335cf" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

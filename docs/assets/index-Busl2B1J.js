@@ -3,7 +3,7 @@
   try {
     if (typeof document != "undefined") {
       var elementStyle = document.createElement("style");
-      elementStyle.appendChild(document.createTextNode(".grid-drag-resize {\n  display: grid;\n}\n.grid-drag-resize .grid-drag-resize__item--draggable-full {\n  cursor: grab;\n  user-select: none;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  opacity: 0.6;\n}\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n  margin: 0;\n  font-weight: normal;\n}\nbody {\n  min-height: 100vh;\n  color: var(--color-text);\n  background: var(--color-background);\n  transition: color 0.5s, background-color 0.5s;\n  line-height: 1.6;\n  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n  font-size: 15px;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.grid-drag-resize {\n  background-color: #eee;\n}\n.grid-drag-resize .grid-drag-resize__item {\n  background-color: #ddd;\n}\n.page {\n  padding: 32px;\n}\n.demo-item {\n  padding: 10px;\n  height: 100%;\n}\n.grid-drag-resize__item--dragging {\n  box-shadow: 0 0 6px 2px #0000ff;\n}"));
+      elementStyle.appendChild(document.createTextNode(".grid-drag-resize {\n  display: grid;\n}\n.grid-drag-resize .grid-drag-resize__item--draggable-full {\n  cursor: grab;\n  user-select: none;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  opacity: 0.6;\n}\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n  margin: 0;\n  font-weight: normal;\n}\nbody {\n  min-height: 100vh;\n  color: var(--color-text);\n  background: var(--color-background);\n  transition: color 0.5s, background-color 0.5s;\n  line-height: 1.6;\n  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n  font-size: 15px;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.page {\n  padding: 32px;\n}\n.demo-item {\n  padding: 10px;\n  height: 100%;\n}\n.grid-drag-resize {\n  background-color: #eee;\n}\n.grid-drag-resize .grid-drag-resize__item {\n  background-color: #ddd;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  box-shadow: 0 0 6px 2px #0000ff;\n}"));
       document.head.appendChild(elementStyle);
     }
   } catch (e) {
@@ -5796,10 +5796,11 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
       };
     });
     const itemEle = ref();
-    const dragHandler = computed(() => (parentProps == null ? void 0 : parentProps.dragHandler) ?? props.dragHandler);
+    const dragHandlerParsed = computed(() => props.dragHandler ?? (parentProps == null ? void 0 : parentProps.dragHandler));
+    const draggableParsed = computed(() => (parentProps == null ? void 0 : parentProps.readonly) ? false : props.draggable);
     watchEffect(() => {
-      if (dragHandler.value && itemEle.value) {
-        const handlerEle = itemEle.value.querySelector(dragHandler.value);
+      if (draggableParsed.value && dragHandlerParsed.value && itemEle.value) {
+        const handlerEle = itemEle.value.querySelector(dragHandlerParsed.value);
         if (handlerEle instanceof HTMLElement) {
           handlerEle.style.cursor = "grab";
           handlerEle.addEventListener("mousedown", dragstart);
@@ -5808,7 +5809,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     });
     function dragstart() {
       var _a;
-      if (props.draggable) {
+      if (draggableParsed.value) {
         emit2("dragging", ((_a = itemEle == null ? void 0 : itemEle.value) == null ? void 0 : _a.getBoundingClientRect()) ?? {
           height: 0,
           width: 0,
@@ -5820,14 +5821,13 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
       }
     }
     return (_ctx, _cache) => {
-      var _a, _b, _c;
       return openBlock(), createElementBlock("div", {
         class: normalizeClass(["grid-drag-resize__item", {
-          "grid-drag-resize__item--draggable": ((_a = unref(parentProps)) == null ? void 0 : _a.draggable) && props.draggable,
-          "grid-drag-resize__item--draggable-full": ((_b = unref(parentProps)) == null ? void 0 : _b.draggable) && props.draggable && ((_c = unref(parentProps)) == null ? void 0 : _c.dragHandler) === void 0 && props.dragHandler === void 0
+          "grid-drag-resize__item--draggable": draggableParsed.value,
+          "grid-drag-resize__item--draggable-full": draggableParsed.value && dragHandlerParsed.value === void 0
         }]),
         style: normalizeStyle(style.value),
-        onMousedown: _cache[0] || (_cache[0] = () => dragHandler.value ? void 0 : dragstart()),
+        onMousedown: _cache[0] || (_cache[0] = () => dragHandlerParsed.value ? void 0 : dragstart()),
         ref_key: "itemEle",
         ref: itemEle
       }, [
@@ -5839,8 +5839,8 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
 const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   __name: "GridDragResize",
   props: {
-    draggable: { type: Boolean, default: true },
     dragHandler: {},
+    readonly: { type: Boolean },
     columns: {},
     rows: {},
     gap: {},
@@ -5859,7 +5859,6 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     });
     const rootEle = ref();
     provide("parentProps", props);
-    provide("rootEle", rootEle);
     const rootRect = computed(() => {
       var _a;
       return ((_a = rootEle == null ? void 0 : rootEle.value) == null ? void 0 : _a.getBoundingClientRect()) ?? {
@@ -5895,10 +5894,11 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     const draggingChild = ref();
     const draggingChildBefore = ref();
     const draggingChildRect = ref();
-    let dragStartClientX = 0, dragStartClientY = 0, dragOffsetClientX = 0, dragOffsetClientY = 0;
+    let dragStartClientX = 0, dragStartClientY = 0;
+    let dragOffsetClientX = 0, dragOffsetClientY = 0;
     let dragging = false;
     function dragstart(e) {
-      if (props.draggable) {
+      if (!props.readonly) {
         dragging = true;
         dragStartClientX = e.clientX;
         dragStartClientY = e.clientY;
@@ -6032,7 +6032,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           rows: 5,
           gap: 10,
           "row-size": 100,
-          draggable: true,
+          readonly: false,
           children: children.value
         }, null, 8, ["children"]),
         createBaseVNode("div", {
@@ -6066,7 +6066,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-10 17:42:30", git: { branch: "master", hash: "cb1656d9c46a592330dab11a762d12a9dd4331ca", tag: "cb1656d9c46a592330dab11a762d12a9dd4331ca-dirty" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-10 19:03:36", git: { branch: "master", hash: "fcd4a3c2af054de3f06723f6568f9d07dd0f6e25", tag: "fcd4a3c2af054de3f06723f6568f9d07dd0f6e25-dirty" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

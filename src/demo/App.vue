@@ -46,7 +46,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
 
 <template>
 <div class="page">
-  <GridDragResize :columns="4" :rows="5" :gap="10" :row-size="100" :draggable="true" :children="children">
+  <GridDragResize :columns="4" :rows="5" :gap="10" :row-size="100" :readonly="false" :children="children">
   </GridDragResize>
   <div v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></div>
 </div>
@@ -87,14 +87,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-.grid-drag-resize {
-  background-color: #eee;
-
-  .grid-drag-resize__item {
-    background-color: #ddd;
-  }
-}
 </style>
 <style lang="less">
 .page {
@@ -106,7 +98,15 @@ body {
   height: 100%;
 }
 
-.grid-drag-resize__item--dragging {
-  box-shadow: 0 0 6px 2px #0000ff;
+.grid-drag-resize {
+  background-color: #eee;
+
+  .grid-drag-resize__item {
+    background-color: #ddd;
+
+    &--dragging {
+      box-shadow: 0 0 6px 2px #0000ff;
+    }
+  }
 }
 </style>

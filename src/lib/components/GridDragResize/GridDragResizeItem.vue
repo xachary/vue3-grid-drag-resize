@@ -6,11 +6,12 @@ import type { GridDragResizeProps, GridDragResizeItemProps } from './types'
 const parentProps = inject<GridDragResizeProps>('parentProps')
 
 const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
-    draggable: true,
+    draggable: true
 });
 
 const emit = defineEmits(['update:columnStart', 'update:columnEnd', 'update:rowStart', 'update:rowEnd', 'dragging'])
 
+// 数据整理
 watchEffect(() => {
     if (props.columnStart !== void 0) {
         if (props.columnEnd === void 0 || props.columnEnd < props.columnStart) {
@@ -29,6 +30,7 @@ watchEffect(() => {
     }
 })
 
+// 样式
 const style = computed(() => {
     return {
         'grid-column-start': props.columnStart,
@@ -40,11 +42,13 @@ const style = computed(() => {
 
 const itemEle: Ref<HTMLElement | undefined> = ref()
 
-const dragHandler = computed(() => parentProps?.dragHandler ?? props.dragHandler)
+const dragHandlerParsed = computed(() => props.dragHandler ?? parentProps?.dragHandler)
+const draggableParsed = computed(() => parentProps?.readonly ? false : props.draggable)
 
+// dragHandler 定位、处理、事件绑定
 watchEffect(() => {
-    if (dragHandler.value && itemEle.value) {
-        const handlerEle = itemEle.value.querySelector(dragHandler.value)
+    if (draggableParsed.value && dragHandlerParsed.value && itemEle.value) {
+        const handlerEle = itemEle.value.querySelector(dragHandlerParsed.value)
         if (handlerEle instanceof HTMLElement) {
             handlerEle.style.cursor = 'grab'
 
@@ -53,8 +57,10 @@ watchEffect(() => {
     }
 })
 
+// 拖动开始
 function dragstart() {
-    if (props.draggable) {
+    if (draggableParsed.value) {
+        // 通知父组件 当前拖动子组件
         emit('dragging', itemEle?.value?.getBoundingClientRect() ?? {
             height: 0,
             width: 0,
@@ -69,9 +75,9 @@ function dragstart() {
 
 <template>
 <div class="grid-drag-resize__item" :class="{
-    'grid-drag-resize__item--draggable': parentProps?.draggable && props.draggable,
-    'grid-drag-resize__item--draggable-full': parentProps?.draggable && props.draggable && parentProps?.dragHandler === void 0 && props.dragHandler === void 0
-}" :style="style" @mousedown="() => dragHandler ? undefined : dragstart()" ref="itemEle">
+    'grid-drag-resize__item--draggable': draggableParsed,
+    'grid-drag-resize__item--draggable-full': draggableParsed && dragHandlerParsed === void 0
+}" :style="style" @mousedown="() => dragHandlerParsed ? undefined : dragstart()" ref="itemEle">
     <slot></slot>
 </div>
 </template>

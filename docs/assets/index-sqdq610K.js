@@ -3,7 +3,7 @@
   try {
     if (typeof document != "undefined") {
       var elementStyle = document.createElement("style");
-      elementStyle.appendChild(document.createTextNode(".grid-drag-resize {\n  display: grid;\n}\n.grid-drag-resize .grid-drag-resize__item--draggable-full {\n  cursor: grab;\n  user-select: none;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  opacity: 0.6;\n}\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n  margin: 0;\n  font-weight: normal;\n}\nbody {\n  min-height: 100vh;\n  color: var(--color-text);\n  background: var(--color-background);\n  transition: color 0.5s, background-color 0.5s;\n  line-height: 1.6;\n  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n  font-size: 15px;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.grid-drag-resize {\n  background-color: #eee;\n}\n.grid-drag-resize .grid-drag-resize__item {\n  background-color: #ddd;\n}\n.page[data-v-d9df4c40] {\n  padding: 32px;\n}\n.demo-item[data-v-d9df4c40] {\n  padding: 10px;\n}"));
+      elementStyle.appendChild(document.createTextNode(".grid-drag-resize {\n  display: grid;\n}\n.grid-drag-resize .grid-drag-resize__item--draggable-full {\n  cursor: grab;\n  user-select: none;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  opacity: 0.6;\n}\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n  margin: 0;\n  font-weight: normal;\n}\nbody {\n  min-height: 100vh;\n  color: var(--color-text);\n  background: var(--color-background);\n  transition: color 0.5s, background-color 0.5s;\n  line-height: 1.6;\n  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n  font-size: 15px;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.grid-drag-resize {\n  background-color: #eee;\n}\n.grid-drag-resize .grid-drag-resize__item {\n  background-color: #ddd;\n}\n.page {\n  padding: 32px;\n}\n.demo-item {\n  padding: 10px;\n  height: 100%;\n}\n.grid-drag-resize__item--dragging {\n  box-shadow: 0 0 6px 2px #0000ff;\n}"));
       document.head.appendChild(elementStyle);
     }
   } catch (e) {
@@ -5991,38 +5991,38 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const children = ref([
       {
         dragHandler: ".demo-item>button",
-        render: () => h("div", { class: "demo-item" }, [h("button", "drag handler")])
+        render: () => h("div", { class: "demo-item", style: { background: "#eb9c64" } }, [h("button", "drag handler")])
       },
       {
         columnStart: 2,
         draggable: false,
-        render: () => h("div", { class: "demo-item" }, "disable drag")
+        render: () => h("div", { class: "demo-item", style: { background: "#ff8789" } }, "disable drag")
       },
       {
         rowStart: 2,
         columnStart: 2,
-        render: () => h("div", { class: "demo-item" }, "1")
+        render: () => h("div", { class: "demo-item", style: { background: "#554e4f" } }, "1")
       },
       {
         rowStart: 2,
         rowEnd: 4,
         columnStart: 4,
         columnEnd: 5,
-        render: () => h("div", { class: "demo-item" }, "2")
+        render: () => h("div", { class: "demo-item", style: { background: "#8fbf9f" } }, "2")
       },
       {
         rowStart: 4,
         rowEnd: 6,
         columnStart: 2,
         columnEnd: 4,
-        render: () => h("div", { class: "demo-item" }, "3")
+        render: () => h("div", { class: "demo-item", style: { background: "#346145" } }, "3")
       },
       {
         rowStart: 4,
         rowEnd: 5,
         columnStart: 1,
         columnEnd: 2,
-        render: () => h("div", { class: "demo-item" }, "4")
+        render: () => h("div", { class: "demo-item", style: { background: "#c2baa6" } }, "4")
       }
     ]);
     return (_ctx, _cache) => {
@@ -6042,14 +6042,6 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     };
   }
 });
-const _export_sfc = (sfc, props) => {
-  const target = sfc.__vccOpts || sfc;
-  for (const [key, val] of props) {
-    target[key] = val;
-  }
-  return target;
-};
-const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-d9df4c40"]]);
 const optionsDefault = {
   colors: ["purple", "blue", "green", "blueviolet", "goldenrod", "brown", "chocolate"],
   type: "log"
@@ -6074,7 +6066,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-10 17:27:15", git: { branch: "master", hash: "5e414a64cd1e197cbd1ef54e05c45355165d060e", tag: "5e414a64cd1e197cbd1ef54e05c45355165d060e" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-10 17:42:30", git: { branch: "master", hash: "cb1656d9c46a592330dab11a762d12a9dd4331ca", tag: "cb1656d9c46a592330dab11a762d12a9dd4331ca-dirty" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }
@@ -6083,4 +6075,4 @@ logArray(["branch", branch]);
 logArray(["tag", tag]);
 logArray(["hash", hash]);
 logArray(["build", lastBuildTime]);
-createApp(App).mount("#app");
+createApp(_sfc_main).mount("#app");

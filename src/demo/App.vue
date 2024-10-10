@@ -8,38 +8,38 @@ import type { GridDragResizeProps } from '@/lib/components/GridDragResize/types'
 const children: Ref<GridDragResizeProps['children']> = ref([
   {
     dragHandler: '.demo-item>button',
-    render: () => h('div', { class: "demo-item" }, [h('button', 'drag handler')])
+    render: () => h('div', { class: "demo-item", style: { background: '#eb9c64' } }, [h('button', 'drag handler')])
   },
   {
     columnStart: 2,
     draggable: false,
-    render: () => h('div', { class: "demo-item" }, 'disable drag')
+    render: () => h('div', { class: "demo-item", style: { background: '#ff8789' } }, 'disable drag')
   },
   {
     rowStart: 2,
     columnStart: 2,
-    render: () => h('div', { class: "demo-item" }, '1')
+    render: () => h('div', { class: "demo-item", style: { background: '#554e4f' } }, '1')
   },
   {
     rowStart: 2,
     rowEnd: 4,
     columnStart: 4,
     columnEnd: 5,
-    render: () => h('div', { class: "demo-item" }, '2')
+    render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, '2')
   },
   {
     rowStart: 4,
     rowEnd: 6,
     columnStart: 2,
     columnEnd: 4,
-    render: () => h('div', { class: "demo-item" }, '3')
+    render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, '3')
   },
   {
     rowStart: 4,
     rowEnd: 5,
     columnStart: 1,
     columnEnd: 2,
-    render: () => h('div', { class: "demo-item" }, '4')
+    render: () => h('div', { class: "demo-item", style: { background: '#c2baa6' } }, '4')
   },
 ])
 </script>
@@ -96,12 +96,17 @@ body {
   }
 }
 </style>
-<style lang="less" scoped>
+<style lang="less">
 .page {
   padding: 32px;
 }
 
 .demo-item {
   padding: 10px;
+  height: 100%;
+}
+
+.grid-drag-resize__item--dragging {
+  box-shadow: 0 0 6px 2px #0000ff;
 }
 </style>

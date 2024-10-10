@@ -1,0 +1,107 @@
+<script setup lang="ts">
+import { ref, h, type Ref } from 'vue'
+// import { GridDragResize, type GridDragResizeProps } from 'vue3-grid-drag-resize'
+// import { GridDragResize } from '../../dist/vue3-grid-drag-resize/index.js'
+import { GridDragResize } from '@/lib/components/GridDragResize'
+import type { GridDragResizeProps } from '@/lib/components/GridDragResize/types'
+
+const children: Ref<GridDragResizeProps['children']> = ref([
+  {
+    dragHandler: '.demo-item>button',
+    render: () => h('div', { class: "demo-item" }, [h('button', 'drag handler')])
+  },
+  {
+    columnStart: 2,
+    draggable: false,
+    render: () => h('div', { class: "demo-item" }, 'disable drag')
+  },
+  {
+    rowStart: 2,
+    columnStart: 2,
+    render: () => h('div', { class: "demo-item" }, '1')
+  },
+  {
+    rowStart: 2,
+    rowEnd: 4,
+    columnStart: 4,
+    columnEnd: 5,
+    render: () => h('div', { class: "demo-item" }, '2')
+  },
+  {
+    rowStart: 4,
+    rowEnd: 6,
+    columnStart: 2,
+    columnEnd: 4,
+    render: () => h('div', { class: "demo-item" }, '3')
+  },
+  {
+    rowStart: 4,
+    rowEnd: 5,
+    columnStart: 1,
+    columnEnd: 2,
+    render: () => h('div', { class: "demo-item" }, '4')
+  },
+])
+</script>
+
+<template>
+<div class="page">
+  <GridDragResize :columns="4" :rows="5" :gap="10" :row-size="100" :draggable="true" :children="children">
+  </GridDragResize>
+  <div v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></div>
+</div>
+</template>
+
+<style lang="less">
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+  transition:
+    color 0.5s,
+    background-color 0.5s;
+  line-height: 1.6;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.grid-drag-resize {
+  background-color: #eee;
+
+  .grid-drag-resize__item {
+    background-color: #ddd;
+  }
+}
+</style>
+<style lang="less" scoped>
+.page {
+  padding: 32px;
+}
+
+.demo-item {
+  padding: 10px;
+}
+</style>

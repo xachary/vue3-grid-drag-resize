@@ -142,6 +142,7 @@ function dragend(e: MouseEvent) {
 
 // 超出组件区域，补充结束事件
 document.body.addEventListener('mouseup', dragend)
+window.addEventListener('mouseup', dragend)
 </script>
 
 <template>

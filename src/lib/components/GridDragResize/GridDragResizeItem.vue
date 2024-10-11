@@ -6,10 +6,11 @@ import type { GridDragResizeProps, GridDragResizeItemProps } from './types'
 const parentProps = inject<GridDragResizeProps>('parentProps')
 
 const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
-    draggable: true
+    draggable: true,
+    resizable: true
 });
 
-const emit = defineEmits(['update:columnStart', 'update:columnEnd', 'update:rowStart', 'update:rowEnd', 'dragging'])
+const emit = defineEmits(['update:columnStart', 'update:columnEnd', 'update:rowStart', 'update:rowEnd', 'dragging', 'select'])
 
 // 数据整理
 watchEffect(() => {
@@ -44,6 +45,7 @@ const itemEle: Ref<HTMLElement | undefined> = ref()
 
 const dragHandlerParsed = computed(() => props.dragHandler ?? parentProps?.dragHandler)
 const draggableParsed = computed(() => parentProps?.readonly ? false : props.draggable)
+const resizableParsed = computed(() => parentProps?.readonly ? false : props.resizable)
 
 // dragHandler 定位、处理、事件绑定
 watchEffect(() => {
@@ -71,13 +73,31 @@ function dragstart() {
         })
     }
 }
+
+// 选中
+function select(e: MouseEvent) {
+    if (resizableParsed.value) {
+        e.stopPropagation()
+
+        // 通知父组件 选中子组件
+        emit('select')
+    }
+}
 </script>
 
 <template>
 <div class="grid-drag-resize__item" :class="{
     'grid-drag-resize__item--draggable': draggableParsed,
     'grid-drag-resize__item--draggable-full': draggableParsed && dragHandlerParsed === void 0
-}" :style="style" @mousedown="() => dragHandlerParsed ? undefined : dragstart()" ref="itemEle">
+}" :style="style" @mousedown="() => dragHandlerParsed ? undefined : dragstart()" @click="select" ref="itemEle">
     <slot></slot>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--right"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--left"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-left"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-right"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-left"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-right"></i>
 </div>
 </template>

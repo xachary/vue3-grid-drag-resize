@@ -1,7 +1,9 @@
 .grid-drag-resize {
   display: grid;
 
-  .grid-drag-resize__item {
+  &__item {
+    position: relative;
+
     &--draggable-full {
       cursor: grab;
       user-select: none;
@@ -9,6 +11,59 @@
 
     &--dragging {
       opacity: 0.6;
+    }
+
+    &--selected &__adjust{
+      display: block;
+    }
+
+    &__adjust {
+      position: absolute;
+      border: 1px solid #666;
+      background-color: white;
+      width: 10px;
+      height: 10px;
+      display: none;
+      &--top {
+        top: -($height/2);
+        left: calc(50% - $width/2);
+        cursor: ns-resize;
+      }
+      &--right {
+        right: -($width/2);
+        top: calc(50% - $height/2);
+        cursor: ew-resize;
+      }
+      &--bottom {
+        bottom: -($height/2);
+        left: calc(50% - $width/2);
+        cursor: ns-resize;
+      }
+      &--left {
+        left: -($width/2);
+        top: calc(50% - $height/2);
+        cursor: ew-resize;
+      }
+      &--top-left {
+        top: -($height/2);
+        left: -($width/2);
+        cursor: nwse-resize;
+      }
+      &--top-right {
+        top: -($height/2);
+        right: -($width/2);
+        cursor: nesw-resize;
+      }
+      &--bottom-left {
+        bottom: -($height/2);
+        left: -($width/2);
+        cursor: nesw-resize;
+      }
+      &--bottom-right {
+        bottom: -($height/2);
+        right: -($width/2);
+        cursor: nwse-resize;
+      }
     }
   }
 }

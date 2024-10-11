@@ -45,7 +45,7 @@ const rowSize = computed(() => {
 })
 
 // 根据鼠标拖动偏移量，计算列/行方向上，移动后最新的位置和大小
-function calcStartEnd(opts: { size: number, gap: number, span: number, max: number, offset: number, startBefore: number }) {
+function calcStartEndByOffset(opts: { size: number, gap: number, span: number, max: number, offset: number, startBefore: number, direction: number }) {
     let { size, gap, span, max, offset, startBefore } = opts
 
     let offsetStart = Math.round(offset / (size + gap))
@@ -66,6 +66,31 @@ function calcStartEnd(opts: { size: number, gap: number, span: number, max: numb
     }
 }
 
+// // 根据鼠标拖动位置（相对于组件），计算列/行方向上的位置，移动后最新的位置和大小
+// function calcStartEndByPos(opts: { size: number, gap: number, span: number, max: number, pos: number }) {
+//     let { size, gap, span, max, pos } = opts
+
+//     // 虚拟地在 grid 四边补充二分之一的 gap 距离
+//     // 如此，通过计算 拖动位置（相对于组件）与 大小+间隙 的倍数即可
+//     let start = Math.ceil((pos + gap / 2) / (size + gap))
+
+//     if (start < 1) {
+//         start = 1
+//     }
+
+//     if (start + span > max) {
+//         start = max - span + 1
+//     }
+
+//     return {
+//         start,
+//         end: start + span
+//     }
+// }
+
+// 当前选中子组件的数据项
+const selectChild: Ref<GridDragResizeItemProps | undefined> = ref()
+
 // 当前拖动子组件的数据项
 const draggingChild: Ref<GridDragResizeItemProps | undefined> = ref()
 // 当前拖动子组件的数据项（初始状态）
@@ -77,7 +102,11 @@ const draggingChildRect: Ref<DOMRect | undefined> = ref()
 let dragStartClientX = 0, dragStartClientY = 0;
 
 // 拖动偏移量
-let dragOffsetClientX = 0, dragOffsetClientY = 0;
+let dragOffsetClientRow = 0, dragOffsetClientColumn = 0;
+
+// 计算移动方向
+// let lastClientX = 0, lastClientY = 0
+let rowDirection = 0, columnDirection = 0
 
 let dragging = false
 
@@ -89,6 +118,11 @@ function dragstart(e: MouseEvent) {
         // 记录 拖动开始位置
         dragStartClientX = e.clientX
         dragStartClientY = e.clientY
+
+        // lastClientX = e.clientX
+        // lastClientY = e.clientY
+        // rowDirection = 0
+        // columnDirection = 0
     }
 }
 
@@ -96,8 +130,23 @@ function dragstart(e: MouseEvent) {
 function drag(e: MouseEvent) {
     if (dragging && draggingChild.value && draggingChildRect.value) {
         // 计算 拖动开始位置
-        dragOffsetClientX = e.clientX - dragStartClientX
-        dragOffsetClientY = e.clientY - dragStartClientY
+        dragOffsetClientColumn = e.clientX - dragStartClientX
+        dragOffsetClientRow = e.clientY - dragStartClientY
+
+        // if (e.clientX > lastClientX) {
+        //     columnDirection = 1
+        // } else if (e.clientX < lastClientX) {
+        //     columnDirection = -1
+        // }
+
+        // if (e.clientY > lastClientY) {
+        //     rowDirection = 1
+        // } else if (e.clientY < lastClientY) {
+        //     rowDirection = -1
+        // }
+
+        // lastClientX = e.clientX
+        // lastClientY = e.clientY
 
         // 当前拖动子组件的 grid 大小
         let rowSpan = (draggingChild.value.rowEnd ?? draggingChild.value.rowStart ?? 1) - (draggingChild.value.rowStart ?? 1)
@@ -111,16 +160,40 @@ function drag(e: MouseEvent) {
         if (columnSpan <= 0) {
             columnSpan = 1
         }
-        
-        
+
+        // // 相对于 组件 的鼠标位置（并考虑 相对于 当前拖动子组件 的鼠标位置）
+        // let posY = e.clientY - rootRect.value.y
+        // if (posY < 0) {
+        //     posY = 0
+        // } else if (posY > rootRect.value.height) {
+        //     posY = rootRect.value.height
+        // }
+
+        // let posX = e.clientX - rootRect.value.x
+        // if (posX < 0) {
+        //     posX = 0
+        // } else if (posX > rootRect.value.width) {
+        //     posX = rootRect.value.width
+        // }
+
+        // // 计算行方向上，移动后最新的位置和大小
+        // let { start: rowStart, end: rowEnd } = calcStartEndByPos({
+        //     size: rowSize.value, gap: (props.gap ?? 0), span: rowSpan, max: props.rows ?? 1, pos: posY
+        // })
+
+        // // 计算列方向上，移动后最新的位置和大小
+        // let { start: columnStart, end: columnEnd } = calcStartEndByPos({
+        //     size: columnSize.value, gap: (props.gap ?? 0), span: columnSpan, max: props.columns ?? 1, pos: posX
+        // })
+
         // 计算行方向上，移动后最新的位置和大小
-        let { start: rowStart, end: rowEnd } = calcStartEnd({
-            size: rowSize.value, gap: (props.gap ?? 0), span: rowSpan, max: props.rows ?? 1, offset: dragOffsetClientY, startBefore: draggingChildBefore.value?.rowStart ?? 1
+        let { start: rowStart, end: rowEnd } = calcStartEndByOffset({
+            size: rowSize.value, gap: (props.gap ?? 0), span: rowSpan, max: props.rows ?? 1, offset: dragOffsetClientRow, startBefore: draggingChildBefore.value?.rowStart ?? 1, direction: rowDirection
         })
 
         // 计算列方向上，移动后最新的位置和大小
-        let { start: columnStart, end: columnEnd } = calcStartEnd({
-            size: columnSize.value, gap: (props.gap ?? 0), span: columnSpan, max: props.columns ?? 1, offset: dragOffsetClientX, startBefore: draggingChildBefore.value?.columnStart ?? 1
+        let { start: columnStart, end: columnEnd } = calcStartEndByOffset({
+            size: columnSize.value, gap: (props.gap ?? 0), span: columnSpan, max: props.columns ?? 1, offset: dragOffsetClientColumn, startBefore: draggingChildBefore.value?.columnStart ?? 1, direction: columnDirection
         })
 
         // 当前拖动子组件的数据项
@@ -140,9 +213,19 @@ function dragend(e: MouseEvent) {
     draggingChild.value = undefined
 }
 
+// 清除选择
+function selectClear() {
+    selectChild.value = undefined
+    draggingChild.value = undefined
+}
+
 // 超出组件区域，补充结束事件
 document.body.addEventListener('mouseup', dragend)
 window.addEventListener('mouseup', dragend)
+
+// 点击空白区域，清空选择
+document.body.addEventListener('click', selectClear)
+window.addEventListener('click', selectClear)
 </script>
 
 <template>
@@ -150,9 +233,10 @@ window.addEventListener('mouseup', dragend)
     <template v-for="(child, idx) of props.children" :key="idx">
         <GridDragResizeItem v-bind="child" v-model:column-start="child.columnStart" v-model:column-end="child.columnEnd"
             v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd"
-            @dragging="(rect) => { draggingChild = child; draggingChildBefore = { ...child }; draggingChildRect = rect }"
+            @dragging="(rect) => { draggingChild = child; draggingChildBefore = { ...child }; draggingChildRect = rect; selectChild = undefined }"
+            @select="() => { selectChild = child; draggingChild = undefined }"
             :style="{ 'zIndex': draggingChild === child ? props.children.length + 1 : idx + 1 }"
-            :class="{ 'grid-drag-resize__item--dragging': draggingChild === child }">
+            :class="{ 'grid-drag-resize__item--dragging': draggingChild === child, 'grid-drag-resize__item--selected': selectChild === child }">
             <component :is="child.render"></component>
         </GridDragResizeItem>
     </template>

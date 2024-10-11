@@ -13,12 +13,13 @@ const children: Ref<GridDragResizeProps['children']> = ref([
   {
     columnStart: 2,
     draggable: false,
-    render: () => h('div', { class: "demo-item", style: { background: '#ff8789' } }, 'disable drag')
+    render: () => h('div', { class: "demo-item", style: { background: '#ff8789' } }, 'disable')
   },
   {
     rowStart: 2,
     columnStart: 2,
-    render: () => h('div', { class: "demo-item", style: { background: '#554e4f' } }, '1')
+    resizable: false,
+    render: () => h('div', { class: "demo-item", style: { background: '#554e4f' } }, 'unresizable')
   },
   {
     rowStart: 2,

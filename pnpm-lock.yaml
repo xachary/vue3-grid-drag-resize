@@ -24,8 +24,8 @@ importers:
         specifier: ^3.4.21
         version: 3.4.21(typescript@5.4.3)
       vue3-grid-drag-resize:
-        specifier: ^0.0.4
-        version: 0.0.4(typescript@5.4.3)
+        specifier: ^0.0.6
+        version: 0.0.6(typescript@5.4.3)
     devDependencies:
       '@commitlint/cli':
         specifier: 19.2.1
@@ -1826,17 +1826,8 @@ packages:
     peerDependencies:
       typescript: '*'
 
-  vue3-grid-drag-resize@0.0.1:
-    resolution: {integrity: sha512-h0s89Js+FfCa8Y+ZtAcFmHDMUMBhKVBSLC+EWiVDpzsNV70esvHbdCkB9n4KhnXDOF33NoDjAeCgji+HB6a9fA==}
-
-  vue3-grid-drag-resize@0.0.2:
-    resolution: {integrity: sha512-OJSVBMta336YsTkFnoFYi1bYlVXqW8XYWn8f/UINm3bgdMFoGT9T5G+Ekjk9C22mssNkpOQecR/IYADAWPbwsw==}
-
-  vue3-grid-drag-resize@0.0.3:
-    resolution: {integrity: sha512-JH2zOcyP3zBOBg0SGCws6O+a/WXZOfFTc3ZS2zzfHH+lTGo0hQmKRjDNGbjsAyXWISxjDyFKGXfu1DMYy5+V8w==}
-
-  vue3-grid-drag-resize@0.0.4:
-    resolution: {integrity: sha512-VIaGvbXUD1HRrdQKxJyOY0B1hsSeZKNtC6Z87QS8887UrpRA5Tk9wMazsK4yiqxzeg/t4xLZqTiw+gz1bau0Ww==}
+  vue3-grid-drag-resize@0.0.6:
+    resolution: {integrity: sha512-9eXUgvC4R5wvXj8muLLRASvRL8SlQZVg2gffmFL857SG3Ny698R5sTCWC9iC8DDB962JCNAlSoJRCxhbsSrMBw==}
 
   vue@3.4.21:
     resolution: {integrity: sha512-5hjyV/jLEIKD/jYl4cavMcnzKwjMKohureP8ejn3hhEjwhWIhWeuzL2kJAjzl/WyVsgPY56Sy4Z40C3lVshxXA==}
@@ -3596,46 +3587,13 @@ snapshots:
       semver: 7.6.0
       typescript: 5.4.3
 
-  vue3-grid-drag-resize@0.0.1(typescript@5.4.3):
+  vue3-grid-drag-resize@0.0.6(typescript@5.4.3):
     dependencies:
       '@types/lodash-es': 4.17.12
       dayjs: 1.11.13
       lodash-es: 4.17.21
       nanoid: 5.0.6
       vue: 3.4.21(typescript@5.4.3)
-    transitivePeerDependencies:
-      - typescript
-
-  vue3-grid-drag-resize@0.0.2(typescript@5.4.3):
-    dependencies:
-      '@types/lodash-es': 4.17.12
-      dayjs: 1.11.13
-      lodash-es: 4.17.21
-      nanoid: 5.0.6
-      vue: 3.4.21(typescript@5.4.3)
-      vue3-grid-drag-resize: 0.0.1(typescript@5.4.3)
-    transitivePeerDependencies:
-      - typescript
-
-  vue3-grid-drag-resize@0.0.3(typescript@5.4.3):
-    dependencies:
-      '@types/lodash-es': 4.17.12
-      dayjs: 1.11.13
-      lodash-es: 4.17.21
-      nanoid: 5.0.6
-      vue: 3.4.21(typescript@5.4.3)
-      vue3-grid-drag-resize: 0.0.2(typescript@5.4.3)
-    transitivePeerDependencies:
-      - typescript
-
-  vue3-grid-drag-resize@0.0.4(typescript@5.4.3):
-    dependencies:
-      '@types/lodash-es': 4.17.12
-      dayjs: 1.11.13
-      lodash-es: 4.17.21
-      nanoid: 5.0.6
-      vue: 3.4.21(typescript@5.4.3)
-      vue3-grid-drag-resize: 0.0.3(typescript@5.4.3)
     transitivePeerDependencies:
       - typescript
 

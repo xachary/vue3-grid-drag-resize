@@ -3,7 +3,7 @@
   try {
     if (typeof document != "undefined") {
       var elementStyle = document.createElement("style");
-      elementStyle.appendChild(document.createTextNode(".grid-drag-resize {\n  display: grid;\n}\n.grid-drag-resize .grid-drag-resize__item--draggable-full {\n  cursor: grab;\n  user-select: none;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  opacity: 0.6;\n}\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n  margin: 0;\n  font-weight: normal;\n}\nbody {\n  min-height: 100vh;\n  color: var(--color-text);\n  background: var(--color-background);\n  transition: color 0.5s, background-color 0.5s;\n  line-height: 1.6;\n  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n  font-size: 15px;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.page {\n  padding: 32px;\n}\n.demo-item {\n  padding: 10px;\n  height: 100%;\n}\n.grid-drag-resize {\n  background-color: #eee;\n}\n.grid-drag-resize .grid-drag-resize__item {\n  background-color: #ddd;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  box-shadow: 0 0 6px 2px #0000ff;\n}"));
+      elementStyle.appendChild(document.createTextNode(".grid-drag-resize {\n  display: grid;\n}\n.grid-drag-resize__item {\n  position: relative;\n}\n.grid-drag-resize__item--draggable-full {\n  cursor: grab;\n  user-select: none;\n}\n.grid-drag-resize__item--dragging {\n  opacity: 0.6;\n}\n.grid-drag-resize__item--selected .grid-drag-resize__item__adjust {\n  display: block;\n}\n.grid-drag-resize__item__adjust {\n  position: absolute;\n  border: 1px solid #666;\n  background-color: white;\n  width: 10px;\n  height: 10px;\n  display: none;\n}\n.grid-drag-resize__item__adjust--top {\n  top: -5px;\n  left: calc(50% - 10px/2);\n  cursor: ns-resize;\n}\n.grid-drag-resize__item__adjust--right {\n  right: -5px;\n  top: calc(50% - 10px/2);\n  cursor: ew-resize;\n}\n.grid-drag-resize__item__adjust--bottom {\n  bottom: -5px;\n  left: calc(50% - 10px/2);\n  cursor: ns-resize;\n}\n.grid-drag-resize__item__adjust--left {\n  left: -5px;\n  top: calc(50% - 10px/2);\n  cursor: ew-resize;\n}\n.grid-drag-resize__item__adjust--top-left {\n  top: -5px;\n  left: -5px;\n  cursor: nwse-resize;\n}\n.grid-drag-resize__item__adjust--top-right {\n  top: -5px;\n  right: -5px;\n  cursor: nesw-resize;\n}\n.grid-drag-resize__item__adjust--bottom-left {\n  bottom: -5px;\n  left: -5px;\n  cursor: nesw-resize;\n}\n.grid-drag-resize__item__adjust--bottom-right {\n  bottom: -5px;\n  right: -5px;\n  cursor: nwse-resize;\n}\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n  margin: 0;\n  font-weight: normal;\n}\nbody {\n  min-height: 100vh;\n  color: var(--color-text);\n  background: var(--color-background);\n  transition: color 0.5s, background-color 0.5s;\n  line-height: 1.6;\n  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n  font-size: 15px;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.page {\n  padding: 32px;\n}\n.demo-item {\n  padding: 10px;\n  height: 100%;\n}\n.grid-drag-resize {\n  background-color: #eee;\n}\n.grid-drag-resize .grid-drag-resize__item {\n  background-color: #ddd;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  box-shadow: 0 0 6px 2px #0000ff;\n}\n.grid-drag-resize .grid-drag-resize__item--selected {\n  box-shadow: 0 0 6px 2px #ff00ff;\n}"));
       document.head.appendChild(elementStyle);
     }
   } catch (e) {
@@ -5760,13 +5760,14 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
   props: {
     draggable: { type: Boolean, default: true },
     dragHandler: {},
+    resizable: { type: Boolean, default: true },
     columnStart: {},
     columnEnd: {},
     rowStart: {},
     rowEnd: {},
     render: {}
   },
-  emits: ["update:columnStart", "update:columnEnd", "update:rowStart", "update:rowEnd", "dragging"],
+  emits: ["update:columnStart", "update:columnEnd", "update:rowStart", "update:rowEnd", "startDrag", "select", "startResize"],
   setup(__props, { emit: __emit }) {
     const parentProps = inject("parentProps");
     const props = __props;
@@ -5798,6 +5799,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     const itemEle = ref();
     const dragHandlerParsed = computed(() => props.dragHandler ?? (parentProps == null ? void 0 : parentProps.dragHandler));
     const draggableParsed = computed(() => (parentProps == null ? void 0 : parentProps.readonly) ? false : props.draggable);
+    const resizableParsed = computed(() => (parentProps == null ? void 0 : parentProps.readonly) ? false : props.resizable);
     watchEffect(() => {
       if (draggableParsed.value && dragHandlerParsed.value && itemEle.value) {
         const handlerEle = itemEle.value.querySelector(dragHandlerParsed.value);
@@ -5810,13 +5812,38 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     function dragstart() {
       var _a;
       if (draggableParsed.value) {
-        emit2("dragging", ((_a = itemEle == null ? void 0 : itemEle.value) == null ? void 0 : _a.getBoundingClientRect()) ?? {
+        emit2("startDrag", ((_a = itemEle == null ? void 0 : itemEle.value) == null ? void 0 : _a.getBoundingClientRect()) ?? {
           height: 0,
           width: 0,
           x: 0,
           y: 0,
           bottom: 0,
           right: 0
+        });
+      }
+    }
+    function select(e) {
+      if (resizableParsed.value) {
+        e.stopPropagation();
+        emit2("select");
+      }
+    }
+    function resizeStart(e, direction) {
+      var _a;
+      if (resizableParsed.value) {
+        e.stopPropagation();
+        emit2("startResize", {
+          event: e,
+          rect: ((_a = itemEle == null ? void 0 : itemEle.value) == null ? void 0 : _a.getBoundingClientRect()) ?? {
+            height: 0,
+            width: 0,
+            x: 0,
+            y: 0,
+            bottom: 0,
+            right: 0
+          },
+          cursor: e.target instanceof HTMLElement ? getComputedStyle(e.target).cursor : "",
+          direction
         });
       }
     }
@@ -5827,11 +5854,44 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
           "grid-drag-resize__item--draggable-full": draggableParsed.value && dragHandlerParsed.value === void 0
         }]),
         style: normalizeStyle(style.value),
-        onMousedown: _cache[0] || (_cache[0] = () => dragHandlerParsed.value ? void 0 : dragstart()),
+        onMousedown: _cache[8] || (_cache[8] = () => dragHandlerParsed.value ? void 0 : dragstart()),
+        onClick: select,
         ref_key: "itemEle",
         ref: itemEle
       }, [
-        renderSlot(_ctx.$slots, "default")
+        renderSlot(_ctx.$slots, "default"),
+        createBaseVNode("i", {
+          class: "grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top",
+          onMousedown: _cache[0] || (_cache[0] = ($event) => resizeStart($event, "top"))
+        }, null, 32),
+        createBaseVNode("i", {
+          class: "grid-drag-resize__item__adjust grid-drag-resize__item__adjust--right",
+          onMousedown: _cache[1] || (_cache[1] = ($event) => resizeStart($event, "right"))
+        }, null, 32),
+        createBaseVNode("i", {
+          class: "grid-drag-resize__item__adjust grid-drag-resize__item__adjust--left",
+          onMousedown: _cache[2] || (_cache[2] = ($event) => resizeStart($event, "left"))
+        }, null, 32),
+        createBaseVNode("i", {
+          class: "grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom",
+          onMousedown: _cache[3] || (_cache[3] = ($event) => resizeStart($event, "bottom"))
+        }, null, 32),
+        createBaseVNode("i", {
+          class: "grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-left",
+          onMousedown: _cache[4] || (_cache[4] = ($event) => resizeStart($event, "top-left"))
+        }, null, 32),
+        createBaseVNode("i", {
+          class: "grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-right",
+          onMousedown: _cache[5] || (_cache[5] = ($event) => resizeStart($event, "top-right"))
+        }, null, 32),
+        createBaseVNode("i", {
+          class: "grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-left",
+          onMousedown: _cache[6] || (_cache[6] = ($event) => resizeStart($event, "bottom-left"))
+        }, null, 32),
+        createBaseVNode("i", {
+          class: "grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-right",
+          onMousedown: _cache[7] || (_cache[7] = ($event) => resizeStart($event, "bottom-right"))
+        }, null, 32)
       ], 38);
     };
   }
@@ -5876,7 +5936,24 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     const rowSize = computed(() => {
       return (rootRect.value.height - (props.gap ?? 0) * ((props.rows ?? 1) - 1)) / (props.rows ?? 1);
     });
-    function calcStartEnd(opts) {
+    let clickStartX = 0, clickStartY = 0;
+    let clickOffsetX = 0, clickOffsetY = 0;
+    let resizing = false;
+    const resizingChild = ref();
+    const resizingChildBefore = ref();
+    const resizingChildRect = ref();
+    const resizingChildCursor = ref("");
+    const resizingChildDirection = ref("");
+    let resizeStartClientX = 0, resizeStartClientY = 0;
+    let resizeOffsetClientRow = 0, resizeOffsetClientColumn = 0;
+    let dragging = false;
+    const draggingChild = ref();
+    const draggingChildBefore = ref();
+    const draggingChildRect = ref();
+    let dragStartClientX = 0, dragStartClientY = 0;
+    let dragOffsetClientRow = 0, dragOffsetClientColumn = 0;
+    let rowDirection = 0, columnDirection = 0;
+    function calcDragStartEndByOffset(opts) {
       let { size: size2, gap, span, max, offset, startBefore } = opts;
       let offsetStart = Math.round(offset / (size2 + gap));
       let start = startBefore + offsetStart;
@@ -5891,68 +5968,206 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         end: start + span
       };
     }
-    const draggingChild = ref();
-    const draggingChildBefore = ref();
-    const draggingChildRect = ref();
-    let dragStartClientX = 0, dragStartClientY = 0;
-    let dragOffsetClientX = 0, dragOffsetClientY = 0;
-    let dragging = false;
-    function dragstart(e) {
-      if (!props.readonly) {
-        dragging = true;
-        dragStartClientX = e.clientX;
-        dragStartClientY = e.clientY;
+    function calcResizeStartEnd(opts) {
+      let { size: size2, gap, max, offset, startBefore, endBefore, target } = opts;
+      let offsetStart = Math.round(offset / (size2 + gap));
+      if (target === "start") {
+        let start = startBefore + offsetStart;
+        if (start < 1) {
+          start = 1;
+        }
+        if (start >= endBefore) {
+          start = endBefore - 1;
+        }
+        return {
+          start,
+          end: endBefore
+        };
+      } else {
+        let end = endBefore + offsetStart;
+        if (end > max) {
+          end = max + 1;
+        }
+        if (end <= startBefore) {
+          end = startBefore + 1;
+        }
+        return {
+          start: startBefore,
+          end
+        };
       }
     }
-    function drag(e) {
-      var _a, _b;
-      if (dragging && draggingChild.value && draggingChildRect.value) {
-        dragOffsetClientX = e.clientX - dragStartClientX;
-        dragOffsetClientY = e.clientY - dragStartClientY;
+    function resizingStart(res) {
+      const { event: e, rect, cursor, direction } = res;
+      clickStartX = e.clientX;
+      clickStartY = e.clientY;
+      resizeStartClientX = e.clientX;
+      resizeStartClientY = e.clientY;
+      dragging = false;
+      resizing = true;
+      resizingChildRect.value = rect;
+      resizingChildCursor.value = cursor;
+      resizingChildDirection.value = direction;
+      document.body.style.cursor = cursor;
+      resizingChildBefore.value = { ...resizingChild.value };
+    }
+    function updateDrag(child, rect) {
+      draggingChild.value = child;
+      draggingChildBefore.value = { ...child };
+      draggingChildRect.value = rect;
+    }
+    function dragStart(e) {
+      clickStartX = e.clientX;
+      clickStartY = e.clientY;
+      if (!props.readonly) {
+        if (draggingChild.value && draggingChildRect.value) {
+          resizing = false;
+          dragging = true;
+          dragStartClientX = e.clientX;
+          dragStartClientY = e.clientY;
+        }
+      }
+    }
+    function dragMove(e) {
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
+      if (dragging && draggingChild.value) {
+        dragOffsetClientColumn = e.clientX - dragStartClientX;
+        dragOffsetClientRow = e.clientY - dragStartClientY;
         let rowSpan = (draggingChild.value.rowEnd ?? draggingChild.value.rowStart ?? 1) - (draggingChild.value.rowStart ?? 1);
         let columnSpan = (draggingChild.value.columnEnd ?? draggingChild.value.columnStart ?? 1) - (draggingChild.value.columnStart ?? 1);
-        if (rowSpan <= 0) {
-          rowSpan = 1;
+        {
+          if (rowSpan <= 0) {
+            rowSpan = 1;
+          }
+          if (columnSpan <= 0) {
+            columnSpan = 1;
+          }
         }
-        if (columnSpan <= 0) {
-          columnSpan = 1;
-        }
-        let { start: rowStart, end: rowEnd } = calcStartEnd({
+        let { start: rowStart, end: rowEnd } = calcDragStartEndByOffset({
           size: rowSize.value,
           gap: props.gap ?? 0,
           span: rowSpan,
           max: props.rows ?? 1,
-          offset: dragOffsetClientY,
-          startBefore: ((_a = draggingChildBefore.value) == null ? void 0 : _a.rowStart) ?? 1
+          offset: dragOffsetClientRow,
+          startBefore: ((_a = draggingChildBefore.value) == null ? void 0 : _a.rowStart) ?? 1,
+          direction: rowDirection
         });
-        let { start: columnStart, end: columnEnd } = calcStartEnd({
+        let { start: columnStart, end: columnEnd } = calcDragStartEndByOffset({
           size: columnSize.value,
           gap: props.gap ?? 0,
           span: columnSpan,
           max: props.columns ?? 1,
-          offset: dragOffsetClientX,
-          startBefore: ((_b = draggingChildBefore.value) == null ? void 0 : _b.columnStart) ?? 1
+          offset: dragOffsetClientColumn,
+          startBefore: ((_b = draggingChildBefore.value) == null ? void 0 : _b.columnStart) ?? 1,
+          direction: columnDirection
         });
         draggingChild.value.columnStart = columnStart;
         draggingChild.value.columnEnd = columnEnd;
         draggingChild.value.rowStart = rowStart;
         draggingChild.value.rowEnd = rowEnd;
       }
+      if (resizing) {
+        resizeOffsetClientColumn = e.clientX - resizeStartClientX;
+        resizeOffsetClientRow = e.clientY - resizeStartClientY;
+        if (resizingChild.value) {
+          if (resizingChildDirection.value.startsWith("top")) {
+            let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
+              size: rowSize.value,
+              gap: props.gap ?? 0,
+              max: props.rows ?? 1,
+              offset: resizeOffsetClientRow,
+              startBefore: ((_c = resizingChildBefore.value) == null ? void 0 : _c.rowStart) ?? 1,
+              endBefore: ((_d = resizingChildBefore.value) == null ? void 0 : _d.rowEnd) ?? 1,
+              target: "start"
+            });
+            resizingChild.value.rowStart = rowStart;
+            resizingChild.value.rowEnd = rowEnd;
+          } else if (resizingChildDirection.value.startsWith("bottom")) {
+            let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
+              size: rowSize.value,
+              gap: props.gap ?? 0,
+              max: props.rows ?? 1,
+              offset: resizeOffsetClientRow,
+              startBefore: ((_e = resizingChildBefore.value) == null ? void 0 : _e.rowStart) ?? 1,
+              endBefore: ((_f = resizingChildBefore.value) == null ? void 0 : _f.rowEnd) ?? 1,
+              target: "end"
+            });
+            resizingChild.value.rowStart = rowStart;
+            resizingChild.value.rowEnd = rowEnd;
+          }
+          if (resizingChildDirection.value.endsWith("left")) {
+            let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
+              size: columnSize.value,
+              gap: props.gap ?? 0,
+              max: props.columns ?? 1,
+              offset: resizeOffsetClientColumn,
+              startBefore: ((_g = resizingChildBefore.value) == null ? void 0 : _g.columnStart) ?? 1,
+              endBefore: ((_h = resizingChildBefore.value) == null ? void 0 : _h.columnEnd) ?? 1,
+              target: "start"
+            });
+            resizingChild.value.columnStart = columnStart;
+            resizingChild.value.columnEnd = columnEnd;
+          } else if (resizingChildDirection.value.endsWith("right")) {
+            let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
+              size: columnSize.value,
+              gap: props.gap ?? 0,
+              max: props.columns ?? 1,
+              offset: resizeOffsetClientColumn,
+              startBefore: ((_i = resizingChildBefore.value) == null ? void 0 : _i.columnStart) ?? 1,
+              endBefore: ((_j = resizingChildBefore.value) == null ? void 0 : _j.columnEnd) ?? 1,
+              target: "end"
+            });
+            resizingChild.value.columnStart = columnStart;
+            resizingChild.value.columnEnd = columnEnd;
+          }
+        }
+      }
     }
-    function dragend(e) {
+    function dragEnd(e) {
       e.stopPropagation();
+      clickOffsetX = e.clientX - clickStartX;
+      clickOffsetY = e.clientY - clickStartY;
+      {
+        dragging = false;
+        draggingChild.value = void 0;
+        resizing = false;
+        resizingChildCursor.value = "";
+        document.body.style.cursor = "";
+      }
+    }
+    function clearSelection() {
+      if (Math.abs(clickOffsetX) < 5 && Math.abs(clickOffsetY) < 5) {
+        resizing = false;
+        resizingChild.value = void 0;
+        resizingChildCursor.value = "";
+        document.body.style.cursor = "";
+      }
       dragging = false;
       draggingChild.value = void 0;
     }
-    document.body.addEventListener("mouseup", dragend);
-    window.addEventListener("mouseup", dragend);
+    function select(child) {
+      if (Math.abs(clickOffsetX) < 5 && Math.abs(clickOffsetY) < 5) {
+        resizingChild.value = child;
+        draggingChild.value = void 0;
+      }
+    }
+    function mousedownOut(e) {
+      clickStartX = e.clientX;
+      clickStartY = e.clientY;
+    }
+    document.body.addEventListener("mousedown", mousedownOut);
+    window.addEventListener("mousedown", mousedownOut);
+    document.body.addEventListener("mouseup", dragEnd);
+    window.addEventListener("mouseup", dragEnd);
+    document.body.addEventListener("click", clearSelection);
+    window.addEventListener("click", clearSelection);
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         class: "grid-drag-resize",
         style: normalizeStyle(style.value),
-        onMousedown: dragstart,
-        onMousemove: drag,
-        onMouseup: dragend,
+        onMousedown: dragStart,
+        onMousemove: dragMove,
+        onMouseup: dragEnd,
         ref_key: "rootEle",
         ref: rootEle
       }, [
@@ -5966,19 +6181,17 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             "onUpdate:rowStart": ($event) => child.rowStart = $event,
             "row-end": child.rowEnd,
             "onUpdate:rowEnd": ($event) => child.rowEnd = $event,
-            onDragging: (rect) => {
-              draggingChild.value = child;
-              draggingChildBefore.value = { ...child };
-              draggingChildRect.value = rect;
-            },
-            style: { "zIndex": draggingChild.value === child ? props.children.length + 1 : idx + 1 },
-            class: { "grid-drag-resize__item--dragging": draggingChild.value === child }
+            onStartDrag: (rect) => updateDrag(child, rect),
+            onSelect: ($event) => select(child),
+            onStartResize: resizingStart,
+            style: { "zIndex": draggingChild.value === child ? props.children.length + 1 : idx + 1, cursor: resizingChildCursor.value },
+            class: { "grid-drag-resize__item--dragging": draggingChild.value === child, "grid-drag-resize__item--selected": resizingChild.value === child }
           }), {
             default: withCtx(() => [
               (openBlock(), createBlock(resolveDynamicComponent(child.render)))
             ]),
             _: 2
-          }, 1040, ["column-start", "onUpdate:columnStart", "column-end", "onUpdate:columnEnd", "row-start", "onUpdate:rowStart", "row-end", "onUpdate:rowEnd", "onDragging", "style", "class"]);
+          }, 1040, ["column-start", "onUpdate:columnStart", "column-end", "onUpdate:columnEnd", "row-start", "onUpdate:rowStart", "row-end", "onUpdate:rowEnd", "onStartDrag", "onSelect", "style", "class"]);
         }), 128))
       ], 36);
     };
@@ -5997,12 +6210,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       {
         columnStart: 2,
         draggable: false,
-        render: () => h("div", { class: "demo-item", style: { background: "#ff8789" } }, "disable drag")
+        render: () => h("div", { class: "demo-item", style: { background: "#ff8789" } }, "undraggable")
       },
       {
         rowStart: 2,
         columnStart: 2,
-        render: () => h("div", { class: "demo-item", style: { background: "#554e4f" } }, "1")
+        resizable: false,
+        render: () => h("div", { class: "demo-item", style: { background: "#554e4f" } }, "unresizable")
       },
       {
         rowStart: 2,
@@ -6067,7 +6281,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-10 21:48:57", git: { branch: "master", hash: "7783634b05a6a11d8c32d20db65d7958071335cf", tag: "7783634b05a6a11d8c32d20db65d7958071335cf" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-11 16:10:26", git: { branch: "master", hash: "66a32120867ccacf87f83975ab283c113d2e2656", tag: "66a32120867ccacf87f83975ab283c113d2e2656-dirty" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

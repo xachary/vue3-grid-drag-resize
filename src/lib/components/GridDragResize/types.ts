@@ -27,3 +27,11 @@ export interface GridDragResizeProps {
   //
   children?: GridDragResizeItemProps[] // 子组件
 }
+
+// 子组件 startResize 事件返回数据
+export interface StartResizeEvent {
+  event: MouseEvent
+  rect: DOMRect
+  cursor: string
+  direction: string
+}

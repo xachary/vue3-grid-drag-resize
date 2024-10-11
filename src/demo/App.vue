@@ -13,7 +13,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
   {
     columnStart: 2,
     draggable: false,
-    render: () => h('div', { class: "demo-item", style: { background: '#ff8789' } }, 'disable')
+    render: () => h('div', { class: "demo-item", style: { background: '#ff8789' } }, 'undraggable')
   },
   {
     rowStart: 2,
@@ -107,6 +107,10 @@ body {
 
     &--dragging {
       box-shadow: 0 0 6px 2px #0000ff;
+    }
+
+    &--selected {
+      box-shadow: 0 0 6px 2px #ff00ff;
     }
   }
 }

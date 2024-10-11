@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watchEffect, inject, type Ref } from 'vue'
 
-import type { GridDragResizeProps, GridDragResizeItemProps } from './types'
+import type { GridDragResizeProps, GridDragResizeItemProps, StartResizeEvent } from './types'
 
 const parentProps = inject<GridDragResizeProps>('parentProps')
 
@@ -10,7 +10,17 @@ const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
     resizable: true
 });
 
-const emit = defineEmits(['update:columnStart', 'update:columnEnd', 'update:rowStart', 'update:rowEnd', 'dragging', 'select'])
+type Emit = {
+    (e: 'update:columnStart', val: number): void
+    (e: 'update:columnEnd', val: number): void
+    (e: 'update:rowStart', val: number): void
+    (e: 'update:rowEnd', val: number): void
+    (e: 'startDrag', val: DOMRect): void
+    (e: 'select'): void
+    (e: 'startResize', val: StartResizeEvent): void
+}
+
+const emit = defineEmits<Emit>()
 
 // 数据整理
 watchEffect(() => {
@@ -45,6 +55,7 @@ const itemEle: Ref<HTMLElement | undefined> = ref()
 
 const dragHandlerParsed = computed(() => props.dragHandler ?? parentProps?.dragHandler)
 const draggableParsed = computed(() => parentProps?.readonly ? false : props.draggable)
+
 const resizableParsed = computed(() => parentProps?.readonly ? false : props.resizable)
 
 // dragHandler 定位、处理、事件绑定
@@ -63,14 +74,14 @@ watchEffect(() => {
 function dragstart() {
     if (draggableParsed.value) {
         // 通知父组件 当前拖动子组件
-        emit('dragging', itemEle?.value?.getBoundingClientRect() ?? {
+        emit('startDrag', itemEle?.value?.getBoundingClientRect() ?? {
             height: 0,
             width: 0,
             x: 0,
             y: 0,
             bottom: 0,
             right: 0
-        })
+        } as DOMRect)
     }
 }
 
@@ -83,6 +94,27 @@ function select(e: MouseEvent) {
         emit('select')
     }
 }
+
+// 开始改变大小
+function resizeStart(e: MouseEvent, direction: string) {
+    if (resizableParsed.value) {
+        e.stopPropagation()
+
+        emit('startResize', {
+            event: e,
+            rect: itemEle?.value?.getBoundingClientRect() ?? {
+                height: 0,
+                width: 0,
+                x: 0,
+                y: 0,
+                bottom: 0,
+                right: 0
+            } as DOMRect,
+            cursor: e.target instanceof HTMLElement ? getComputedStyle(e.target).cursor : '',
+            direction
+        })
+    }
+}
 </script>
 
 <template>
@@ -91,13 +123,22 @@ function select(e: MouseEvent) {
     'grid-drag-resize__item--draggable-full': draggableParsed && dragHandlerParsed === void 0
 }" :style="style" @mousedown="() => dragHandlerParsed ? undefined : dragstart()" @click="select" ref="itemEle">
     <slot></slot>
-    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top"></i>
-    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--right"></i>
-    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--left"></i>
-    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom"></i>
-    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-left"></i>
-    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-right"></i>
-    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-left"></i>
-    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-right"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top"
+        @mousedown="resizeStart($event, 'top')">
+    </i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--right"
+        @mousedown="resizeStart($event, 'right')"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--left"
+        @mousedown="resizeStart($event, 'left')"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom"
+        @mousedown="resizeStart($event, 'bottom')"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-left"
+        @mousedown="resizeStart($event, 'top-left')"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-right"
+        @mousedown="resizeStart($event, 'top-right')"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-left"
+        @mousedown="resizeStart($event, 'bottom-left')"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-right"
+        @mousedown="resizeStart($event, 'bottom-right')"></i>
 </div>
 </template>

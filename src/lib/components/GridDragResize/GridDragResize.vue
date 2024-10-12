@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, provide, type Ref } from 'vue'
+import { ref, computed, provide, watch, type Ref } from 'vue'
 
 import type { GridDragResizeProps, GridDragResizeItemProps, StartResizeEvent } from './types'
 
@@ -9,10 +9,58 @@ const props = withDefaults(defineProps<GridDragResizeProps>(), {
     children: () => []
 });
 
+type Emit = {
+    (e: 'update:rows', val: number): void
+    (e: 'update:columns', val: number): void
+}
+
+const emit = defineEmits<Emit>()
+
+// 转换为 grid 模版
+function gridTemplateParse(count: number, size?: number) {
+    return `repeat(${count},${Number.isInteger(size) ? `${size}px` : '1fr'})`
+}
+
+// 如果没定义 行数/列数，根据 children 计算合适的 行数/列数
+function calcMaxCount(target: string, count?: number) {
+    if (!Number.isInteger(count) || (Number.isInteger(count) && count! < 1)) {
+        count = props.children.reduce((max, child) => {
+            const end = { rows: child.rowEnd, columns: child.columnEnd }[target]
+            if (end && end > 1) {
+                if (end - 1 > max) {
+                    max = end - 1
+                }
+            }
+            return max
+        }, 1)
+    }
+
+    return count ?? 1
+}
+
+const rows = ref(1)
+const columns = ref(1)
+
+watch(() => [props.rows, props.columns], () => {
+    rows.value = calcMaxCount('rows', props.rows)
+    columns.value = calcMaxCount('columns', props.columns)
+
+    if (rows.value !== props.rows) {
+        emit('update:rows', rows.value)
+    }
+
+    if (columns.value !== props.columns) {
+        emit('update:columns', columns.value)
+    }
+}, {
+    immediate: true
+})
+
+// grid 样式
 const style = computed(() => {
     return {
-        'grid-template-columns': Number.isInteger(props.columns) ? `repeat(${props.columns},${Number.isInteger(props.columnSize) ? `${props.columnSize}px` : '1fr'})` : '',
-        'grid-template-rows': Number.isInteger(props.rows) ? `repeat(${props.rows},${Number.isInteger(props.rowSize) ? `${props.rowSize}px` : '1fr'})` : '',
+        'grid-template-columns': gridTemplateParse(columns.value, props.columnSize),
+        'grid-template-rows': gridTemplateParse(rows.value, props.rowSize),
         'grid-gap': Number.isInteger(props.gap) ? `${props.gap}px ${props.gap}px` : ''
     }
 })
@@ -36,14 +84,13 @@ const rootRect = computed(() => {
 
 // 列宽
 const columnSize = computed(() => {
-    return (rootRect.value.width - (props.gap ?? 0) * ((props.columns ?? 1) - 1)) / (props.columns ?? 1)
+    return props.columnSize ?? (rootRect.value.width - (props.gap ?? 0) * (columns.value - 1)) / columns.value
 })
 
 // 行高
 const rowSize = computed(() => {
-    return (rootRect.value.height - (props.gap ?? 0) * ((props.rows ?? 1) - 1)) / (props.rows ?? 1)
+    return props.rowSize ?? (rootRect.value.height - (props.gap ?? 0) * (rows.value - 1)) / rows.value
 })
-
 
 // 点击开始位置
 let clickStartX = 0, clickStartY = 0
@@ -89,8 +136,8 @@ let dragOffsetClientRow = 0, dragOffsetClientColumn = 0;
 let rowDirection = 0, columnDirection = 0
 
 // 根据鼠标拖动偏移量，计算列/行方向上，移动后最新的位置和大小
-function calcDragStartEndByOffset(opts: { size: number, gap: number, span: number, max: number, offset: number, startBefore: number, direction: number }) {
-    let { size, gap, span, max, offset, startBefore } = opts
+function calcDragStartEndByOffset(opts: { size: number, gap: number, span: number, max: number, offset: number, startBefore: number, direction: number, expandable: boolean }) {
+    let { size, gap, span, max, offset, startBefore, expandable } = opts
 
     let offsetStart = Math.round(offset / (size + gap))
 
@@ -100,8 +147,10 @@ function calcDragStartEndByOffset(opts: { size: number, gap: number, span: numbe
         start = 1
     }
 
-    if (start + span > max) {
-        start = max - span + 1
+    if (!expandable) {
+        if (start + span > max) {
+            start = max - span + 1
+        }
     }
 
     return {
@@ -284,23 +333,33 @@ function dragMove(e: MouseEvent) {
 
         // // 计算行方向上，移动后最新的位置和大小
         // let { start: rowStart, end: rowEnd } = calcDragStartEndByPos({
-        //     size: rowSize.value, gap: (props.gap ?? 0), span: rowSpan, max: props.rows ?? 1, pos: posY
+        //     size: rowSize.value, gap: (props.gap ?? 0), span: rowSpan, max: rows.value ?? 1, pos: posY
         // })
 
         // // 计算列方向上，移动后最新的位置和大小
         // let { start: columnStart, end: columnEnd } = calcDragStartEndByPos({
-        //     size: columnSize.value, gap: (props.gap ?? 0), span: columnSpan, max: props.columns ?? 1, pos: posX
+        //     size: columnSize.value, gap: (props.gap ?? 0), span: columnSpan, max: columns.value ?? 1, pos: posX
         // })
 
         // 计算行方向上，移动后最新的位置和大小
         let { start: rowStart, end: rowEnd } = calcDragStartEndByOffset({
-            size: rowSize.value, gap: (props.gap ?? 0), span: rowSpan, max: props.rows ?? 1, offset: dragOffsetClientRow, startBefore: draggingChildBefore.value?.rowStart ?? 1, direction: rowDirection
+            size: rowSize.value, gap: (props.gap ?? 0), span: rowSpan, max: rows.value ?? 1, offset: dragOffsetClientRow, startBefore: draggingChildBefore.value?.rowStart ?? 1, direction: rowDirection, expandable: props.rowExpandable ?? false
         })
+
+        if (props.rowExpandable) {
+            // 向下扩展
+            rows.value = calcMaxCount('rows')
+        }
 
         // 计算列方向上，移动后最新的位置和大小
         let { start: columnStart, end: columnEnd } = calcDragStartEndByOffset({
-            size: columnSize.value, gap: (props.gap ?? 0), span: columnSpan, max: props.columns ?? 1, offset: dragOffsetClientColumn, startBefore: draggingChildBefore.value?.columnStart ?? 1, direction: columnDirection
+            size: columnSize.value, gap: (props.gap ?? 0), span: columnSpan, max: columns.value ?? 1, offset: dragOffsetClientColumn, startBefore: draggingChildBefore.value?.columnStart ?? 1, direction: columnDirection, expandable: props.columnExpandable ?? false
         })
+
+        if (props.columnExpandable) {
+            // 向右扩展
+            columns.value = calcMaxCount('columns')
+        }
 
         // 更新 当前拖动子组件的数据项
         draggingChild.value.columnStart = columnStart
@@ -317,13 +376,13 @@ function dragMove(e: MouseEvent) {
             // 行 向
             if (resizingChildDirection.value.startsWith('top')) {
                 let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
-                    size: rowSize.value, gap: (props.gap ?? 0), max: props.rows ?? 1, offset: resizeOffsetClientRow, startBefore: resizingChildBefore.value?.rowStart ?? 1, endBefore: resizingChildBefore.value?.rowEnd ?? 1, target: 'start'
+                    size: rowSize.value, gap: (props.gap ?? 0), max: rows.value ?? 1, offset: resizeOffsetClientRow, startBefore: resizingChildBefore.value?.rowStart ?? 1, endBefore: resizingChildBefore.value?.rowEnd ?? 1, target: 'start'
                 })
                 resizingChild.value.rowStart = rowStart
                 resizingChild.value.rowEnd = rowEnd
             } else if (resizingChildDirection.value.startsWith('bottom')) {
                 let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
-                    size: rowSize.value, gap: (props.gap ?? 0), max: props.rows ?? 1, offset: resizeOffsetClientRow, startBefore: resizingChildBefore.value?.rowStart ?? 1, endBefore: resizingChildBefore.value?.rowEnd ?? 1, target: 'end'
+                    size: rowSize.value, gap: (props.gap ?? 0), max: rows.value ?? 1, offset: resizeOffsetClientRow, startBefore: resizingChildBefore.value?.rowStart ?? 1, endBefore: resizingChildBefore.value?.rowEnd ?? 1, target: 'end'
                 })
                 resizingChild.value.rowStart = rowStart
                 resizingChild.value.rowEnd = rowEnd
@@ -332,13 +391,13 @@ function dragMove(e: MouseEvent) {
             // 列 向
             if (resizingChildDirection.value.endsWith('left')) {
                 let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
-                    size: columnSize.value, gap: (props.gap ?? 0), max: props.columns ?? 1, offset: resizeOffsetClientColumn, startBefore: resizingChildBefore.value?.columnStart ?? 1, endBefore: resizingChildBefore.value?.columnEnd ?? 1, target: 'start'
+                    size: columnSize.value, gap: (props.gap ?? 0), max: columns.value ?? 1, offset: resizeOffsetClientColumn, startBefore: resizingChildBefore.value?.columnStart ?? 1, endBefore: resizingChildBefore.value?.columnEnd ?? 1, target: 'start'
                 })
                 resizingChild.value.columnStart = columnStart
                 resizingChild.value.columnEnd = columnEnd
             } else if (resizingChildDirection.value.endsWith('right')) {
                 let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
-                    size: columnSize.value, gap: (props.gap ?? 0), max: props.columns ?? 1, offset: resizeOffsetClientColumn, startBefore: resizingChildBefore.value?.columnStart ?? 1, endBefore: resizingChildBefore.value?.columnEnd ?? 1, target: 'end'
+                    size: columnSize.value, gap: (props.gap ?? 0), max: columns.value ?? 1, offset: resizeOffsetClientColumn, startBefore: resizingChildBefore.value?.columnStart ?? 1, endBefore: resizingChildBefore.value?.columnEnd ?? 1, target: 'end'
                 })
                 resizingChild.value.columnStart = columnStart
                 resizingChild.value.columnEnd = columnEnd
@@ -398,9 +457,13 @@ function mousedownOut(e: MouseEvent) {
     clickStartY = e.clientY
 }
 
-// 超出组件区域，补充鼠标按下事件
-document.body.addEventListener('mousedown', mousedownOut)
+// 超出窗口区域，补充鼠标按下事件
 window.addEventListener('mousedown', mousedownOut)
+
+// 鼠标处理事件
+document.body.addEventListener('mousedown', dragStart)
+document.body.addEventListener('mousemove', dragMove)
+document.body.addEventListener('mouseup', dragEnd)
 
 // 超出组件区域，补充结束事件
 document.body.addEventListener('mouseup', dragEnd)
@@ -412,8 +475,7 @@ window.addEventListener('click', clearSelection)
 </script>
 
 <template>
-<div class="grid-drag-resize" :style="style" @mousedown="dragStart" @mousemove="dragMove" @mouseup="dragEnd"
-    ref="rootEle">
+<div class="grid-drag-resize" :style="style" ref="rootEle">
     <template v-for="(child, idx) of props.children" :key="idx">
         <GridDragResizeItem v-bind="child" v-model:column-start="child.columnStart" v-model:column-end="child.columnEnd"
             v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd"

@@ -24,6 +24,8 @@ export interface GridDragResizeProps {
   gap?: number // 间隙
   columnSize?: number // 列宽，默认是 1fr
   rowSize?: number // 行高，默认是 1fr
+  columnExpandable?: boolean // 允许向右增加列
+  rowExpandable?: boolean // 允许向下增加行
   //
   children?: GridDragResizeItemProps[] // 子组件
 }

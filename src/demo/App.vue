@@ -47,7 +47,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
 
 <template>
 <div class="page">
-  <GridDragResize :columns="4" :rows="5" :gap="10" :row-size="100" :readonly="false" :children="children">
+  <GridDragResize :columns="4" :gap="10" :row-size="100" :row-expandable="true" :readonly="false" :children="children">
   </GridDragResize>
   <div v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></div>
 </div>

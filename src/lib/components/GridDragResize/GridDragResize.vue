@@ -182,8 +182,8 @@ function calcDragStartEndByOffset(opts: { size: number, gap: number, span: numbe
 // }
 
 // 根据鼠标拖动偏移量，计算调整大小后的位置
-function calcResizeStartEnd(opts: { size: number, gap: number, max: number, offset: number, startBefore: number, endBefore: number, target: 'start' | 'end' }) {
-    let { size, gap, max, offset, startBefore, endBefore, target } = opts
+function calcResizeStartEnd(opts: { size: number, gap: number, max: number, offset: number, startBefore: number, endBefore: number, target: 'start' | 'end', expandable: boolean }) {
+    let { size, gap, max, offset, startBefore, endBefore, target, expandable } = opts
 
     let offsetStart = Math.round(offset / (size + gap))
 
@@ -205,8 +205,10 @@ function calcResizeStartEnd(opts: { size: number, gap: number, max: number, offs
     } else {
         let end = endBefore + offsetStart
 
-        if (end > max) {
-            end = max + 1
+        if (!expandable) {
+            if (end > max) {
+                end = max + 1
+            }
         }
 
         if (end <= startBefore) {
@@ -376,31 +378,42 @@ function dragMove(e: MouseEvent) {
             // 行 向
             if (resizingChildDirection.value.startsWith('top')) {
                 let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
-                    size: rowSize.value, gap: (props.gap ?? 0), max: rows.value ?? 1, offset: resizeOffsetClientRow, startBefore: resizingChildBefore.value?.rowStart ?? 1, endBefore: resizingChildBefore.value?.rowEnd ?? 1, target: 'start'
+                    size: rowSize.value, gap: (props.gap ?? 0), max: rows.value ?? 1, offset: resizeOffsetClientRow, startBefore: resizingChildBefore.value?.rowStart ?? 1, endBefore: resizingChildBefore.value?.rowEnd ?? 1, target: 'start', expandable: props.rowExpandable
                 })
                 resizingChild.value.rowStart = rowStart
                 resizingChild.value.rowEnd = rowEnd
             } else if (resizingChildDirection.value.startsWith('bottom')) {
                 let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
-                    size: rowSize.value, gap: (props.gap ?? 0), max: rows.value ?? 1, offset: resizeOffsetClientRow, startBefore: resizingChildBefore.value?.rowStart ?? 1, endBefore: resizingChildBefore.value?.rowEnd ?? 1, target: 'end'
+                    size: rowSize.value, gap: (props.gap ?? 0), max: rows.value ?? 1, offset: resizeOffsetClientRow, startBefore: resizingChildBefore.value?.rowStart ?? 1, endBefore: resizingChildBefore.value?.rowEnd ?? 1, target: 'end', expandable: props.rowExpandable
                 })
                 resizingChild.value.rowStart = rowStart
                 resizingChild.value.rowEnd = rowEnd
+
+                if (props.rowExpandable) {
+                    // 向下扩展
+                    rows.value = calcMaxCount('rows')
+                }
             }
 
             // 列 向
             if (resizingChildDirection.value.endsWith('left')) {
                 let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
-                    size: columnSize.value, gap: (props.gap ?? 0), max: columns.value ?? 1, offset: resizeOffsetClientColumn, startBefore: resizingChildBefore.value?.columnStart ?? 1, endBefore: resizingChildBefore.value?.columnEnd ?? 1, target: 'start'
+                    size: columnSize.value, gap: (props.gap ?? 0), max: columns.value ?? 1, offset: resizeOffsetClientColumn, startBefore: resizingChildBefore.value?.columnStart ?? 1, endBefore: resizingChildBefore.value?.columnEnd ?? 1, target: 'start', expandable: props.columnExpandable
                 })
                 resizingChild.value.columnStart = columnStart
                 resizingChild.value.columnEnd = columnEnd
             } else if (resizingChildDirection.value.endsWith('right')) {
                 let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
-                    size: columnSize.value, gap: (props.gap ?? 0), max: columns.value ?? 1, offset: resizeOffsetClientColumn, startBefore: resizingChildBefore.value?.columnStart ?? 1, endBefore: resizingChildBefore.value?.columnEnd ?? 1, target: 'end'
+                    size: columnSize.value, gap: (props.gap ?? 0), max: columns.value ?? 1, offset: resizeOffsetClientColumn, startBefore: resizingChildBefore.value?.columnStart ?? 1, endBefore: resizingChildBefore.value?.columnEnd ?? 1, target: 'end', expandable: props.columnExpandable
                 })
                 resizingChild.value.columnStart = columnStart
                 resizingChild.value.columnEnd = columnEnd
+
+                if (props.columnExpandable) {
+                    // 向右扩展
+                    columns.value = calcMaxCount('columns')
+                }
+
             }
         }
     }

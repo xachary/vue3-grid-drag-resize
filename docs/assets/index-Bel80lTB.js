@@ -3,7 +3,7 @@
   try {
     if (typeof document != "undefined") {
       var elementStyle = document.createElement("style");
-      elementStyle.appendChild(document.createTextNode(".grid-drag-resize {\n  display: grid;\n}\n.grid-drag-resize__item {\n  position: relative;\n}\n.grid-drag-resize__item--draggable-full {\n  cursor: grab;\n  user-select: none;\n}\n.grid-drag-resize__item--dragging {\n  opacity: 0.6;\n}\n.grid-drag-resize__item--selected .grid-drag-resize__item__adjust {\n  display: block;\n}\n.grid-drag-resize__item__adjust {\n  position: absolute;\n  border: 1px solid #666;\n  background-color: white;\n  width: 10px;\n  height: 10px;\n  display: none;\n}\n.grid-drag-resize__item__adjust--top {\n  top: -5px;\n  left: calc(50% - 10px/2);\n  cursor: ns-resize;\n}\n.grid-drag-resize__item__adjust--right {\n  right: -5px;\n  top: calc(50% - 10px/2);\n  cursor: ew-resize;\n}\n.grid-drag-resize__item__adjust--bottom {\n  bottom: -5px;\n  left: calc(50% - 10px/2);\n  cursor: ns-resize;\n}\n.grid-drag-resize__item__adjust--left {\n  left: -5px;\n  top: calc(50% - 10px/2);\n  cursor: ew-resize;\n}\n.grid-drag-resize__item__adjust--top-left {\n  top: -5px;\n  left: -5px;\n  cursor: nwse-resize;\n}\n.grid-drag-resize__item__adjust--top-right {\n  top: -5px;\n  right: -5px;\n  cursor: nesw-resize;\n}\n.grid-drag-resize__item__adjust--bottom-left {\n  bottom: -5px;\n  left: -5px;\n  cursor: nesw-resize;\n}\n.grid-drag-resize__item__adjust--bottom-right {\n  bottom: -5px;\n  right: -5px;\n  cursor: nwse-resize;\n}\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n  margin: 0;\n  font-weight: normal;\n}\nbody {\n  min-height: 100vh;\n  color: var(--color-text);\n  background: var(--color-background);\n  transition: color 0.5s, background-color 0.5s;\n  line-height: 1.6;\n  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n  font-size: 15px;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.page {\n  padding: 32px;\n}\n.demo-item {\n  padding: 10px;\n  height: 100%;\n}\n.grid-drag-resize {\n  background-color: #eee;\n}\n.grid-drag-resize .grid-drag-resize__item {\n  background-color: #ddd;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  box-shadow: 0 0 6px 2px #0000ff;\n}\n.grid-drag-resize .grid-drag-resize__item--selected {\n  box-shadow: 0 0 6px 2px #ff00ff;\n}"));
+      elementStyle.appendChild(document.createTextNode(".grid-drag-resize {\n  display: grid;\n}\n.grid-drag-resize__item {\n  position: relative;\n}\n.grid-drag-resize__item--draggable-full {\n  cursor: grab;\n  user-select: none;\n}\n.grid-drag-resize__item--dragging {\n  opacity: 0.6;\n}\n.grid-drag-resize__item--selected .grid-drag-resize__item__adjust {\n  display: block;\n}\n.grid-drag-resize__item__group {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n}\n.grid-drag-resize__item__adjust {\n  position: absolute;\n  border: 1px solid #666;\n  background-color: white;\n  width: 10px;\n  height: 10px;\n  display: none;\n}\n.grid-drag-resize__item__adjust--top {\n  top: -5px;\n  left: calc(50% - 10px/2);\n  cursor: ns-resize;\n}\n.grid-drag-resize__item__adjust--right {\n  right: -5px;\n  top: calc(50% - 10px/2);\n  cursor: ew-resize;\n}\n.grid-drag-resize__item__adjust--bottom {\n  bottom: -5px;\n  left: calc(50% - 10px/2);\n  cursor: ns-resize;\n}\n.grid-drag-resize__item__adjust--left {\n  left: -5px;\n  top: calc(50% - 10px/2);\n  cursor: ew-resize;\n}\n.grid-drag-resize__item__adjust--top-left {\n  top: -5px;\n  left: -5px;\n  cursor: nwse-resize;\n}\n.grid-drag-resize__item__adjust--top-right {\n  top: -5px;\n  right: -5px;\n  cursor: nesw-resize;\n}\n.grid-drag-resize__item__adjust--bottom-left {\n  bottom: -5px;\n  left: -5px;\n  cursor: nesw-resize;\n}\n.grid-drag-resize__item__adjust--bottom-right {\n  bottom: -5px;\n  right: -5px;\n  cursor: nwse-resize;\n}\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n  margin: 0;\n  font-weight: normal;\n}\nbody {\n  min-height: 100vh;\n  color: var(--color-text);\n  background: var(--color-background);\n  transition: color 0.5s, background-color 0.5s;\n  line-height: 1.6;\n  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n  font-size: 15px;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.page {\n  padding: 32px;\n}\n.demo-item {\n  padding: 10px;\n  height: 100%;\n}\n.grid-drag-resize {\n  background-color: #eee;\n}\n.grid-drag-resize .grid-drag-resize__item {\n  background-color: #ddd;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  box-shadow: 0 0 6px 2px #0000ff;\n}\n.grid-drag-resize .grid-drag-resize__item--selected {\n  box-shadow: 0 0 6px 2px #ff00ff;\n}"));
       document.head.appendChild(elementStyle);
     }
   } catch (e) {
@@ -5761,6 +5761,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     draggable: { type: Boolean, default: true },
     dragHandler: {},
     resizable: { type: Boolean, default: true },
+    overflow: { default: "hidden" },
     columnStart: {},
     columnEnd: {},
     rowStart: {},
@@ -5859,7 +5860,12 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
         ref_key: "itemEle",
         ref: itemEle
       }, [
-        renderSlot(_ctx.$slots, "default"),
+        createBaseVNode("div", {
+          class: "grid-drag-resize__item__group",
+          style: normalizeStyle({ overflow: props.overflow })
+        }, [
+          renderSlot(_ctx.$slots, "default")
+        ], 4),
         createBaseVNode("i", {
           class: "grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top",
           onMousedown: _cache[0] || (_cache[0] = ($event) => resizeStart($event, "top"))
@@ -6325,7 +6331,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-12 15:06:51", git: { branch: "master", hash: "398c2459951d7f24815d3d2573f503312da29f69", tag: "398c2459951d7f24815d3d2573f503312da29f69-dirty" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-12 15:33:58", git: { branch: "master", hash: "cae1ec8d6cd7cf4fc8df1229d25bfe5f0c54a6bb", tag: "cae1ec8d6cd7cf4fc8df1229d25bfe5f0c54a6bb" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

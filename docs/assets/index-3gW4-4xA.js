@@ -5906,14 +5906,49 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     gap: {},
     columnSize: {},
     rowSize: {},
+    columnExpandable: { type: Boolean },
+    rowExpandable: { type: Boolean },
     children: { default: () => [] }
   },
-  setup(__props) {
+  emits: ["update:rows", "update:columns"],
+  setup(__props, { emit: __emit }) {
     const props = __props;
+    const emit2 = __emit;
+    function gridTemplateParse(count, size2) {
+      return `repeat(${count},${Number.isInteger(size2) ? `${size2}px` : "1fr"})`;
+    }
+    function calcMaxCount(target, count) {
+      if (!Number.isInteger(count) || Number.isInteger(count) && count < 1) {
+        count = props.children.reduce((max, child) => {
+          const end = { rows: child.rowEnd, columns: child.columnEnd }[target];
+          if (end && end > 1) {
+            if (end - 1 > max) {
+              max = end - 1;
+            }
+          }
+          return max;
+        }, 1);
+      }
+      return count ?? 1;
+    }
+    const rows = ref(1);
+    const columns = ref(1);
+    watch(() => [props.rows, props.columns], () => {
+      rows.value = calcMaxCount("rows", props.rows);
+      columns.value = calcMaxCount("columns", props.columns);
+      if (rows.value !== props.rows) {
+        emit2("update:rows", rows.value);
+      }
+      if (columns.value !== props.columns) {
+        emit2("update:columns", columns.value);
+      }
+    }, {
+      immediate: true
+    });
     const style = computed(() => {
       return {
-        "grid-template-columns": Number.isInteger(props.columns) ? `repeat(${props.columns},${Number.isInteger(props.columnSize) ? `${props.columnSize}px` : "1fr"})` : "",
-        "grid-template-rows": Number.isInteger(props.rows) ? `repeat(${props.rows},${Number.isInteger(props.rowSize) ? `${props.rowSize}px` : "1fr"})` : "",
+        "grid-template-columns": gridTemplateParse(columns.value, props.columnSize),
+        "grid-template-rows": gridTemplateParse(rows.value, props.rowSize),
         "grid-gap": Number.isInteger(props.gap) ? `${props.gap}px ${props.gap}px` : ""
       };
     });
@@ -5931,10 +5966,10 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       };
     });
     const columnSize = computed(() => {
-      return (rootRect.value.width - (props.gap ?? 0) * ((props.columns ?? 1) - 1)) / (props.columns ?? 1);
+      return props.columnSize ?? (rootRect.value.width - (props.gap ?? 0) * (columns.value - 1)) / columns.value;
     });
     const rowSize = computed(() => {
-      return (rootRect.value.height - (props.gap ?? 0) * ((props.rows ?? 1) - 1)) / (props.rows ?? 1);
+      return props.rowSize ?? (rootRect.value.height - (props.gap ?? 0) * (rows.value - 1)) / rows.value;
     });
     let clickStartX = 0, clickStartY = 0;
     let clickOffsetX = 0, clickOffsetY = 0;
@@ -5954,14 +5989,16 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     let dragOffsetClientRow = 0, dragOffsetClientColumn = 0;
     let rowDirection = 0, columnDirection = 0;
     function calcDragStartEndByOffset(opts) {
-      let { size: size2, gap, span, max, offset, startBefore } = opts;
+      let { size: size2, gap, span, max, offset, startBefore, expandable } = opts;
       let offsetStart = Math.round(offset / (size2 + gap));
       let start = startBefore + offsetStart;
       if (start < 1) {
         start = 1;
       }
-      if (start + span > max) {
-        start = max - span + 1;
+      if (!expandable) {
+        if (start + span > max) {
+          start = max - span + 1;
+        }
       }
       return {
         start,
@@ -6047,20 +6084,28 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
           size: rowSize.value,
           gap: props.gap ?? 0,
           span: rowSpan,
-          max: props.rows ?? 1,
+          max: rows.value ?? 1,
           offset: dragOffsetClientRow,
           startBefore: ((_a = draggingChildBefore.value) == null ? void 0 : _a.rowStart) ?? 1,
-          direction: rowDirection
+          direction: rowDirection,
+          expandable: props.rowExpandable ?? false
         });
+        if (props.rowExpandable) {
+          rows.value = calcMaxCount("rows");
+        }
         let { start: columnStart, end: columnEnd } = calcDragStartEndByOffset({
           size: columnSize.value,
           gap: props.gap ?? 0,
           span: columnSpan,
-          max: props.columns ?? 1,
+          max: columns.value ?? 1,
           offset: dragOffsetClientColumn,
           startBefore: ((_b = draggingChildBefore.value) == null ? void 0 : _b.columnStart) ?? 1,
-          direction: columnDirection
+          direction: columnDirection,
+          expandable: props.columnExpandable ?? false
         });
+        if (props.columnExpandable) {
+          columns.value = calcMaxCount("columns");
+        }
         draggingChild.value.columnStart = columnStart;
         draggingChild.value.columnEnd = columnEnd;
         draggingChild.value.rowStart = rowStart;
@@ -6074,7 +6119,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
               size: rowSize.value,
               gap: props.gap ?? 0,
-              max: props.rows ?? 1,
+              max: rows.value ?? 1,
               offset: resizeOffsetClientRow,
               startBefore: ((_c = resizingChildBefore.value) == null ? void 0 : _c.rowStart) ?? 1,
               endBefore: ((_d = resizingChildBefore.value) == null ? void 0 : _d.rowEnd) ?? 1,
@@ -6086,7 +6131,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
               size: rowSize.value,
               gap: props.gap ?? 0,
-              max: props.rows ?? 1,
+              max: rows.value ?? 1,
               offset: resizeOffsetClientRow,
               startBefore: ((_e = resizingChildBefore.value) == null ? void 0 : _e.rowStart) ?? 1,
               endBefore: ((_f = resizingChildBefore.value) == null ? void 0 : _f.rowEnd) ?? 1,
@@ -6099,7 +6144,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
               size: columnSize.value,
               gap: props.gap ?? 0,
-              max: props.columns ?? 1,
+              max: columns.value ?? 1,
               offset: resizeOffsetClientColumn,
               startBefore: ((_g = resizingChildBefore.value) == null ? void 0 : _g.columnStart) ?? 1,
               endBefore: ((_h = resizingChildBefore.value) == null ? void 0 : _h.columnEnd) ?? 1,
@@ -6111,7 +6156,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
               size: columnSize.value,
               gap: props.gap ?? 0,
-              max: props.columns ?? 1,
+              max: columns.value ?? 1,
               offset: resizeOffsetClientColumn,
               startBefore: ((_i = resizingChildBefore.value) == null ? void 0 : _i.columnStart) ?? 1,
               endBefore: ((_j = resizingChildBefore.value) == null ? void 0 : _j.columnEnd) ?? 1,
@@ -6155,8 +6200,10 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       clickStartX = e.clientX;
       clickStartY = e.clientY;
     }
-    document.body.addEventListener("mousedown", mousedownOut);
     window.addEventListener("mousedown", mousedownOut);
+    document.body.addEventListener("mousedown", dragStart);
+    document.body.addEventListener("mousemove", dragMove);
+    document.body.addEventListener("mouseup", dragEnd);
     document.body.addEventListener("mouseup", dragEnd);
     window.addEventListener("mouseup", dragEnd);
     document.body.addEventListener("click", clearSelection);
@@ -6165,9 +6212,6 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       return openBlock(), createElementBlock("div", {
         class: "grid-drag-resize",
         style: normalizeStyle(style.value),
-        onMousedown: dragStart,
-        onMousemove: dragMove,
-        onMouseup: dragEnd,
         ref_key: "rootEle",
         ref: rootEle
       }, [
@@ -6193,7 +6237,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             _: 2
           }, 1040, ["column-start", "onUpdate:columnStart", "column-end", "onUpdate:columnEnd", "row-start", "onUpdate:rowStart", "row-end", "onUpdate:rowEnd", "onStartDrag", "onSelect", "style", "class"]);
         }), 128))
-      ], 36);
+      ], 4);
     };
   }
 });
@@ -6244,9 +6288,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       return openBlock(), createElementBlock("div", _hoisted_1, [
         createVNode(unref(_sfc_main$1), {
           columns: 4,
-          rows: 5,
           gap: 10,
           "row-size": 100,
+          "row-expandable": true,
           readonly: false,
           children: children.value
         }, null, 8, ["children"]),
@@ -6281,7 +6325,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-11 16:10:26", git: { branch: "master", hash: "66a32120867ccacf87f83975ab283c113d2e2656", tag: "66a32120867ccacf87f83975ab283c113d2e2656-dirty" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-12 15:06:51", git: { branch: "master", hash: "398c2459951d7f24815d3d2573f503312da29f69", tag: "398c2459951d7f24815d3d2573f503312da29f69-dirty" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

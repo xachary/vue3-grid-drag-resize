@@ -463,23 +463,9 @@ function select(child: GridDragResizeItemProps) {
     }
 }
 
-// 超出组件区域，鼠标按下事件
-function mousedownOut(e: MouseEvent) {
-    // 更新 点击开始位置
-    clickStartX = e.clientX
-    clickStartY = e.clientY
-}
-
-// 超出窗口区域，补充鼠标按下事件
-window.addEventListener('mousedown', mousedownOut)
-
 // 鼠标处理事件
-document.body.addEventListener('mousedown', dragStart)
-document.body.addEventListener('mousemove', dragMove)
-document.body.addEventListener('mouseup', dragEnd)
-
-// 超出组件区域，补充结束事件
-document.body.addEventListener('mouseup', dragEnd)
+window.addEventListener('mousedown', dragStart)
+window.addEventListener('mousemove', dragMove)
 window.addEventListener('mouseup', dragEnd)
 
 // 点击空白区域，清空选择

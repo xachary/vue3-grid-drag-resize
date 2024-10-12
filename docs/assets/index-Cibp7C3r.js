@@ -6012,7 +6012,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       };
     }
     function calcResizeStartEnd(opts) {
-      let { size: size2, gap, max, offset, startBefore, endBefore, target } = opts;
+      let { size: size2, gap, max, offset, startBefore, endBefore, target, expandable } = opts;
       let offsetStart = Math.round(offset / (size2 + gap));
       if (target === "start") {
         let start = startBefore + offsetStart;
@@ -6028,8 +6028,10 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         };
       } else {
         let end = endBefore + offsetStart;
-        if (end > max) {
-          end = max + 1;
+        if (!expandable) {
+          if (end > max) {
+            end = max + 1;
+          }
         }
         if (end <= startBefore) {
           end = startBefore + 1;
@@ -6129,7 +6131,8 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
               offset: resizeOffsetClientRow,
               startBefore: ((_c = resizingChildBefore.value) == null ? void 0 : _c.rowStart) ?? 1,
               endBefore: ((_d = resizingChildBefore.value) == null ? void 0 : _d.rowEnd) ?? 1,
-              target: "start"
+              target: "start",
+              expandable: props.rowExpandable
             });
             resizingChild.value.rowStart = rowStart;
             resizingChild.value.rowEnd = rowEnd;
@@ -6141,10 +6144,14 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
               offset: resizeOffsetClientRow,
               startBefore: ((_e = resizingChildBefore.value) == null ? void 0 : _e.rowStart) ?? 1,
               endBefore: ((_f = resizingChildBefore.value) == null ? void 0 : _f.rowEnd) ?? 1,
-              target: "end"
+              target: "end",
+              expandable: props.rowExpandable
             });
             resizingChild.value.rowStart = rowStart;
             resizingChild.value.rowEnd = rowEnd;
+            if (props.rowExpandable) {
+              rows.value = calcMaxCount("rows");
+            }
           }
           if (resizingChildDirection.value.endsWith("left")) {
             let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
@@ -6154,7 +6161,8 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
               offset: resizeOffsetClientColumn,
               startBefore: ((_g = resizingChildBefore.value) == null ? void 0 : _g.columnStart) ?? 1,
               endBefore: ((_h = resizingChildBefore.value) == null ? void 0 : _h.columnEnd) ?? 1,
-              target: "start"
+              target: "start",
+              expandable: props.columnExpandable
             });
             resizingChild.value.columnStart = columnStart;
             resizingChild.value.columnEnd = columnEnd;
@@ -6166,10 +6174,14 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
               offset: resizeOffsetClientColumn,
               startBefore: ((_i = resizingChildBefore.value) == null ? void 0 : _i.columnStart) ?? 1,
               endBefore: ((_j = resizingChildBefore.value) == null ? void 0 : _j.columnEnd) ?? 1,
-              target: "end"
+              target: "end",
+              expandable: props.columnExpandable
             });
             resizingChild.value.columnStart = columnStart;
             resizingChild.value.columnEnd = columnEnd;
+            if (props.columnExpandable) {
+              columns.value = calcMaxCount("columns");
+            }
           }
         }
       }
@@ -6331,7 +6343,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-12 15:33:58", git: { branch: "master", hash: "cae1ec8d6cd7cf4fc8df1229d25bfe5f0c54a6bb", tag: "cae1ec8d6cd7cf4fc8df1229d25bfe5f0c54a6bb" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-12 15:45:52", git: { branch: "master", hash: "d73362b9a4e22f2402fe66ee05212f611468fed0", tag: "d73362b9a4e22f2402fe66ee05212f611468fed0" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

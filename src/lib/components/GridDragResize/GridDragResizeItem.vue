@@ -7,7 +7,8 @@ const parentProps = inject<GridDragResizeProps>('parentProps')
 
 const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
     draggable: true,
-    resizable: true
+    resizable: true,
+    overflow: 'hidden'
 });
 
 type Emit = {
@@ -122,7 +123,9 @@ function resizeStart(e: MouseEvent, direction: string) {
     'grid-drag-resize__item--draggable': draggableParsed,
     'grid-drag-resize__item--draggable-full': draggableParsed && dragHandlerParsed === void 0
 }" :style="style" @mousedown="() => dragHandlerParsed ? undefined : dragstart()" @click="select" ref="itemEle">
-    <slot></slot>
+    <div class="grid-drag-resize__item__group" :style="{ overflow: props.overflow }">
+        <slot></slot>
+    </div>
     <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top"
         @mousedown="resizeStart($event, 'top')">
     </i>

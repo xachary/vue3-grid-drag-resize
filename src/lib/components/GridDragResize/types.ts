@@ -5,6 +5,7 @@ export interface GridDragResizeItemProps {
   draggable?: boolean
   dragHandler?: string // 满足 querySelector 的查询字符串，指向可拖拉拽的元素位置
   resizable?: boolean
+  overflow?: string
   // css display grid 属性
   columnStart?: number
   columnEnd?: number

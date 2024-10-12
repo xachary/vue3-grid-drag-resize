@@ -6214,15 +6214,8 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         draggingChild.value = void 0;
       }
     }
-    function mousedownOut(e) {
-      clickStartX = e.clientX;
-      clickStartY = e.clientY;
-    }
-    window.addEventListener("mousedown", mousedownOut);
-    document.body.addEventListener("mousedown", dragStart);
-    document.body.addEventListener("mousemove", dragMove);
-    document.body.addEventListener("mouseup", dragEnd);
-    document.body.addEventListener("mouseup", dragEnd);
+    window.addEventListener("mousedown", dragStart);
+    window.addEventListener("mousemove", dragMove);
     window.addEventListener("mouseup", dragEnd);
     document.body.addEventListener("click", clearSelection);
     window.addEventListener("click", clearSelection);
@@ -6260,7 +6253,6 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
   }
 });
 const _hoisted_1 = { class: "page" };
-const _hoisted_2 = ["innerHTML"];
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "App",
   setup(__props) {
@@ -6311,10 +6303,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           "row-expandable": true,
           readonly: false,
           children: children.value
-        }, null, 8, ["children"]),
-        createBaseVNode("div", {
-          innerHTML: JSON.stringify(children.value, null, 2).replace(/\n/g, "<br>").replace(/\s/g, "  ")
-        }, null, 8, _hoisted_2)
+        }, null, 8, ["children"])
       ]);
     };
   }
@@ -6343,7 +6332,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-12 15:45:52", git: { branch: "master", hash: "d73362b9a4e22f2402fe66ee05212f611468fed0", tag: "d73362b9a4e22f2402fe66ee05212f611468fed0" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-12 15:54:07", git: { branch: "master", hash: "04f028b8e5d03bd080b1a26fcd081c5d7cf114d0", tag: "04f028b8e5d03bd080b1a26fcd081c5d7cf114d0" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

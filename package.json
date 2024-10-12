@@ -1,6 +1,6 @@
 {
   "name": "vue3-grid-drag-resize",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "type": "module",
   "files": [
     "dist"

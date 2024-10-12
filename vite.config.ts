@@ -71,7 +71,7 @@ export default defineConfig(({ mode }) => {
                 new URL('./src/lib/components/GridDragResize/index.ts', import.meta.url)
               ),
               formats: ['es'],
-              fileName: 'index.js'
+              fileName: 'index'
             }
           : undefined,
       rollupOptions:

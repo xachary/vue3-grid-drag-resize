@@ -6020,9 +6020,9 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     function gridTemplateParse(count, size2) {
       return `repeat(${count},${Number.isInteger(size2) ? `${size2}px` : "1fr"})`;
     }
-    function calcMaxCount(target, count) {
+    function calcMaxCount(target, count, more = []) {
       if (!Number.isInteger(count) || Number.isInteger(count) && count < 1) {
-        count = childrenParsed.value.reduce((max, child) => {
+        count = [...childrenParsed.value, ...more].reduce((max, child) => {
           const end = { rows: child.rowEnd, columns: child.columnEnd }[target];
           if (end && end > 1) {
             if (end - 1 > max) {
@@ -6111,13 +6111,15 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       };
     }
     function calcDragStartEndByPos(opts) {
-      let { size: size2, gap, span, max, pos } = opts;
+      let { size: size2, gap, span, max, pos, expandable } = opts;
       let start = Math.ceil((pos + gap / 2) / (size2 + gap));
       if (start < 1) {
         start = 1;
       }
-      if (start + span > max) {
-        start = max - span + 1;
+      if (!expandable) {
+        if (start + span > max) {
+          start = max - span + 1;
+        }
       }
       return {
         start,
@@ -6395,13 +6397,13 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         let posY = e.clientY - rootRect.value.y;
         if (posY < 0) {
           posY = 0;
-        } else if (posY > rootRect.value.height) {
+        } else if (!props.rowExpandable && posY > rootRect.value.height) {
           posY = rootRect.value.height;
         }
         let posX = e.clientX - rootRect.value.x;
         if (posX < 0) {
           posX = 0;
-        } else if (posX > rootRect.value.width) {
+        } else if (!props.columnExpandable && posX > rootRect.value.width) {
           posX = rootRect.value.width;
         }
         let { start: rowStart, end: rowEnd } = calcDragStartEndByPos({
@@ -6409,19 +6411,27 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
           gap: props.gap ?? 0,
           span: rowSpan,
           max: rows.value ?? 1,
-          pos: posY
+          pos: posY,
+          expandable: props.rowExpandable ?? false
         });
+        droppingChild.value.rowStart = rowStart;
+        droppingChild.value.rowEnd = rowEnd;
+        if (props.rowExpandable) {
+          rows.value = calcMaxCount("rows", void 0, [droppingChild.value]);
+        }
         let { start: columnStart, end: columnEnd } = calcDragStartEndByPos({
           size: columnSize.value,
           gap: props.gap ?? 0,
           span: columnSpan,
           max: columns.value ?? 1,
-          pos: posX
+          pos: posX,
+          expandable: props.columnExpandable ?? false
         });
         droppingChild.value.columnStart = columnStart;
         droppingChild.value.columnEnd = columnEnd;
-        droppingChild.value.rowStart = rowStart;
-        droppingChild.value.rowEnd = rowEnd;
+        if (props.columnExpandable) {
+          columns.value = calcMaxCount("columns", void 0, [droppingChild.value]);
+        }
       }
     }
     function drop(e) {
@@ -6433,6 +6443,8 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       }
       droppingChild.value = void 0;
     }
+    window.addEventListener("dragover", dropover);
+    window.addEventListener("drop", drop);
     return (_ctx, _cache) => {
       var _a, _b, _c, _d;
       return openBlock(), createElementBlock("div", {
@@ -6650,7 +6662,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 17:30:13", git: { branch: "master", hash: "8fc2b22c77edd0a6e5eb82e67ca35c6e7a71cb96", tag: "8fc2b22c77edd0a6e5eb82e67ca35c6e7a71cb96" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 17:48:56", git: { branch: "master", hash: "ad635353e7b0a6d1b7c83f848007801ca69f12b5", tag: "ad635353e7b0a6d1b7c83f848007801ca69f12b5" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

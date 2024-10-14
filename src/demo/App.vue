@@ -7,44 +7,63 @@ import { ref, h, type Ref } from 'vue'
 
 import { GridDragResize } from '@/lib/components/GridDragResize'
 import type { GridDragResizeProps, GridDragResizeItemProps } from '@/lib/components/GridDragResize/types'
+import { nanoid } from 'nanoid'
 
 // 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
   {
     dragHandler: '.demo-item>button',
-    render: () => h('div', { class: "demo-item", style: { background: '#eb9c64' } }, [h('button', 'drag handler')])
+    render: () => h('div', { class: "demo-item", style: { background: '#eb9c64' } }, [h('button', 'drag handler')]),
+    data: {
+      id: nanoid()
+    }
   },
   {
     columnStart: 2,
     draggable: false,
-    render: () => h('div', { class: "demo-item", style: { background: '#ff8789' } }, 'undraggable')
+    render: () => h('div', { class: "demo-item", style: { background: '#ff8789' } }, 'undraggable'),
+    data: {
+      id: nanoid()
+    }
   },
   {
     rowStart: 2,
     columnStart: 2,
     resizable: false,
-    render: () => h('div', { class: "demo-item", style: { background: '#554e4f' } }, 'unresizable')
+    render: () => h('div', { class: "demo-item", style: { background: '#554e4f' } }, 'unresizable'),
+    data: {
+      id: nanoid()
+    }
   },
   {
     rowStart: 2,
     rowEnd: 4,
     columnStart: 4,
     columnEnd: 5,
-    render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, '2')
+    render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, '2'),
+    data: {
+      id: nanoid()
+    }
   },
   {
     rowStart: 4,
     rowEnd: 6,
     columnStart: 2,
     columnEnd: 4,
-    render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, '3')
+    render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, '3'),
+    data: {
+      id: nanoid()
+    }
   },
   {
     rowStart: 4,
     rowEnd: 5,
     columnStart: 1,
     columnEnd: 2,
-    render: () => h('div', { class: "demo-item", style: { background: '#c2baa6' } }, '4')
+    render: () => h('div', { class: "demo-item", style: { background: '#c2baa6' } }, '4'),
+    data: {
+      id: nanoid()
+    }
   },
 ])
 
@@ -67,7 +86,7 @@ function createCandidate(columns = 1, rows = 1, background = '#fff') {
   return {
     columns,
     rows,
-    render: (props: GridDragResizeItemProps) => candidateRender(columns, rows, background, props)
+    render: (props: GridDragResizeItemProps) => candidateRender(columns, rows, background, props),
   } as GridDragResizeItemProps
 }
 
@@ -87,6 +106,7 @@ function dragstart(e: DragEvent, idx: number) {
     // 目标 拖入子组件的数据项
     const item = candidate.value?.[idx]
     if (item) {
+      item.data = { id: nanoid() }
       // 设置 拖入子组件的数据项
       gridDragResize.value.setDropping(item)
     }

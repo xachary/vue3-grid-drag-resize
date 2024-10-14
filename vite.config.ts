@@ -37,7 +37,7 @@ const __BUILD_INFO__ = {
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const m = mode === 'docs' ? 'docs' : 'dist'
+  const m = mode === 'demo' ? 'demo' : 'dist'
   console.log('build mode:', m)
 
   return {
@@ -60,9 +60,9 @@ export default defineConfig(({ mode }) => {
       }
     },
     build: {
-      outDir: m,
+      outDir: m === 'dist' ? m : `docs/demo`,
       minify: m === 'dist',
-      copyPublicDir: m === 'docs',
+      copyPublicDir: m !== 'dist',
       lib:
         m === 'dist'
           ? {

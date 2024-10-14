@@ -6662,7 +6662,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 17:48:56", git: { branch: "master", hash: "ad635353e7b0a6d1b7c83f848007801ca69f12b5", tag: "ad635353e7b0a6d1b7c83f848007801ca69f12b5" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 18:58:25", git: { branch: "master", hash: "0745725c1816c9c326f81d4af408d9e20de49925", tag: "0745725c1816c9c326f81d4af408d9e20de49925-dirty" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

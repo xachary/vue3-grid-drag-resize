@@ -11,13 +11,16 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
-    "build-docs": "run-p type-check \"build-only --mode docs {@}\" --",
+    "build-demo": "run-p type-check \"build-only --mode demo {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .eslintignore",
     "format": "prettier --write src/",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docs:dev": "vitepress dev src/docs",
+    "docs:build": "vitepress build src/docs",
+    "docs:preview": "vitepress preview src/docs"
   },
   "dependencies": {
     "@types/lodash-es": "4.17.12",
@@ -48,6 +51,7 @@
     "vite": "^5.1.6",
     "vite-plugin-css-injected-by-js": "^3.5.2",
     "vite-plugin-dts": "^4.2.3",
+    "vitepress": "^1.4.1",
     "vue-tsc": "^2.0.6"
   }
 }

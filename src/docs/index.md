@@ -12,7 +12,7 @@ hero:
       link: /guide/index
     - theme: alt
       text: 示例
-      link: https://xachary.github.io/vue3-grid-drag-resize/
+      link: https://xachary.github.io/vue3-grid-drag-resize/demo
 
 features:
   - title: Vue3

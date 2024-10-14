@@ -3,7 +3,7 @@
   try {
     if (typeof document != "undefined") {
       var elementStyle = document.createElement("style");
-      elementStyle.appendChild(document.createTextNode(".grid-drag-resize {\n  display: grid;\n}\n.grid-drag-resize__item {\n  position: relative;\n}\n.grid-drag-resize__item--draggable-full {\n  cursor: grab;\n  user-select: none;\n}\n.grid-drag-resize__item--dragging {\n  opacity: 0.6;\n}\n.grid-drag-resize__item--selected .grid-drag-resize__item__adjust {\n  display: block;\n}\n.grid-drag-resize__item__group {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n}\n.grid-drag-resize__item__adjust {\n  position: absolute;\n  border: 1px solid #666;\n  background-color: white;\n  width: 10px;\n  height: 10px;\n  display: none;\n}\n.grid-drag-resize__item__adjust--top {\n  top: -5px;\n  left: calc(50% - 10px/2);\n  cursor: ns-resize;\n}\n.grid-drag-resize__item__adjust--right {\n  right: -5px;\n  top: calc(50% - 10px/2);\n  cursor: ew-resize;\n}\n.grid-drag-resize__item__adjust--bottom {\n  bottom: -5px;\n  left: calc(50% - 10px/2);\n  cursor: ns-resize;\n}\n.grid-drag-resize__item__adjust--left {\n  left: -5px;\n  top: calc(50% - 10px/2);\n  cursor: ew-resize;\n}\n.grid-drag-resize__item__adjust--top-left {\n  top: -5px;\n  left: -5px;\n  cursor: nwse-resize;\n}\n.grid-drag-resize__item__adjust--top-right {\n  top: -5px;\n  right: -5px;\n  cursor: nesw-resize;\n}\n.grid-drag-resize__item__adjust--bottom-left {\n  bottom: -5px;\n  left: -5px;\n  cursor: nesw-resize;\n}\n.grid-drag-resize__item__adjust--bottom-right {\n  bottom: -5px;\n  right: -5px;\n  cursor: nwse-resize;\n}\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n  margin: 0;\n  font-weight: normal;\n}\nbody {\n  min-height: 100vh;\n  color: var(--color-text);\n  background: var(--color-background);\n  transition: color 0.5s, background-color 0.5s;\n  line-height: 1.6;\n  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n  font-size: 15px;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.page {\n  padding: 32px;\n  display: flex;\n  align-items: flex-start;\n}\n.demo-item {\n  padding: 10px;\n  height: 100%;\n}\n.grid-drag-resize {\n  background-color: #eee;\n  width: 80%;\n}\n.grid-drag-resize .grid-drag-resize__item {\n  background-color: #ddd;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  box-shadow: 0 0 6px 2px #0000ff;\n}\n.grid-drag-resize .grid-drag-resize__item--selected {\n  box-shadow: 0 0 6px 2px #ff00ff;\n}"));
+      elementStyle.appendChild(document.createTextNode(".grid-drag-resize {\n  display: grid;\n}\n.grid-drag-resize__item {\n  position: relative;\n}\n.grid-drag-resize__item--draggable-full {\n  cursor: grab;\n  user-select: none;\n}\n.grid-drag-resize__item--dragging {\n  opacity: 0.6;\n}\n.grid-drag-resize__item--selected .grid-drag-resize__item__adjust {\n  display: block;\n}\n.grid-drag-resize__item__group {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n}\n.grid-drag-resize__item__adjust {\n  position: absolute;\n  border: 1px solid #666;\n  background-color: white;\n  width: 10px;\n  height: 10px;\n  display: none;\n}\n.grid-drag-resize__item__adjust--top {\n  top: -5px;\n  left: calc(50% - 10px/2);\n  cursor: ns-resize;\n}\n.grid-drag-resize__item__adjust--right {\n  right: -5px;\n  top: calc(50% - 10px/2);\n  cursor: ew-resize;\n}\n.grid-drag-resize__item__adjust--bottom {\n  bottom: -5px;\n  left: calc(50% - 10px/2);\n  cursor: ns-resize;\n}\n.grid-drag-resize__item__adjust--left {\n  left: -5px;\n  top: calc(50% - 10px/2);\n  cursor: ew-resize;\n}\n.grid-drag-resize__item__adjust--top-left {\n  top: -5px;\n  left: -5px;\n  cursor: nwse-resize;\n}\n.grid-drag-resize__item__adjust--top-right {\n  top: -5px;\n  right: -5px;\n  cursor: nesw-resize;\n}\n.grid-drag-resize__item__adjust--bottom-left {\n  bottom: -5px;\n  left: -5px;\n  cursor: nesw-resize;\n}\n.grid-drag-resize__item__adjust--bottom-right {\n  bottom: -5px;\n  right: -5px;\n  cursor: nwse-resize;\n}\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n  margin: 0;\n  font-weight: normal;\n}\nbody {\n  min-height: 100vh;\n  color: var(--color-text);\n  background: var(--color-background);\n  transition: color 0.5s, background-color 0.5s;\n  line-height: 1.6;\n  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n  font-size: 15px;\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.page {\n  padding: 32px;\n  display: flex;\n  align-items: flex-start;\n  min-height: 100vh;\n}\n.page > header {\n  display: flex;\n  flex-direction: column;\n  align-self: stretch;\n  border: 1px solid #ddd;\n  margin-right: 32px;\n}\n.page > header > header,\n.page > header > footer {\n  flex-grow: 1;\n  height: 0;\n  overflow: auto;\n}\n.page > header > header > div {\n  height: 100px;\n  border-bottom: 1px solid #eee;\n  cursor: grab;\n  user-select: none;\n  background-color: #fff;\n}\n.page > header > footer {\n  border-top: 1px solid #eee;\n}\n.demo-item {\n  padding: 10px;\n  height: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 18px;\n  line-height: 1.1em;\n  color: #fff;\n  flex-direction: column;\n}\n.grid-drag-resize {\n  background-color: #eee;\n  width: 80%;\n}\n.grid-drag-resize .grid-drag-resize__item {\n  background-color: #ddd;\n}\n.grid-drag-resize .grid-drag-resize__item--dragging {\n  box-shadow: 0 0 6px 2px #0000ff;\n}\n.grid-drag-resize .grid-drag-resize__item--selected {\n  box-shadow: 0 0 6px 2px #ff00ff;\n}"));
       document.head.appendChild(elementStyle);
     }
   } catch (e) {
@@ -190,6 +190,18 @@ function normalizeClass(value) {
     }
   }
   return res.trim();
+}
+function normalizeProps(props) {
+  if (!props)
+    return null;
+  let { class: klass, style } = props;
+  if (klass && !isString(klass)) {
+    props.class = normalizeClass(klass);
+  }
+  if (style) {
+    props.style = normalizeStyle(style);
+  }
+  return props;
 }
 const specialBooleanAttrs = `itemscope,allowfullscreen,formnovalidate,ismap,nomodule,novalidate,readonly`;
 const isSpecialBooleanAttr = /* @__PURE__ */ makeMap(specialBooleanAttrs);
@@ -2050,6 +2062,36 @@ function traverse(value, depth, currentDepth = 0, seen) {
     }
   }
   return value;
+}
+function withDirectives(vnode, directives) {
+  if (currentRenderingInstance === null) {
+    return vnode;
+  }
+  const instance = getExposeProxy(currentRenderingInstance) || currentRenderingInstance.proxy;
+  const bindings = vnode.dirs || (vnode.dirs = []);
+  for (let i = 0; i < directives.length; i++) {
+    let [dir, value, arg, modifiers = EMPTY_OBJ] = directives[i];
+    if (dir) {
+      if (isFunction(dir)) {
+        dir = {
+          mounted: dir,
+          updated: dir
+        };
+      }
+      if (dir.deep) {
+        traverse(value);
+      }
+      bindings.push({
+        dir,
+        instance,
+        value,
+        oldValue: void 0,
+        arg,
+        modifiers
+      });
+    }
+  }
+  return vnode;
 }
 function invokeDirectiveHook(vnode, prevVNode, instance, name) {
   const bindings = vnode.dirs;
@@ -5429,6 +5471,45 @@ function patchClass(el, value, isSVG) {
 }
 const vShowOriginalDisplay = Symbol("_vod");
 const vShowHidden = Symbol("_vsh");
+const vShow = {
+  beforeMount(el, { value }, { transition }) {
+    el[vShowOriginalDisplay] = el.style.display === "none" ? "" : el.style.display;
+    if (transition && value) {
+      transition.beforeEnter(el);
+    } else {
+      setDisplay(el, value);
+    }
+  },
+  mounted(el, { value }, { transition }) {
+    if (transition && value) {
+      transition.enter(el);
+    }
+  },
+  updated(el, { value, oldValue }, { transition }) {
+    if (!value === !oldValue)
+      return;
+    if (transition) {
+      if (value) {
+        transition.beforeEnter(el);
+        setDisplay(el, true);
+        transition.enter(el);
+      } else {
+        transition.leave(el, () => {
+          setDisplay(el, false);
+        });
+      }
+    } else {
+      setDisplay(el, value);
+    }
+  },
+  beforeUnmount(el, { value }) {
+    setDisplay(el, value);
+  }
+};
+function setDisplay(el, value) {
+  el.style.display = value ? el[vShowOriginalDisplay] : "none";
+  el[vShowHidden] = !value;
+}
 const CSS_VAR_TEXT = Symbol("");
 const displayRE = /(^|;)\s*display\s*:/;
 function patchStyle(el, prev, next) {
@@ -5766,9 +5847,11 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     columnEnd: {},
     rowStart: {},
     rowEnd: {},
+    columns: {},
+    rows: {},
     render: {}
   },
-  emits: ["update:columnStart", "update:columnEnd", "update:rowStart", "update:rowEnd", "startDrag", "select", "startResize"],
+  emits: ["update:columnStart", "update:columnEnd", "update:rowStart", "update:rowEnd", "update:rows", "update:columns", "startDrag", "select", "startResize"],
   setup(__props, { emit: __emit }) {
     const parentProps = inject("parentProps");
     const props = __props;
@@ -5787,6 +5870,12 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
         }
       } else {
         emit2("update:rowStart", 1);
+      }
+      if (props.columnStart !== void 0 && props.columnEnd !== void 0) {
+        emit2("update:columns", props.columnEnd - props.columnStart);
+      }
+      if (props.rowEnd !== void 0 && props.rowStart !== void 0) {
+        emit2("update:rows", props.rowEnd - props.rowStart);
       }
     });
     const style = computed(() => {
@@ -5919,16 +6008,20 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     rowExpandable: { type: Boolean },
     children: { default: () => [] }
   },
-  emits: ["update:rows", "update:columns"],
-  setup(__props, { emit: __emit }) {
+  emits: ["update:rows", "update:columns", "update:children"],
+  setup(__props, { expose: __expose, emit: __emit }) {
     const props = __props;
+    const childrenParsed = ref([...props.children]);
+    watch(() => props.children, () => {
+      childrenParsed.value = [...props.children];
+    });
     const emit2 = __emit;
     function gridTemplateParse(count, size2) {
       return `repeat(${count},${Number.isInteger(size2) ? `${size2}px` : "1fr"})`;
     }
     function calcMaxCount(target, count) {
       if (!Number.isInteger(count) || Number.isInteger(count) && count < 1) {
-        count = props.children.reduce((max, child) => {
+        count = childrenParsed.value.reduce((max, child) => {
           const end = { rows: child.rowEnd, columns: child.columnEnd }[target];
           if (end && end > 1) {
             if (end - 1 > max) {
@@ -6010,6 +6103,20 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         if (start + span > max) {
           start = max - span + 1;
         }
+      }
+      return {
+        start,
+        end: start + span
+      };
+    }
+    function calcDragStartEndByPos(opts) {
+      let { size: size2, gap, span, max, pos } = opts;
+      let start = Math.ceil((pos + gap / 2) / (size2 + gap));
+      if (start < 1) {
+        start = 1;
+      }
+      if (start + span > max) {
+        start = max - span + 1;
       }
       return {
         start,
@@ -6182,6 +6289,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             });
             selectingChild.value.rowStart = rowStart;
             selectingChild.value.rowEnd = rowEnd;
+            selectingChild.value.columns = rowEnd - rowStart;
           } else if (resizingChildDirection.value.startsWith("bottom")) {
             let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
               size: rowSize.value,
@@ -6195,6 +6303,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             });
             selectingChild.value.rowStart = rowStart;
             selectingChild.value.rowEnd = rowEnd;
+            selectingChild.value.columns = rowEnd - rowStart;
             if (props.rowExpandable) {
               rows.value = calcMaxCount("rows");
             }
@@ -6212,6 +6321,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             });
             selectingChild.value.columnStart = columnStart;
             selectingChild.value.columnEnd = columnEnd;
+            selectingChild.value.columns = columnEnd - columnStart;
           } else if (resizingChildDirection.value.endsWith("right")) {
             let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
               size: columnSize.value,
@@ -6225,6 +6335,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             });
             selectingChild.value.columnStart = columnStart;
             selectingChild.value.columnEnd = columnEnd;
+            selectingChild.value.columns = columnEnd - columnStart;
             if (props.columnExpandable) {
               columns.value = calcMaxCount("columns");
             }
@@ -6264,14 +6375,74 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     window.addEventListener("mousemove", dragMove);
     window.addEventListener("mouseup", dragEnd);
     window.addEventListener("click", clearSelection);
+    const droppingChild = ref();
+    __expose({
+      // 设置 拖入子组件的数据项
+      setDropping: (child) => {
+        droppingChild.value = child;
+      },
+      // 清除 拖入子组件的数据项
+      clearDropping: () => {
+        droppingChild.value = void 0;
+      }
+    });
+    function dropover(e) {
+      e.preventDefault();
+      if (droppingChild.value) {
+        let rowSpan = droppingChild.value.rows ?? 1;
+        let columnSpan = droppingChild.value.columns ?? 1;
+        let posY = e.clientY - rootRect.value.y;
+        if (posY < 0) {
+          posY = 0;
+        } else if (posY > rootRect.value.height) {
+          posY = rootRect.value.height;
+        }
+        let posX = e.clientX - rootRect.value.x;
+        if (posX < 0) {
+          posX = 0;
+        } else if (posX > rootRect.value.width) {
+          posX = rootRect.value.width;
+        }
+        let { start: rowStart, end: rowEnd } = calcDragStartEndByPos({
+          size: rowSize.value,
+          gap: props.gap ?? 0,
+          span: rowSpan,
+          max: rows.value ?? 1,
+          pos: posY
+        });
+        let { start: columnStart, end: columnEnd } = calcDragStartEndByPos({
+          size: columnSize.value,
+          gap: props.gap ?? 0,
+          span: columnSpan,
+          max: columns.value ?? 1,
+          pos: posX
+        });
+        droppingChild.value.columnStart = columnStart;
+        droppingChild.value.columnEnd = columnEnd;
+        droppingChild.value.rowStart = rowStart;
+        droppingChild.value.rowEnd = rowEnd;
+      }
+    }
+    function drop(e) {
+      var _a;
+      e.preventDefault();
+      if (droppingChild.value) {
+        (_a = childrenParsed.value) == null ? void 0 : _a.push({ ...droppingChild.value });
+        emit2("update:children", childrenParsed.value);
+      }
+      droppingChild.value = void 0;
+    }
     return (_ctx, _cache) => {
+      var _a, _b, _c, _d;
       return openBlock(), createElementBlock("div", {
         class: "grid-drag-resize",
         style: normalizeStyle(style.value),
         ref_key: "rootEle",
-        ref: rootEle
+        ref: rootEle,
+        onDragover: dropover,
+        onDrop: drop
       }, [
-        (openBlock(true), createElementBlock(Fragment, null, renderList(props.children, (child, idx) => {
+        (openBlock(true), createElementBlock(Fragment, null, renderList(childrenParsed.value, (child, idx) => {
           return openBlock(), createBlock(_sfc_main$2, mergeProps({ key: idx }, child, {
             "column-start": child.columnStart,
             "onUpdate:columnStart": ($event) => child.columnStart = $event,
@@ -6284,21 +6455,34 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             onStartDrag: ($event) => startDrag($event, child),
             onSelect: ($event) => select(child),
             onStartResize: resizingStart,
-            style: { "zIndex": draggingChild.value === child ? props.children.length + 1 : idx + 1, cursor: resizingChildCursor.value },
+            style: { "zIndex": draggingChild.value === child ? childrenParsed.value.length + 1 : idx + 1, cursor: resizingChildCursor.value },
             class: { "grid-drag-resize__item--dragging": draggingChild.value === child, "grid-drag-resize__item--selected": selectingChild.value === child }
           }), {
             default: withCtx(() => [
-              (openBlock(), createBlock(resolveDynamicComponent(child.render)))
+              (openBlock(), createBlock(resolveDynamicComponent(child.render), normalizeProps(guardReactiveProps(child)), null, 16))
             ]),
             _: 2
           }, 1040, ["column-start", "onUpdate:columnStart", "column-end", "onUpdate:columnEnd", "row-start", "onUpdate:rowStart", "row-end", "onUpdate:rowEnd", "onStartDrag", "onSelect", "style", "class"]);
-        }), 128))
-      ], 4);
+        }), 128)),
+        withDirectives(createVNode(_sfc_main$2, {
+          draggable: false,
+          resizable: false,
+          "column-start": (_a = droppingChild.value) == null ? void 0 : _a.columnStart,
+          "column-end": (_b = droppingChild.value) == null ? void 0 : _b.columnEnd,
+          "row-start": (_c = droppingChild.value) == null ? void 0 : _c.rowStart,
+          "row-end": (_d = droppingChild.value) == null ? void 0 : _d.rowEnd,
+          style: normalizeStyle({ "zIndex": childrenParsed.value.length + 1 }),
+          class: "grid-drag-resize__item--shadow"
+        }, null, 8, ["column-start", "column-end", "row-start", "row-end", "style"]), [
+          [vShow, droppingChild.value]
+        ])
+      ], 36);
     };
   }
 });
 const _hoisted_1 = { class: "page" };
-const _hoisted_2 = ["innerHTML"];
+const _hoisted_2 = ["onDragstart"];
+const _hoisted_3 = ["innerHTML"];
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "App",
   setup(__props) {
@@ -6340,18 +6524,73 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         render: () => h("div", { class: "demo-item", style: { background: "#c2baa6" } }, "4")
       }
     ]);
+    function candidateRender(columns, rows, background, props) {
+      if ([props.columnStart, props.columnEnd, props.rowStart, props.rowEnd].every((o) => o !== void 0)) {
+        const info = [
+          h("div", `${props.columns} x ${props.rows}`),
+          h("div", `column: start ~ end = ${props.columnStart} ~ ${props.columnEnd}`),
+          h("div", `row: start ~ end ${props.rowStart} ~ ${props.rowEnd}`)
+        ];
+        return h("div", { class: "demo-item", style: { background } }, info);
+      } else {
+        return h("div", { class: "demo-item", style: { background } }, [h("div", `${props.columns ?? columns}x${props.rows ?? rows}`)]);
+      }
+    }
+    function createCandidate(columns = 1, rows = 1, background = "#fff") {
+      return {
+        columns,
+        rows,
+        render: (props) => candidateRender(columns, rows, background, props)
+      };
+    }
+    const candidate = ref([
+      createCandidate(1, 1, "#6c35de"),
+      createCandidate(2, 3, "#ffc7ff"),
+      createCandidate(4, 2, "#cb80ff")
+    ]);
+    const gridDragResize = ref();
+    function dragstart(e, idx) {
+      var _a;
+      if (gridDragResize.value) {
+        const item = (_a = candidate.value) == null ? void 0 : _a[idx];
+        if (item) {
+          gridDragResize.value.setDropping(item);
+        }
+      }
+    }
+    function dragend() {
+      if (gridDragResize.value) {
+        gridDragResize.value.clearDropping();
+      }
+    }
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", _hoisted_1, [
-        createBaseVNode("div", {
-          innerHTML: JSON.stringify(children.value, null, 2).replace(/\n/g, "<br>").replace(/\s/g, "  ")
-        }, null, 8, _hoisted_2),
+        createBaseVNode("header", null, [
+          createBaseVNode("header", null, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList(candidate.value, (item, idx) => {
+              return openBlock(), createElementBlock("div", {
+                key: idx,
+                draggable: "true",
+                onDragstart: ($event) => dragstart($event, idx),
+                onDragend: dragend
+              }, [
+                (openBlock(), createBlock(resolveDynamicComponent(item.render)))
+              ], 40, _hoisted_2);
+            }), 128))
+          ]),
+          createBaseVNode("footer", {
+            innerHTML: JSON.stringify(children.value, null, 2).replace(/\n/g, "<br>").replace(/\s/g, "  ")
+          }, null, 8, _hoisted_3)
+        ]),
         createVNode(unref(_sfc_main$1), {
           columns: 4,
           gap: 10,
           "row-size": 100,
           "row-expandable": true,
           readonly: false,
-          children: children.value
+          children: children.value,
+          ref_key: "gridDragResize",
+          ref: gridDragResize
         }, null, 8, ["children"])
       ]);
     };
@@ -6381,7 +6620,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 11:10:33", git: { branch: "master", hash: "becbe310b3842f1d569b2855df6f37b69636296f", tag: "becbe310b3842f1d569b2855df6f37b69636296f-dirty" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 15:24:37", git: { branch: "master", hash: "e5c8c283a5abb4218942247d8ef2baf06d3eb0ec", tag: "e5c8c283a5abb4218942247d8ef2baf06d3eb0ec" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

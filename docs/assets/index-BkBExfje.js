@@ -5849,7 +5849,8 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
     rowEnd: {},
     columns: {},
     rows: {},
-    render: {}
+    render: {},
+    data: {}
   },
   emits: ["update:columnStart", "update:columnEnd", "update:rowStart", "update:rowEnd", "update:rows", "update:columns", "startDrag", "select", "startResize"],
   setup(__props, { emit: __emit }) {
@@ -6480,6 +6481,15 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     };
   }
 });
+const urlAlphabet = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
+let nanoid = (size2 = 21) => {
+  let id = "";
+  let bytes = crypto.getRandomValues(new Uint8Array(size2));
+  while (size2--) {
+    id += urlAlphabet[bytes[size2] & 63];
+  }
+  return id;
+};
 const _hoisted_1 = { class: "page" };
 const _hoisted_2 = ["onDragstart"];
 const _hoisted_3 = ["innerHTML"];
@@ -6489,39 +6499,57 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const children = ref([
       {
         dragHandler: ".demo-item>button",
-        render: () => h("div", { class: "demo-item", style: { background: "#eb9c64" } }, [h("button", "drag handler")])
+        render: () => h("div", { class: "demo-item", style: { background: "#eb9c64" } }, [h("button", "drag handler")]),
+        data: {
+          id: nanoid()
+        }
       },
       {
         columnStart: 2,
         draggable: false,
-        render: () => h("div", { class: "demo-item", style: { background: "#ff8789" } }, "undraggable")
+        render: () => h("div", { class: "demo-item", style: { background: "#ff8789" } }, "undraggable"),
+        data: {
+          id: nanoid()
+        }
       },
       {
         rowStart: 2,
         columnStart: 2,
         resizable: false,
-        render: () => h("div", { class: "demo-item", style: { background: "#554e4f" } }, "unresizable")
+        render: () => h("div", { class: "demo-item", style: { background: "#554e4f" } }, "unresizable"),
+        data: {
+          id: nanoid()
+        }
       },
       {
         rowStart: 2,
         rowEnd: 4,
         columnStart: 4,
         columnEnd: 5,
-        render: () => h("div", { class: "demo-item", style: { background: "#8fbf9f" } }, "2")
+        render: () => h("div", { class: "demo-item", style: { background: "#8fbf9f" } }, "2"),
+        data: {
+          id: nanoid()
+        }
       },
       {
         rowStart: 4,
         rowEnd: 6,
         columnStart: 2,
         columnEnd: 4,
-        render: () => h("div", { class: "demo-item", style: { background: "#346145" } }, "3")
+        render: () => h("div", { class: "demo-item", style: { background: "#346145" } }, "3"),
+        data: {
+          id: nanoid()
+        }
       },
       {
         rowStart: 4,
         rowEnd: 5,
         columnStart: 1,
         columnEnd: 2,
-        render: () => h("div", { class: "demo-item", style: { background: "#c2baa6" } }, "4")
+        render: () => h("div", { class: "demo-item", style: { background: "#c2baa6" } }, "4"),
+        data: {
+          id: nanoid()
+        }
       }
     ]);
     function candidateRender(columns, rows, background, props) {
@@ -6554,6 +6582,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       if (gridDragResize.value) {
         const item = (_a = candidate.value) == null ? void 0 : _a[idx];
         if (item) {
+          item.data = { id: nanoid() };
           gridDragResize.value.setDropping(item);
         }
       }
@@ -6621,7 +6650,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 17:12:43", git: { branch: "master", hash: "a9bd5a5431a743e5542d1a810beeb22352409d4a", tag: "a9bd5a5431a743e5542d1a810beeb22352409d4a" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 17:30:13", git: { branch: "master", hash: "8fc2b22c77edd0a6e5eb82e67ca35c6e7a71cb96", tag: "8fc2b22c77edd0a6e5eb82e67ca35c6e7a71cb96" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

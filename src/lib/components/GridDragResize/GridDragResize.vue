@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, provide, watch, type Ref } from 'vue'
 
-import type { GridDragResizeProps, GridDragResizeItemProps, StartResizeEvent } from './types'
+import type { GridDragResizeProps, GridDragResizeItemProps, StartResizeEvent, StartDragEvent } from './types'
 
 import GridDragResizeItem from './GridDragResizeItem.vue'
 
@@ -100,8 +100,9 @@ let clickOffsetX = 0, clickOffsetY = 0
 // 调整大小
 let resizing = false
 
-// 当前调整大小子组件的数据项
-const resizingChild: Ref<GridDragResizeItemProps | undefined> = ref()
+// 当前选中子组件的数据项
+const selectingChild: Ref<GridDragResizeItemProps | undefined> = ref()
+
 // 当前调整大小子组件的数据项（初始状态）
 const resizingChildBefore: Ref<GridDragResizeItemProps | undefined> = ref()
 // 当前调整大小子组件的位置、大小信息
@@ -110,6 +111,8 @@ const resizingChildRect: Ref<DOMRect | undefined> = ref()
 const resizingChildCursor: Ref<string> = ref('')
 // 当前调整大小方向
 const resizingChildDirection: Ref<string> = ref('')
+// 当前调整大小子组件的 Dom
+const resizingChildEle: Ref<HTMLElement | undefined> = ref()
 
 // 调整大小开始位置
 let resizeStartClientX = 0, resizeStartClientY = 0;
@@ -125,6 +128,8 @@ const draggingChild: Ref<GridDragResizeItemProps | undefined> = ref()
 const draggingChildBefore: Ref<GridDragResizeItemProps | undefined> = ref()
 // 当前拖动子组件的位置、大小信息
 const draggingChildRect: Ref<DOMRect | undefined> = ref()
+// 当前拖动子组件的 Dom
+const draggingChildEle: Ref<HTMLElement | undefined> = ref()
 
 // 拖动开始位置
 let dragStartClientX = 0, dragStartClientY = 0;
@@ -222,9 +227,64 @@ function calcResizeStartEnd(opts: { size: number, gap: number, max: number, offs
     }
 }
 
+function resizingReset() {
+    resizing = false
+
+    resizingChildBefore.value = undefined
+    resizingChildRect.value = undefined
+    resizingChildCursor.value = ''
+    resizingChildDirection.value = ''
+
+    document.body.style.cursor = ''
+}
+
+function dragReset() {
+    dragging = false
+
+    draggingChild.value = undefined
+    draggingChildBefore.value = undefined
+    draggingChildRect.value = undefined
+    draggingChildEle.value = undefined
+}
+
+// 元素是否整个在都可视区域内
+function isElementInViewport(el: HTMLElement) {
+    var rect = el.getBoundingClientRect();
+
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
+// 滚动使小组件在可视区域内
+function scrollIntoViewIfNeeded(target?: HTMLElement) {
+    if (target) {
+        if (!isElementInViewport(target)) {
+            target.scrollIntoView()
+        }
+    }
+}
+
+// 拖动开始
+function startDrag(res: StartDragEvent, child: GridDragResizeItemProps) {
+    const { event: e, rect } = res
+    if (e && e.currentTarget instanceof HTMLElement) {
+        updateDrag(child, rect, e.currentTarget)
+    }
+}
+
 // 调整大小开始
 function resizingStart(res: StartResizeEvent) {
     const { event: e, rect, cursor, direction } = res
+
+    if (e && e.currentTarget instanceof HTMLElement) {
+        if (e.currentTarget.parentElement instanceof HTMLElement) {
+            resizingChildEle.value = e.currentTarget.parentElement
+        }
+    }
 
     // 更新 点击开始位置
     clickStartX = e.clientX
@@ -235,7 +295,7 @@ function resizingStart(res: StartResizeEvent) {
     resizeStartClientY = e.clientY
 
     // 状态互斥
-    dragging = false
+    dragReset()
     resizing = true
 
     // 更新计算所需信息
@@ -247,18 +307,21 @@ function resizingStart(res: StartResizeEvent) {
     document.body.style.cursor = cursor
 
     // 缓存状态
-    resizingChildBefore.value = { ...resizingChild.value };
+    resizingChildBefore.value = { ...selectingChild.value };
 }
 
 // 更新拖动信息
-function updateDrag(child: GridDragResizeItemProps, rect: DOMRect) {
+function updateDrag(child: GridDragResizeItemProps, rect: DOMRect, target: HTMLElement) {
     draggingChild.value = child;
     draggingChildBefore.value = { ...child };
     draggingChildRect.value = rect;
+    draggingChildEle.value = target
 }
 
 // 拖动开始
 function dragStart(e: MouseEvent) {
+    e.stopPropagation()
+
     // 更新 点击开始位置
     clickStartX = e.clientX
     clickStartY = e.clientY
@@ -266,7 +329,7 @@ function dragStart(e: MouseEvent) {
     if (!props.readonly) {
         if (draggingChild.value && draggingChildRect.value) {
             // 状态互斥
-            resizing = false
+            resizingReset()
             dragging = true
 
             // 记录 拖动开始位置
@@ -283,6 +346,8 @@ function dragStart(e: MouseEvent) {
 
 // 拖动中
 function dragMove(e: MouseEvent) {
+    e.stopPropagation()
+
     if (dragging && draggingChild.value) {
         // 计算 拖动偏移量
         dragOffsetClientColumn = e.clientX - dragStartClientX
@@ -368,26 +433,30 @@ function dragMove(e: MouseEvent) {
         draggingChild.value.columnEnd = columnEnd
         draggingChild.value.rowStart = rowStart
         draggingChild.value.rowEnd = rowEnd
+
+
+        // 滚动跟随
+        scrollIntoViewIfNeeded(draggingChildEle.value)
     }
     if (resizing) {
         // 计算 调整大小拖动偏移量
         resizeOffsetClientColumn = e.clientX - resizeStartClientX
         resizeOffsetClientRow = e.clientY - resizeStartClientY
 
-        if (resizingChild.value) {
+        if (selectingChild.value) {
             // 行 向
             if (resizingChildDirection.value.startsWith('top')) {
                 let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
                     size: rowSize.value, gap: (props.gap ?? 0), max: rows.value ?? 1, offset: resizeOffsetClientRow, startBefore: resizingChildBefore.value?.rowStart ?? 1, endBefore: resizingChildBefore.value?.rowEnd ?? 1, target: 'start', expandable: props.rowExpandable
                 })
-                resizingChild.value.rowStart = rowStart
-                resizingChild.value.rowEnd = rowEnd
+                selectingChild.value.rowStart = rowStart
+                selectingChild.value.rowEnd = rowEnd
             } else if (resizingChildDirection.value.startsWith('bottom')) {
                 let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
                     size: rowSize.value, gap: (props.gap ?? 0), max: rows.value ?? 1, offset: resizeOffsetClientRow, startBefore: resizingChildBefore.value?.rowStart ?? 1, endBefore: resizingChildBefore.value?.rowEnd ?? 1, target: 'end', expandable: props.rowExpandable
                 })
-                resizingChild.value.rowStart = rowStart
-                resizingChild.value.rowEnd = rowEnd
+                selectingChild.value.rowStart = rowStart
+                selectingChild.value.rowEnd = rowEnd
 
                 if (props.rowExpandable) {
                     // 向下扩展
@@ -400,14 +469,14 @@ function dragMove(e: MouseEvent) {
                 let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
                     size: columnSize.value, gap: (props.gap ?? 0), max: columns.value ?? 1, offset: resizeOffsetClientColumn, startBefore: resizingChildBefore.value?.columnStart ?? 1, endBefore: resizingChildBefore.value?.columnEnd ?? 1, target: 'start', expandable: props.columnExpandable
                 })
-                resizingChild.value.columnStart = columnStart
-                resizingChild.value.columnEnd = columnEnd
+                selectingChild.value.columnStart = columnStart
+                selectingChild.value.columnEnd = columnEnd
             } else if (resizingChildDirection.value.endsWith('right')) {
                 let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
                     size: columnSize.value, gap: (props.gap ?? 0), max: columns.value ?? 1, offset: resizeOffsetClientColumn, startBefore: resizingChildBefore.value?.columnStart ?? 1, endBefore: resizingChildBefore.value?.columnEnd ?? 1, target: 'end', expandable: props.columnExpandable
                 })
-                resizingChild.value.columnStart = columnStart
-                resizingChild.value.columnEnd = columnEnd
+                selectingChild.value.columnStart = columnStart
+                selectingChild.value.columnEnd = columnEnd
 
                 if (props.columnExpandable) {
                     // 向右扩展
@@ -416,6 +485,10 @@ function dragMove(e: MouseEvent) {
 
             }
         }
+
+
+        // 滚动跟随
+        scrollIntoViewIfNeeded(resizingChildEle.value)
     }
 }
 
@@ -429,12 +502,8 @@ function dragEnd(e: MouseEvent) {
 
     // 状态重置
     {
-        dragging = false
-        draggingChild.value = undefined
-
-        resizing = false
-        resizingChildCursor.value = ''
-        document.body.style.cursor = ''
+        resizingReset()
+        dragReset()
     }
 }
 
@@ -442,24 +511,25 @@ function dragEnd(e: MouseEvent) {
 function clearSelection() {
     // 判断真实 click
     if (Math.abs(clickOffsetX) < 5 && Math.abs(clickOffsetY) < 5) {
-        // 取消选择
-        resizing = false
-        resizingChild.value = undefined
-
-        resizingChildCursor.value = ''
-        document.body.style.cursor = ''
+        selectingChild.value = undefined
     }
 
-    // 取消拖动
-    dragging = false
-    draggingChild.value = undefined
+    // 状态重置
+    {
+        resizingReset()
+        dragReset()
+    }
 }
 
 // 选择
 function select(child: GridDragResizeItemProps) {
     if (Math.abs(clickOffsetX) < 5 && Math.abs(clickOffsetY) < 5) {
-        resizingChild.value = child;
+        selectingChild.value = child;
+
         draggingChild.value = undefined
+        draggingChildBefore.value = undefined;
+        draggingChildRect.value = undefined;
+        draggingChildEle.value = undefined
     }
 }
 
@@ -469,7 +539,6 @@ window.addEventListener('mousemove', dragMove)
 window.addEventListener('mouseup', dragEnd)
 
 // 点击空白区域，清空选择
-document.body.addEventListener('click', clearSelection)
 window.addEventListener('click', clearSelection)
 </script>
 
@@ -477,10 +546,10 @@ window.addEventListener('click', clearSelection)
 <div class="grid-drag-resize" :style="style" ref="rootEle">
     <template v-for="(child, idx) of props.children" :key="idx">
         <GridDragResizeItem v-bind="child" v-model:column-start="child.columnStart" v-model:column-end="child.columnEnd"
-            v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd"
-            @startDrag="(rect) => updateDrag(child, rect)" @select="select(child)" @startResize="resizingStart"
+            v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd" @startDrag="startDrag($event, child)"
+            @select="select(child)" @startResize="resizingStart"
             :style="{ 'zIndex': draggingChild === child ? props.children.length + 1 : idx + 1, cursor: resizingChildCursor }"
-            :class="{ 'grid-drag-resize__item--dragging': draggingChild === child, 'grid-drag-resize__item--selected': resizingChild === child }">
+            :class="{ 'grid-drag-resize__item--dragging': draggingChild === child, 'grid-drag-resize__item--selected': selectingChild === child }">
             <component :is="child.render"></component>
         </GridDragResizeItem>
     </template>

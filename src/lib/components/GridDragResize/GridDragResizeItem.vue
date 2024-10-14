@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watchEffect, inject, type Ref } from 'vue'
 
-import type { GridDragResizeProps, GridDragResizeItemProps, StartResizeEvent } from './types'
+import type { GridDragResizeProps, GridDragResizeItemProps, StartResizeEvent, StartDragEvent } from './types'
 
 const parentProps = inject<GridDragResizeProps>('parentProps')
 
@@ -16,7 +16,7 @@ type Emit = {
     (e: 'update:columnEnd', val: number): void
     (e: 'update:rowStart', val: number): void
     (e: 'update:rowEnd', val: number): void
-    (e: 'startDrag', val: DOMRect): void
+    (e: 'startDrag', val: StartDragEvent): void
     (e: 'select'): void
     (e: 'startResize', val: StartResizeEvent): void
 }
@@ -72,17 +72,20 @@ watchEffect(() => {
 })
 
 // 拖动开始
-function dragstart() {
+function dragstart(e: MouseEvent) {
     if (draggableParsed.value) {
         // 通知父组件 当前拖动子组件
-        emit('startDrag', itemEle?.value?.getBoundingClientRect() ?? {
-            height: 0,
-            width: 0,
-            x: 0,
-            y: 0,
-            bottom: 0,
-            right: 0
-        } as DOMRect)
+        emit('startDrag', {
+            event: e,
+            rect: itemEle?.value?.getBoundingClientRect() ?? {
+                height: 0,
+                width: 0,
+                x: 0,
+                y: 0,
+                bottom: 0,
+                right: 0
+            } as DOMRect
+        })
     }
 }
 
@@ -122,7 +125,8 @@ function resizeStart(e: MouseEvent, direction: string) {
 <div class="grid-drag-resize__item" :class="{
     'grid-drag-resize__item--draggable': draggableParsed,
     'grid-drag-resize__item--draggable-full': draggableParsed && dragHandlerParsed === void 0
-}" :style="style" @mousedown="() => dragHandlerParsed ? undefined : dragstart()" @click="select" ref="itemEle">
+}" :style="style" @mousedown="(e: MouseEvent) => dragHandlerParsed ? undefined : dragstart(e)" @click="select"
+    ref="itemEle">
     <div class="grid-drag-resize__item__group" :style="{ overflow: props.overflow }">
         <slot></slot>
     </div>

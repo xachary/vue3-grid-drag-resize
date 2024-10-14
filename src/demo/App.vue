@@ -94,6 +94,8 @@ body {
   padding: 32px;
   display: flex;
   align-items: flex-start;
+  // height: 100vh;
+  // overflow: auto;
 }
 
 .demo-item {

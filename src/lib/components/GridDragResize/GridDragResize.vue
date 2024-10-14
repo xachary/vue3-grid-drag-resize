@@ -589,7 +589,7 @@ function drop(e: DragEvent) {
         <GridDragResizeItem v-bind="child" v-model:column-start="child.columnStart" v-model:column-end="child.columnEnd"
             v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd" @startDrag="startDrag($event, child)"
             @select="select(child)" @startResize="resizingStart"
-            :style="{ 'zIndex': draggingChild === child ? childrenParsed.length + 1 : idx + 1, cursor: resizingChildCursor }"
+            :style="{ 'zIndex': draggingChild === child ? childrenParsed.length + 2 : selectingChild === child ? childrenParsed.length + 1 : idx + 1, cursor: resizingChildCursor }"
             :class="{ 'grid-drag-resize__item--dragging': draggingChild === child, 'grid-drag-resize__item--selected': selectingChild === child }">
             <component :is="child.render" v-bind="child"></component>
         </GridDragResizeItem>
@@ -597,7 +597,7 @@ function drop(e: DragEvent) {
     <GridDragResizeItem v-show="droppingChild" :draggable="false" :resizable="false"
         :column-start="droppingChild?.columnStart" :column-end="droppingChild?.columnEnd"
         :row-start="droppingChild?.rowStart" :row-end="droppingChild?.rowEnd"
-        :style="{ 'zIndex': childrenParsed.length + 1 }" class="grid-drag-resize__item--shadow">
+        :style="{ 'zIndex': childrenParsed.length + 3 }" class="grid-drag-resize__item--shadow">
     </GridDragResizeItem>
 </div>
 </template>

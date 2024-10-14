@@ -20,7 +20,7 @@ type Emit = {
     (e: 'update:columns', val: number): void
     (e: 'startDrag', val: StartDragEvent): void
     (e: 'select'): void
-    (e: 'startResize', val: StartResizeEvent): any
+    (e: 'startResize', val: StartResizeEvent): void
 }
 
 const emit = defineEmits<Emit>()

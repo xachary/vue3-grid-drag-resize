@@ -5810,16 +5810,19 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
         }
       }
     });
-    function dragstart() {
+    function dragstart(e) {
       var _a;
       if (draggableParsed.value) {
-        emit2("startDrag", ((_a = itemEle == null ? void 0 : itemEle.value) == null ? void 0 : _a.getBoundingClientRect()) ?? {
-          height: 0,
-          width: 0,
-          x: 0,
-          y: 0,
-          bottom: 0,
-          right: 0
+        emit2("startDrag", {
+          event: e,
+          rect: ((_a = itemEle == null ? void 0 : itemEle.value) == null ? void 0 : _a.getBoundingClientRect()) ?? {
+            height: 0,
+            width: 0,
+            x: 0,
+            y: 0,
+            bottom: 0,
+            right: 0
+          }
         });
       }
     }
@@ -5855,7 +5858,7 @@ const _sfc_main$2 = /* @__PURE__ */ defineComponent({
           "grid-drag-resize__item--draggable-full": draggableParsed.value && dragHandlerParsed.value === void 0
         }]),
         style: normalizeStyle(style.value),
-        onMousedown: _cache[8] || (_cache[8] = () => dragHandlerParsed.value ? void 0 : dragstart()),
+        onMousedown: _cache[8] || (_cache[8] = (e) => dragHandlerParsed.value ? void 0 : dragstart(e)),
         onClick: select,
         ref_key: "itemEle",
         ref: itemEle
@@ -5980,17 +5983,19 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     let clickStartX = 0, clickStartY = 0;
     let clickOffsetX = 0, clickOffsetY = 0;
     let resizing = false;
-    const resizingChild = ref();
+    const selectingChild = ref();
     const resizingChildBefore = ref();
     const resizingChildRect = ref();
     const resizingChildCursor = ref("");
     const resizingChildDirection = ref("");
+    const resizingChildEle = ref();
     let resizeStartClientX = 0, resizeStartClientY = 0;
     let resizeOffsetClientRow = 0, resizeOffsetClientColumn = 0;
     let dragging = false;
     const draggingChild = ref();
     const draggingChildBefore = ref();
     const draggingChildRect = ref();
+    const draggingChildEle = ref();
     let dragStartClientX = 0, dragStartClientY = 0;
     let dragOffsetClientRow = 0, dragOffsetClientColumn = 0;
     let rowDirection = 0, columnDirection = 0;
@@ -6042,31 +6047,70 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         };
       }
     }
+    function resizingReset() {
+      resizing = false;
+      resizingChildBefore.value = void 0;
+      resizingChildRect.value = void 0;
+      resizingChildCursor.value = "";
+      resizingChildDirection.value = "";
+      document.body.style.cursor = "";
+    }
+    function dragReset() {
+      dragging = false;
+      draggingChild.value = void 0;
+      draggingChildBefore.value = void 0;
+      draggingChildRect.value = void 0;
+      draggingChildEle.value = void 0;
+    }
+    function isElementInViewport(el) {
+      var rect = el.getBoundingClientRect();
+      return rect.top >= 0 && rect.left >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && rect.right <= (window.innerWidth || document.documentElement.clientWidth);
+    }
+    function scrollIntoViewIfNeeded(target) {
+      if (target) {
+        if (!isElementInViewport(target)) {
+          target.scrollIntoView();
+        }
+      }
+    }
+    function startDrag(res, child) {
+      const { event: e, rect } = res;
+      if (e && e.currentTarget instanceof HTMLElement) {
+        updateDrag(child, rect, e.currentTarget);
+      }
+    }
     function resizingStart(res) {
       const { event: e, rect, cursor, direction } = res;
+      if (e && e.currentTarget instanceof HTMLElement) {
+        if (e.currentTarget.parentElement instanceof HTMLElement) {
+          resizingChildEle.value = e.currentTarget.parentElement;
+        }
+      }
       clickStartX = e.clientX;
       clickStartY = e.clientY;
       resizeStartClientX = e.clientX;
       resizeStartClientY = e.clientY;
-      dragging = false;
+      dragReset();
       resizing = true;
       resizingChildRect.value = rect;
       resizingChildCursor.value = cursor;
       resizingChildDirection.value = direction;
       document.body.style.cursor = cursor;
-      resizingChildBefore.value = { ...resizingChild.value };
+      resizingChildBefore.value = { ...selectingChild.value };
     }
-    function updateDrag(child, rect) {
+    function updateDrag(child, rect, target) {
       draggingChild.value = child;
       draggingChildBefore.value = { ...child };
       draggingChildRect.value = rect;
+      draggingChildEle.value = target;
     }
     function dragStart(e) {
+      e.stopPropagation();
       clickStartX = e.clientX;
       clickStartY = e.clientY;
       if (!props.readonly) {
         if (draggingChild.value && draggingChildRect.value) {
-          resizing = false;
+          resizingReset();
           dragging = true;
           dragStartClientX = e.clientX;
           dragStartClientY = e.clientY;
@@ -6075,6 +6119,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     }
     function dragMove(e) {
       var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
+      e.stopPropagation();
       if (dragging && draggingChild.value) {
         dragOffsetClientColumn = e.clientX - dragStartClientX;
         dragOffsetClientRow = e.clientY - dragStartClientY;
@@ -6118,11 +6163,12 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
         draggingChild.value.columnEnd = columnEnd;
         draggingChild.value.rowStart = rowStart;
         draggingChild.value.rowEnd = rowEnd;
+        scrollIntoViewIfNeeded(draggingChildEle.value);
       }
       if (resizing) {
         resizeOffsetClientColumn = e.clientX - resizeStartClientX;
         resizeOffsetClientRow = e.clientY - resizeStartClientY;
-        if (resizingChild.value) {
+        if (selectingChild.value) {
           if (resizingChildDirection.value.startsWith("top")) {
             let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
               size: rowSize.value,
@@ -6134,8 +6180,8 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
               target: "start",
               expandable: props.rowExpandable
             });
-            resizingChild.value.rowStart = rowStart;
-            resizingChild.value.rowEnd = rowEnd;
+            selectingChild.value.rowStart = rowStart;
+            selectingChild.value.rowEnd = rowEnd;
           } else if (resizingChildDirection.value.startsWith("bottom")) {
             let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
               size: rowSize.value,
@@ -6147,8 +6193,8 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
               target: "end",
               expandable: props.rowExpandable
             });
-            resizingChild.value.rowStart = rowStart;
-            resizingChild.value.rowEnd = rowEnd;
+            selectingChild.value.rowStart = rowStart;
+            selectingChild.value.rowEnd = rowEnd;
             if (props.rowExpandable) {
               rows.value = calcMaxCount("rows");
             }
@@ -6164,8 +6210,8 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
               target: "start",
               expandable: props.columnExpandable
             });
-            resizingChild.value.columnStart = columnStart;
-            resizingChild.value.columnEnd = columnEnd;
+            selectingChild.value.columnStart = columnStart;
+            selectingChild.value.columnEnd = columnEnd;
           } else if (resizingChildDirection.value.endsWith("right")) {
             let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
               size: columnSize.value,
@@ -6177,13 +6223,14 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
               target: "end",
               expandable: props.columnExpandable
             });
-            resizingChild.value.columnStart = columnStart;
-            resizingChild.value.columnEnd = columnEnd;
+            selectingChild.value.columnStart = columnStart;
+            selectingChild.value.columnEnd = columnEnd;
             if (props.columnExpandable) {
               columns.value = calcMaxCount("columns");
             }
           }
         }
+        scrollIntoViewIfNeeded(resizingChildEle.value);
       }
     }
     function dragEnd(e) {
@@ -6191,33 +6238,31 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       clickOffsetX = e.clientX - clickStartX;
       clickOffsetY = e.clientY - clickStartY;
       {
-        dragging = false;
-        draggingChild.value = void 0;
-        resizing = false;
-        resizingChildCursor.value = "";
-        document.body.style.cursor = "";
+        resizingReset();
+        dragReset();
       }
     }
     function clearSelection() {
       if (Math.abs(clickOffsetX) < 5 && Math.abs(clickOffsetY) < 5) {
-        resizing = false;
-        resizingChild.value = void 0;
-        resizingChildCursor.value = "";
-        document.body.style.cursor = "";
+        selectingChild.value = void 0;
       }
-      dragging = false;
-      draggingChild.value = void 0;
+      {
+        resizingReset();
+        dragReset();
+      }
     }
     function select(child) {
       if (Math.abs(clickOffsetX) < 5 && Math.abs(clickOffsetY) < 5) {
-        resizingChild.value = child;
+        selectingChild.value = child;
         draggingChild.value = void 0;
+        draggingChildBefore.value = void 0;
+        draggingChildRect.value = void 0;
+        draggingChildEle.value = void 0;
       }
     }
     window.addEventListener("mousedown", dragStart);
     window.addEventListener("mousemove", dragMove);
     window.addEventListener("mouseup", dragEnd);
-    document.body.addEventListener("click", clearSelection);
     window.addEventListener("click", clearSelection);
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
@@ -6236,11 +6281,11 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             "onUpdate:rowStart": ($event) => child.rowStart = $event,
             "row-end": child.rowEnd,
             "onUpdate:rowEnd": ($event) => child.rowEnd = $event,
-            onStartDrag: (rect) => updateDrag(child, rect),
+            onStartDrag: ($event) => startDrag($event, child),
             onSelect: ($event) => select(child),
             onStartResize: resizingStart,
             style: { "zIndex": draggingChild.value === child ? props.children.length + 1 : idx + 1, cursor: resizingChildCursor.value },
-            class: { "grid-drag-resize__item--dragging": draggingChild.value === child, "grid-drag-resize__item--selected": resizingChild.value === child }
+            class: { "grid-drag-resize__item--dragging": draggingChild.value === child, "grid-drag-resize__item--selected": selectingChild.value === child }
           }), {
             default: withCtx(() => [
               (openBlock(), createBlock(resolveDynamicComponent(child.render)))
@@ -6336,7 +6381,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-12 16:00:07", git: { branch: "master", hash: "60e848c9e8e08725d4ba078becce7b7dbd590b73", tag: "60e848c9e8e08725d4ba078becce7b7dbd590b73-dirty" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 11:10:33", git: { branch: "master", hash: "becbe310b3842f1d569b2855df6f37b69636296f", tag: "becbe310b3842f1d569b2855df6f37b69636296f-dirty" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

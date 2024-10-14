@@ -12,6 +12,9 @@ export interface GridDragResizeItemProps {
   rowStart?: number
   rowEnd?: number
   //
+  columns?: number // 列数
+  rows?: number // 行数
+  //
   render?: () => VNode
 }
 

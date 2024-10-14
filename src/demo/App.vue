@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { ref, h, type Ref } from 'vue'
+
+// Build test:
 // import { GridDragResize, type GridDragResizeProps } from 'vue3-grid-drag-resize'
 // import { GridDragResize } from '../../dist/vue3-grid-drag-resize/index.js'
-import { GridDragResize } from '@/lib/components/GridDragResize'
-import type { GridDragResizeProps } from '@/lib/components/GridDragResize/types'
 
+import { GridDragResize } from '@/lib/components/GridDragResize'
+import type { GridDragResizeProps, GridDragResizeItemProps } from '@/lib/components/GridDragResize/types'
+
+// 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
   {
     dragHandler: '.demo-item>button',
@@ -43,12 +47,74 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     render: () => h('div', { class: "demo-item", style: { background: '#c2baa6' } }, '4')
   },
 ])
+
+// render
+function candidateRender(columns: number, rows: number, background: string, props: GridDragResizeItemProps) {
+  if ([props.columnStart, props.columnEnd, props.rowStart, props.rowEnd].every(o => o !== void 0)) {
+    const info = [
+      h('div', `${props.columns} x ${props.rows}`),
+      h('div', `column: start ~ end = ${props.columnStart} ~ ${props.columnEnd}`),
+      h('div', `row: start ~ end ${props.rowStart} ~ ${props.rowEnd}`),
+    ]
+    return h('div', { class: "demo-item", style: { background } }, info)
+  } else {
+    return h('div', { class: "demo-item", style: { background } }, [h('div', `${props.columns ?? columns}x${props.rows ?? rows}`)])
+  }
+}
+
+// 生成拖入内容
+function createCandidate(columns = 1, rows = 1, background = '#fff') {
+  return {
+    columns,
+    rows,
+    render: (props: GridDragResizeItemProps) => candidateRender(columns, rows, background, props)
+  } as GridDragResizeItemProps
+}
+
+// 待拖入内容
+const candidate: Ref<GridDragResizeProps['children']> = ref([
+  createCandidate(1, 1, '#6c35de'),
+  createCandidate(2, 3, '#ffc7ff'),
+  createCandidate(4, 2, '#cb80ff'),
+])
+
+// 组件实例
+const gridDragResize: Ref<InstanceType<typeof GridDragResize> | undefined> = ref()
+
+// 开始拖入
+function dragstart(e: DragEvent, idx: number) {
+  if (gridDragResize.value) {
+    // 目标 拖入子组件的数据项
+    const item = candidate.value?.[idx]
+    if (item) {
+      // 设置 拖入子组件的数据项
+      gridDragResize.value.setDropping(item)
+    }
+  }
+}
+
+// 拖入终止
+function dragend() {
+  if (gridDragResize.value) {
+    // 清除 拖入子组件的数据项
+    gridDragResize.value.clearDropping()
+  }
+} 
 </script>
 
 <template>
 <div class="page">
-  <div v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></div>
-  <GridDragResize :columns="4" :gap="10" :row-size="100" :row-expandable="true" :readonly="false" :children="children">
+  <header>
+    <header>
+      <div v-for="(item, idx) of candidate" :key="idx" draggable="true" @dragstart="dragstart($event, idx)"
+        @dragend="dragend">
+        <component :is="item.render"></component>
+      </div>
+    </header>
+    <footer v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></footer>
+  </header>
+  <GridDragResize :columns="4" :gap="10" :row-size="100" :row-expandable="true" :readonly="false" :children="children"
+    ref="gridDragResize">
   </GridDragResize>
 </div>
 </template>
@@ -94,13 +160,51 @@ body {
   padding: 32px;
   display: flex;
   align-items: flex-start;
+  min-height: 100vh;
+
   // height: 100vh;
   // overflow: auto;
+  &>header {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    border: 1px solid #ddd;
+    margin-right: 32px;
+
+    &>header,
+    &>footer {
+      flex-grow: 1;
+      height: 0;
+      overflow: auto;
+    }
+
+    &>header {
+      &>div {
+        height: 100px;
+        border-bottom: 1px solid #eee;
+        cursor: grab;
+        user-select: none;
+        background-color: #fff;
+
+      }
+    }
+
+    &>footer {
+      border-top: 1px solid #eee;
+    }
+  }
 }
 
 .demo-item {
   padding: 10px;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1.1em;
+  color: #fff;
+  flex-direction: column;
 }
 
 .grid-drag-resize {

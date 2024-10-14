@@ -16,6 +16,8 @@ type Emit = {
     (e: 'update:columnEnd', val: number): void
     (e: 'update:rowStart', val: number): void
     (e: 'update:rowEnd', val: number): void
+    (e: 'update:rows', val: number): void
+    (e: 'update:columns', val: number): void
     (e: 'startDrag', val: StartDragEvent): void
     (e: 'select'): void
     (e: 'startResize', val: StartResizeEvent): void
@@ -39,6 +41,13 @@ watchEffect(() => {
         }
     } else {
         emit('update:rowStart', 1)
+    }
+
+    if (props.columnStart !== void 0 && props.columnEnd !== void 0) {
+        emit('update:columns', props.columnEnd - props.columnStart)
+    }
+    if (props.rowEnd !== void 0 && props.rowStart !== void 0) {
+        emit('update:rows', props.rowEnd - props.rowStart)
     }
 })
 

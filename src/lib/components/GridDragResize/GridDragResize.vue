@@ -287,6 +287,7 @@ function startDrag(res: StartDragEvent, child: GridDragResizeItemProps) {
 
 // 调整大小开始
 function resizingStart(...args: any[] | unknown[]) {
+    // 这里的写法是为了通过 github pages 的 type-check
     const res = args[0] as StartResizeEvent
     const { event: e, rect, cursor, direction } = res
 

@@ -286,8 +286,9 @@ function startDrag(res: StartDragEvent, child: GridDragResizeItemProps) {
 }
 
 // 调整大小开始
-function resizingStart(res: any) {
-    const { event: e, rect, cursor, direction } = res as StartResizeEvent
+function resizingStart(res: StartResizeEvent, ...args: any[]) {
+    // console.log(args)
+    const { event: e, rect, cursor, direction } = res
 
     if (e && e.currentTarget instanceof HTMLElement) {
         if (e.currentTarget.parentElement instanceof HTMLElement) {

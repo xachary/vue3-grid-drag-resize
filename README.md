@@ -5,6 +5,8 @@ Drag and resize element in grid.
 
 ![Oct-12-2024 15-56-44](https://github.com/user-attachments/assets/374838df-43cd-4270-8b12-b4601238dc30)
 
+![Oct-14-2024 15-25-49](https://github.com/user-attachments/assets/b5514f23-0420-44c1-a41a-006257b37ab7)
+
 [Live Demo](https://xachary.github.io/vue3-grid-drag-resize/)
 
 [NPM](https://www.npmjs.com/package/vue3-grid-drag-resize)

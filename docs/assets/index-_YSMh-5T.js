@@ -6529,7 +6529,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         const info = [
           h("div", `${props.columns} x ${props.rows}`),
           h("div", `column: start ~ end = ${props.columnStart} ~ ${props.columnEnd}`),
-          h("div", `row: start ~ end ${props.rowStart} ~ ${props.rowEnd}`)
+          h("div", `row: start ~ end = ${props.rowStart} ~ ${props.rowEnd}`)
         ];
         return h("div", { class: "demo-item", style: { background } }, info);
       } else {
@@ -6589,6 +6589,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           "row-expandable": true,
           readonly: false,
           children: children.value,
+          "onUpdate:children": _cache[0] || (_cache[0] = ($event) => children.value = $event),
           ref_key: "gridDragResize",
           ref: gridDragResize
         }, null, 8, ["children"])
@@ -6620,7 +6621,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 15:24:37", git: { branch: "master", hash: "e5c8c283a5abb4218942247d8ef2baf06d3eb0ec", tag: "e5c8c283a5abb4218942247d8ef2baf06d3eb0ec" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 15:39:48", git: { branch: "master", hash: "2b4f0387272b5a557bf5c3f5bdb0758662475038", tag: "2b4f0387272b5a557bf5c3f5bdb0758662475038-dirty" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

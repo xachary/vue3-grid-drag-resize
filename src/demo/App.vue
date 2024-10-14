@@ -54,7 +54,7 @@ function candidateRender(columns: number, rows: number, background: string, prop
     const info = [
       h('div', `${props.columns} x ${props.rows}`),
       h('div', `column: start ~ end = ${props.columnStart} ~ ${props.columnEnd}`),
-      h('div', `row: start ~ end ${props.rowStart} ~ ${props.rowEnd}`),
+      h('div', `row: start ~ end = ${props.rowStart} ~ ${props.rowEnd}`),
     ]
     return h('div', { class: "demo-item", style: { background } }, info)
   } else {
@@ -113,8 +113,8 @@ function dragend() {
     </header>
     <footer v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></footer>
   </header>
-  <GridDragResize :columns="4" :gap="10" :row-size="100" :row-expandable="true" :readonly="false" :children="children"
-    ref="gridDragResize">
+  <GridDragResize :columns="4" :gap="10" :row-size="100" :row-expandable="true" :readonly="false"
+    v-model:children="children" ref="gridDragResize">
   </GridDragResize>
 </div>
 </template>

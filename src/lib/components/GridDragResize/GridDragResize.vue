@@ -29,9 +29,9 @@ function gridTemplateParse(count: number, size?: number) {
 }
 
 // 如果没定义 行数/列数，根据 children 计算合适的 行数/列数
-function calcMaxCount(target: string, count?: number) {
+function calcMaxCount(target: string, count?: number, more: GridDragResizeItemProps[] = []) {
     if (!Number.isInteger(count) || (Number.isInteger(count) && count! < 1)) {
-        count = childrenParsed.value.reduce((max, child) => {
+        count = [...childrenParsed.value, ...more].reduce((max, child) => {
             const end = { rows: child.rowEnd, columns: child.columnEnd }[target]
             if (end && end > 1) {
                 if (end - 1 > max) {
@@ -172,8 +172,8 @@ function calcDragStartEndByOffset(opts: { size: number, gap: number, span: numbe
 }
 
 // 根据鼠标拖动位置（相对于组件），计算列/行方向上的位置，移动后最新的位置和大小
-function calcDragStartEndByPos(opts: { size: number, gap: number, span: number, max: number, pos: number }) {
-    let { size, gap, span, max, pos } = opts
+function calcDragStartEndByPos(opts: { size: number, gap: number, span: number, max: number, pos: number, expandable: boolean }) {
+    let { size, gap, span, max, pos, expandable } = opts
 
     // 虚拟地在 grid 四边补充二分之一的 gap 距离
     // 如此，通过计算 拖动位置（相对于组件）与 大小+间隙 的倍数即可
@@ -183,8 +183,10 @@ function calcDragStartEndByPos(opts: { size: number, gap: number, span: number, 
         start = 1
     }
 
-    if (start + span > max) {
-        start = max - span + 1
+    if (!expandable) {
+        if (start + span > max) {
+            start = max - span + 1
+        }
     }
 
     return {
@@ -456,7 +458,6 @@ function dragMove(e: MouseEvent) {
                     // 向右扩展
                     columns.value = calcMaxCount('columns')
                 }
-
             }
         }
 
@@ -542,32 +543,44 @@ function dropover(e: DragEvent) {
         let posY = e.clientY - rootRect.value.y
         if (posY < 0) {
             posY = 0
-        } else if (posY > rootRect.value.height) {
+        } else if (!props.rowExpandable && posY > rootRect.value.height) {
             posY = rootRect.value.height
         }
 
         let posX = e.clientX - rootRect.value.x
         if (posX < 0) {
             posX = 0
-        } else if (posX > rootRect.value.width) {
+        } else if (!props.columnExpandable && posX > rootRect.value.width) {
             posX = rootRect.value.width
         }
 
         // 计算行方向上，移动后最新的位置和大小
         let { start: rowStart, end: rowEnd } = calcDragStartEndByPos({
-            size: rowSize.value, gap: (props.gap ?? 0), span: rowSpan, max: rows.value ?? 1, pos: posY
+            size: rowSize.value, gap: (props.gap ?? 0), span: rowSpan, max: rows.value ?? 1, pos: posY, expandable: props.rowExpandable ?? false
         })
+
+        // 更新 当前拖入子组件的数据项
+        droppingChild.value.rowStart = rowStart
+        droppingChild.value.rowEnd = rowEnd
+
+        if (props.rowExpandable) {
+            // 向下扩展
+            rows.value = calcMaxCount('rows', undefined, [droppingChild.value])
+        }
 
         // 计算列方向上，移动后最新的位置和大小
         let { start: columnStart, end: columnEnd } = calcDragStartEndByPos({
-            size: columnSize.value, gap: (props.gap ?? 0), span: columnSpan, max: columns.value ?? 1, pos: posX
+            size: columnSize.value, gap: (props.gap ?? 0), span: columnSpan, max: columns.value ?? 1, pos: posX, expandable: props.columnExpandable ?? false
         })
 
-        // 更新 当前拖动子组件的数据项
+        // 更新 当前拖入子组件的数据项
         droppingChild.value.columnStart = columnStart
         droppingChild.value.columnEnd = columnEnd
-        droppingChild.value.rowStart = rowStart
-        droppingChild.value.rowEnd = rowEnd
+
+        if (props.columnExpandable) {
+            // 向右扩展
+            columns.value = calcMaxCount('columns', undefined, [droppingChild.value])
+        }
     }
 }
 
@@ -581,6 +594,10 @@ function drop(e: DragEvent) {
     }
     droppingChild.value = undefined
 }
+
+// 鼠标处理事件
+window.addEventListener('dragover', dropover)
+window.addEventListener('drop', drop)
 </script>
 
 <template>

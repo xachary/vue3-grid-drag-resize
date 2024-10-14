@@ -6455,7 +6455,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
             onStartDrag: ($event) => startDrag($event, child),
             onSelect: ($event) => select(child),
             onStartResize: resizingStart,
-            style: { "zIndex": draggingChild.value === child ? childrenParsed.value.length + 1 : idx + 1, cursor: resizingChildCursor.value },
+            style: { "zIndex": draggingChild.value === child ? childrenParsed.value.length + 2 : selectingChild.value === child ? childrenParsed.value.length + 1 : idx + 1, cursor: resizingChildCursor.value },
             class: { "grid-drag-resize__item--dragging": draggingChild.value === child, "grid-drag-resize__item--selected": selectingChild.value === child }
           }), {
             default: withCtx(() => [
@@ -6471,7 +6471,7 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
           "column-end": (_b = droppingChild.value) == null ? void 0 : _b.columnEnd,
           "row-start": (_c = droppingChild.value) == null ? void 0 : _c.rowStart,
           "row-end": (_d = droppingChild.value) == null ? void 0 : _d.rowEnd,
-          style: normalizeStyle({ "zIndex": childrenParsed.value.length + 1 }),
+          style: normalizeStyle({ "zIndex": childrenParsed.value.length + 3 }),
           class: "grid-drag-resize__item--shadow"
         }, null, 8, ["column-start", "column-end", "row-start", "row-end", "style"]), [
           [vShow, droppingChild.value]
@@ -6621,7 +6621,7 @@ const logArray = (words) => {
     console.error(e);
   }
 };
-var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 15:39:48", git: { branch: "master", hash: "2b4f0387272b5a557bf5c3f5bdb0758662475038", tag: "2b4f0387272b5a557bf5c3f5bdb0758662475038-dirty" } };
+var define_BUILD_INFO_default = { lastBuildTime: "2024-10-14 17:12:43", git: { branch: "master", hash: "a9bd5a5431a743e5542d1a810beeb22352409d4a", tag: "a9bd5a5431a743e5542d1a810beeb22352409d4a" } };
 const {
   lastBuildTime,
   git: { branch, tag, hash }

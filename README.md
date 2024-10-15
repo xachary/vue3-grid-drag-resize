@@ -7,7 +7,7 @@ Drag and resize element in grid.
 
 ![Oct-14-2024 15-25-49](https://github.com/user-attachments/assets/b5514f23-0420-44c1-a41a-006257b37ab7)
 
-[文档](https://xachary.github.io/vue3-grid-drag-resize/) | [Docs](https://xachary.github.io/vue3-grid-drag-resize/en/Ï)
+[文档](https://xachary.github.io/vue3-grid-drag-resize/) | [Docs](https://xachary.github.io/vue3-grid-drag-resize/en/)
 
 [在线示例](https://xachary.github.io/vue3-grid-drag-resize/demo/index.html) | [Live Demo](https://xachary.github.io/vue3-grid-drag-resize/demo/index.html)
 

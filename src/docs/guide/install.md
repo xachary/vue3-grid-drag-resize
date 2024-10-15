@@ -1,3 +1,5 @@
 # 安装
 
-敬请期待
+```bash
+pnpm i vue3-grid-drag-resize
+```

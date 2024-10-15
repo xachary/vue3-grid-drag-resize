@@ -12,7 +12,7 @@ export interface GridDragResizeItemProps<T = any> {
   //
   dragHandler?: string // 拖动锚点（querySelector）
   //
-  draggable?: boolean // 是否可拖拉拽
+  draggable?: boolean // 是否可拖动
   resizable?: boolean // 是否可调整大小
   overflow?: string // CSS overflow
   //

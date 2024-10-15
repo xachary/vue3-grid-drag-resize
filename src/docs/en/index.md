@@ -16,7 +16,7 @@ hero:
 
 features:
   - title: Vue3
-    details: A Vue3 component
+    details: This`s a Vue3 component.
   - title: CSS grid layout
     details: Based on CSS grid layout
   - title: Drag and drop

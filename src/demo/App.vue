@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, h, type Ref } from 'vue'
+import { nanoid } from 'nanoid'
 
 // Build test:
 // import { GridDragResize, type GridDragResizeProps } from 'vue3-grid-drag-resize'
@@ -7,30 +8,42 @@ import { ref, h, type Ref } from 'vue'
 
 import { GridDragResize } from '@/lib/components/GridDragResize'
 import type { GridDragResizeProps, GridDragResizeItemProps } from '@/lib/components/GridDragResize/types'
-import { nanoid } from 'nanoid'
+
+import ComponentA from '@/demo/components/ComponentA.vue'
+import ComponentB from '@/demo/components/ComponentB.vue'
+import ComponentC from '@/demo/components/ComponentC.vue'
 
 // 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
   {
-    dragHandler: '.demo-item>button',
-    render: () => h('div', { class: "demo-item", style: { background: '#eb9c64' } }, [h('button', 'drag handler')]),
+    render: () => h(ComponentA),
     data: {
       id: nanoid()
     }
   },
   {
     columnStart: 2,
-    draggable: false,
-    render: () => h('div', { class: "demo-item", style: { background: '#ff8789' } }, 'undraggable'),
-    data: {
-      id: nanoid()
-    }
-  },
-  {
     rowStart: 2,
-    columnStart: 2,
+    draggable: false,
+    render: () => h(ComponentB),
+    data: {
+      id: nanoid()
+    }
+  },
+  {
+    rowStart: 3,
+    columnStart: 3,
     resizable: false,
-    render: () => h('div', { class: "demo-item", style: { background: '#554e4f' } }, 'unresizable'),
+    render: () => h(ComponentC),
+    data: {
+      id: nanoid()
+    }
+  },
+  {
+    rowStart: 4,
+    columnStart: 4,
+    dragHandler: '.demo-item>button',
+    render: () => h('div', { class: "demo-item", style: { background: '#eb9c64' } }, [h('button', 'Drag handler')]),
     data: {
       id: nanoid()
     }
@@ -38,36 +51,36 @@ const children: Ref<GridDragResizeProps['children']> = ref([
   {
     rowStart: 2,
     rowEnd: 4,
-    columnStart: 4,
-    columnEnd: 5,
-    render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, '2'),
-    data: {
-      id: nanoid()
-    }
-  },
-  {
-    rowStart: 4,
-    rowEnd: 6,
-    columnStart: 2,
-    columnEnd: 4,
-    render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, '3'),
-    data: {
-      id: nanoid()
-    }
-  },
-  {
-    rowStart: 4,
-    rowEnd: 5,
     columnStart: 1,
     columnEnd: 2,
-    render: () => h('div', { class: "demo-item", style: { background: '#c2baa6' } }, '4'),
+    render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Component D'),
+    data: {
+      id: nanoid()
+    }
+  },
+  {
+    rowStart: 3,
+    rowEnd: 7,
+    columnStart: 2,
+    columnEnd: 3,
+    render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, 'Component E'),
+    data: {
+      id: nanoid()
+    }
+  },
+  {
+    rowStart: 5,
+    rowEnd: 7,
+    columnStart: 3,
+    columnEnd: 5,
+    render: () => h('div', { class: "demo-item", style: { background: '#c2baa6' } }, 'Component F'),
     data: {
       id: nanoid()
     }
   },
 ])
 
-// render
+// 生成 render
 function candidateRender(columns: number, rows: number, background: string, props: GridDragResizeItemProps) {
   if ([props.columnStart, props.columnEnd, props.rowStart, props.rowEnd].every(o => o !== void 0)) {
     const info = [

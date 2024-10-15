@@ -34,7 +34,8 @@ export default defineConfig({
               text: '快速上手',
               items: [
                 { text: '概览', link: '/guide/intro' },
-                { text: '安装', link: '/guide/install' }
+                { text: '安装', link: '/guide/install' },
+                { text: '使用', link: '/guide/usage' }
               ]
             }
           ],
@@ -67,15 +68,16 @@ export default defineConfig({
             {
               text: 'Quick Start',
               items: [
-                { text: 'Introduction', link: '/guide/intro' },
-                { text: 'Install', link: '/guide/install' }
+                { text: 'Introduction', link: '/en/guide/intro' },
+                { text: 'Install', link: '/en/guide/install' },
+                { text: 'Usage', link: '/en/guide/usage' }
               ]
             }
           ],
           '/en/api/': [
             {
               text: 'API',
-              items: [{ text: 'GridDragResize', link: '/api/index' }]
+              items: [{ text: 'GridDragResize', link: '/en/api/index' }]
             }
           ]
         },

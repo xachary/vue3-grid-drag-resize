@@ -29,5 +29,5 @@ coverage
 
 *.tsbuildinfo
 
-.vitepress
-docs
+src/docs/.vitepress/cache
+/docs

@@ -24,7 +24,7 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: '首页', link: '/index' },
-          { text: '快速上手', link: '/guide/index' },
+          { text: '快速上手', link: '/guide/intro' },
           { text: 'API', link: '/api/index' },
           { text: '示例', link: 'https://xachary.github.io/vue3-grid-drag-resize/demo' }
         ],
@@ -33,7 +33,7 @@ export default defineConfig({
             {
               text: '快速上手',
               items: [
-                { text: '概览', link: '/guide/index' },
+                { text: '概览', link: '/guide/intro' },
                 { text: '安装', link: '/guide/install' }
               ]
             }
@@ -45,7 +45,11 @@ export default defineConfig({
             }
           ]
         },
-        outlineTitle: '导航'
+        outlineTitle: '导航',
+        docFooter: {
+          prev: '上一页',
+          next: '下一页'
+        }
       }
     },
     en: {
@@ -54,7 +58,7 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: 'Home', link: '/en/index' },
-          { text: 'Guide', link: '/en/guide/index' },
+          { text: 'Guide', link: '/en/guide/intro' },
           { text: 'API', link: '/en/api/index' },
           { text: 'Demo', link: 'https://xachary.github.io/vue3-grid-drag-resize/demo' }
         ],
@@ -63,7 +67,7 @@ export default defineConfig({
             {
               text: 'Quick Start',
               items: [
-                { text: 'Introduction', link: '/guide/index' },
+                { text: 'Introduction', link: '/guide/intro' },
                 { text: 'Install', link: '/guide/install' }
               ]
             }
@@ -75,7 +79,11 @@ export default defineConfig({
             }
           ]
         },
-        outlineTitle: 'Navigate'
+        outlineTitle: 'Navigate',
+        docFooter: {
+          prev: 'Previous page',
+          next: 'Next page'
+        }
       }
     }
   }

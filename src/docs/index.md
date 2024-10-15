@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: 快速上手
-      link: /guide/index
+      link: /guide/intro
     - theme: alt
       text: 示例
       link: https://xachary.github.io/vue3-grid-drag-resize/demo

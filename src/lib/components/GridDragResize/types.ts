@@ -5,21 +5,20 @@ export interface GridDragResizeItemProps<T = any> {
   columns?: number // 列数
   rows?: number // 行数
   //
-  // css display grid 属性
-  columnStart?: number
-  columnEnd?: number
-  rowStart?: number
-  rowEnd?: number
+  columnStart?: number // CSS columnStart
+  columnEnd?: number // CSS columnEnd
+  rowStart?: number // CSS rowStart
+  rowEnd?: number // CSS rowEnd
   //
-  dragHandler?: string // 满足 querySelector 的查询字符串，指向可拖拉拽的元素位置
+  dragHandler?: string // 拖动锚点（querySelector）
   //
-  draggable?: boolean
-  resizable?: boolean
-  overflow?: string
+  draggable?: boolean // 是否可拖拉拽
+  resizable?: boolean // 是否可调整大小
+  overflow?: string // CSS overflow
   //
-  render?: () => VNode
+  render?: () => VNode // 显示内容
   //
-  data?: T
+  data?: T // 数据项
 }
 
 // 组件的 Props
@@ -34,8 +33,8 @@ export interface GridDragResizeProps<T = any> {
   //
   children?: GridDragResizeItemProps<T>[] // 子组件配置项
   //
-  dragHandler?: string // 优先级低于子组件的 dragHandler
-  readonly?: boolean // 优先级高于子组件的 draggable、resizable
+  dragHandler?: string // 拖动锚点（querySelector），优先级低于子组件的 dragHandler
+  readonly?: boolean // 只读，优先级高于子组件的 draggable、resizable
 }
 
 // 子组件 startDrag 事件返回数据

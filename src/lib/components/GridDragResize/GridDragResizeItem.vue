@@ -1,15 +1,36 @@
 <script setup lang="ts">
-import { ref, computed, watchEffect, inject, type Ref } from 'vue'
+import { ref, computed, watch, watchEffect, inject, type Ref } from 'vue'
 
 import type { GridDragResizeProps, GridDragResizeItemProps, StartResizeEvent, StartDragEvent } from './types'
 
 const parentProps = inject<GridDragResizeProps>('parentProps')
 
 const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
+    columns: 1,
+    rows: 1,
+    //
+    columnStart: 1,
+    columnEnd: 2,
+    rowStart: 1,
+    rowEnd: 2,
+    //
+    dragHandler: '',
     draggable: true,
     resizable: true,
     overflow: 'hidden'
 });
+
+const columnsParsed = computed(() => props.columns || 1)
+const rowsParsed = computed(() => props.rows || 1)
+
+const columnStartParsed = computed(() => props.columnStart < 1 ? 1 : props.columnStart)
+const columnEndParsed = computed(() => props.columnEnd < 2 ? 2 : props.columnEnd)
+const rowStartParsed = computed(() => props.rowStart < 1 ? 1 : props.rowStart)
+const rowEndParsed = computed(() => props.rowEnd < 2 ? 2 : props.rowEnd)
+
+const dragHandlerParsed = computed(() => props.dragHandler || parentProps?.dragHandler)
+const draggableParsed = computed(() => parentProps?.readonly ? false : props.draggable)
+const resizableParsed = computed(() => parentProps?.readonly ? false : props.resizable)
 
 type Emit = {
     (e: 'update:columnStart', val: number): void
@@ -26,6 +47,18 @@ type Emit = {
 const emit = defineEmits<Emit>()
 
 // 数据整理
+watch(() => [props.rows, props.columns], () => {
+    if (props.rows !== rowsParsed.value) {
+        emit('update:rows', rowsParsed.value)
+    }
+
+    if (props.columns !== columnsParsed.value) {
+        emit('update:columns', columnsParsed.value)
+    }
+}, {
+    immediate: true
+})
+
 watchEffect(() => {
     if (props.columnStart !== void 0) {
         if (props.columnEnd === void 0 || props.columnEnd < props.columnStart) {
@@ -54,19 +87,14 @@ watchEffect(() => {
 // 样式
 const style = computed(() => {
     return {
-        'grid-column-start': props.columnStart,
-        'grid-column-end': props.columnEnd,
-        'grid-row-start': props.rowStart,
-        'grid-row-end': props.rowEnd,
+        'grid-column-start': columnStartParsed.value,
+        'grid-column-end': columnEndParsed.value,
+        'grid-row-start': rowStartParsed.value,
+        'grid-row-end': rowEndParsed.value,
     }
 })
 
 const itemEle: Ref<HTMLElement | undefined> = ref()
-
-const dragHandlerParsed = computed(() => props.dragHandler ?? parentProps?.dragHandler)
-const draggableParsed = computed(() => parentProps?.readonly ? false : props.draggable)
-
-const resizableParsed = computed(() => parentProps?.readonly ? false : props.resizable)
 
 // dragHandler 定位、处理、事件绑定
 watchEffect(() => {
@@ -133,7 +161,7 @@ function resizeStart(e: MouseEvent, direction: string) {
 <template>
 <div class="grid-drag-resize__item" :class="{
     'grid-drag-resize__item--draggable': draggableParsed,
-    'grid-drag-resize__item--draggable-full': draggableParsed && dragHandlerParsed === void 0
+    'grid-drag-resize__item--draggable-full': draggableParsed && !dragHandlerParsed
 }" :style="style" @mousedown="(e: MouseEvent) => dragHandlerParsed ? undefined : dragstart(e)" @click="select"
     ref="itemEle">
     <div class="grid-drag-resize__item__group" :style="{ overflow: props.overflow }">

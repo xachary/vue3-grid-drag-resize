@@ -7,7 +7,11 @@
   ],
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "homepage": "https://github.com/xachary/vue3-grid-drag-resize",
+  "homepage": "https://xachary.github.io/vue3-grid-drag-resize/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xachary/vue3-grid-drag-resize"
+  },
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",

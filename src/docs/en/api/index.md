@@ -16,6 +16,7 @@
 | children         | GridDragResizeItemProps&lt;T&gt;[] | []        | children Props                                                      | 0.0.17 |
 | dragHandler      | string                             | ''        | Drag anchor (querySelector), children has higher priority           | 0.0.17 |
 | readonly         | boolean                            | false     | Readonly, true will disable the draggable and resizable of children | 0.0.17 |
+| sub              | boolean                            | false     | Work as sub component                                               | 0.0.17 |
 
 ## children Props
 

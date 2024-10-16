@@ -16,6 +16,7 @@
 | children         | GridDragResizeItemProps&lt;T&gt;[] | []        | 子配置项                                      | 0.0.17 |
 | dragHandler      | string                             | ''        | 拖动锚点（querySelector），子组件优先级更高   | 0.0.17 |
 | readonly         | boolean                            | false     | 只读，true 将禁用子配置项的可拖动和可调整大小 | 0.0.17 |
+| sub              | boolean                            | false     | 作为子组件运行                                | 0.0.17 |
 
 ## 子配置项
 

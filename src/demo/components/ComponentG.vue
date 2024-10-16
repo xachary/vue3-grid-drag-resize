@@ -4,7 +4,7 @@
         <p>Component G</p>
         <p>(Nested GridDragResize)</p>
     </header>
-    <GridDragResize :columns="3" :rows="3" :children="children" sub debug></GridDragResize>
+    <GridDragResize :columns="3" :rows="3" :gap="5" :children="children" sub debug></GridDragResize>
 </div>
 </template>
 
@@ -48,7 +48,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
         rowEnd: 2,
         columnStart: 1,
         columnEnd: 2,
-        render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Child 1'),
+        render: () => h('div', { class: "demo-item", style: { background: '#0085ff' } }, 'Child 1'),
         data: {
             id: nanoid()
         }
@@ -58,7 +58,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
         rowEnd: 3,
         columnStart: 2,
         columnEnd: 3,
-        render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Child 2'),
+        render: () => h('div', { class: "demo-item", style: { background: '#c2402a' } }, 'Child 2'),
         data: {
             id: nanoid()
         }
@@ -66,9 +66,19 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     {
         rowStart: 3,
         rowEnd: 4,
+        columnStart: 1,
+        columnEnd: 3,
+        render: () => h('div', { class: "demo-item", style: { background: '#FF6347' } }, 'Child 3'),
+        data: {
+            id: nanoid()
+        }
+    },
+    {
+        rowStart: 1,
+        rowEnd: 4,
         columnStart: 3,
         columnEnd: 4,
-        render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Child 3'),
+        render: () => h('div', { class: "demo-item", style: { background: '#917800' } }, 'Child 4'),
         data: {
             id: nanoid()
         }

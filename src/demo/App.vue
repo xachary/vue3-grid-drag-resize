@@ -17,6 +17,7 @@ import ComponentG from '@/demo/components/ComponentG.vue'
 // 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
   {
+    removable: false,
     render: () => h(ComponentA),
     data: {
       id: nanoid()
@@ -84,6 +85,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     rowEnd: 3,
     columnStart: 3,
     columnEnd: 5,
+    removable: false,
     render: () => h(ComponentG),
     data: {
       id: nanoid()

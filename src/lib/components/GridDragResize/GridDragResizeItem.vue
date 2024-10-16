@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
     dragHandler: '',
     draggable: true,
     resizable: true,
+    removable: true,
     overflow: 'hidden'
 });
 
@@ -31,6 +32,7 @@ const rowEndParsed = computed(() => props.rowEnd < 2 ? 2 : props.rowEnd)
 const dragHandlerParsed = computed(() => props.dragHandler || parentProps?.dragHandler)
 const draggableParsed = computed(() => parentProps?.readonly ? false : props.draggable)
 const resizableParsed = computed(() => parentProps?.readonly ? false : props.resizable)
+const removableParsed = computed(() => parentProps?.readonly ? false : props.removable)
 
 type Emit = {
     (e: 'update:columnStart', val: number): void
@@ -42,6 +44,7 @@ type Emit = {
     (e: 'startDrag', val: StartDragEvent): void
     (e: 'select'): void
     (e: 'startResize', val: StartResizeEvent): void
+    (e: 'remove'): void
 }
 
 const emit = defineEmits<Emit>()
@@ -156,6 +159,27 @@ function resizeStart(e: MouseEvent, direction: string) {
         })
     }
 }
+
+// 移除
+function remove(e: MouseEvent) {
+    e.stopPropagation()
+
+    emit('remove')
+}
+
+// 自适应间距
+const removeDistance = computed(() => {
+    const size = 13 / 2
+    const gap = (parentProps?.gap ?? 0)
+    return (gap < size ? gap : size)
+})
+
+// 自适应间距
+const adjustDistance = computed(() => {
+    const size = 10 / 2
+    const gap = (parentProps?.gap ?? 0)
+    return (gap < size ? gap : size)
+})
 </script>
 
 <template>
@@ -168,21 +192,28 @@ function resizeStart(e: MouseEvent, direction: string) {
         <slot></slot>
     </div>
     <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top"
-        @mousedown="resizeStart($event, 'top')">
+        @mousedown="resizeStart($event, 'top')" :style="{ top: `${-adjustDistance}px` }">
     </i>
     <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--right"
-        @mousedown="resizeStart($event, 'right')"></i>
-    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--left"
-        @mousedown="resizeStart($event, 'left')"></i>
+        @mousedown="resizeStart($event, 'right')" :style="{ right: `${-adjustDistance}px` }"></i>
     <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom"
-        @mousedown="resizeStart($event, 'bottom')"></i>
+        @mousedown="resizeStart($event, 'bottom')" :style="{ bottom: `${-adjustDistance}px` }"></i>
+    <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--left"
+        @mousedown="resizeStart($event, 'left')" :style="{ left: `${-adjustDistance}px` }"></i>
     <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-left"
-        @mousedown="resizeStart($event, 'top-left')"></i>
+        @mousedown="resizeStart($event, 'top-left')"
+        :style="{ top: `${-adjustDistance}px`, left: `${-adjustDistance}px` }"></i>
     <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-right"
-        @mousedown="resizeStart($event, 'top-right')"></i>
+        @mousedown="resizeStart($event, 'top-right')"
+        :style="{ top: `${-adjustDistance}px`, right: `${-adjustDistance}px` }"></i>
     <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-left"
-        @mousedown="resizeStart($event, 'bottom-left')"></i>
+        @mousedown="resizeStart($event, 'bottom-left')"
+        :style="{ bottom: `${-adjustDistance}px`, left: `${-adjustDistance}px` }"></i>
     <i class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-right"
-        @mousedown="resizeStart($event, 'bottom-right')"></i>
+        @mousedown="resizeStart($event, 'bottom-right')"
+        :style="{ bottom: `${-adjustDistance}px`, right: `${-adjustDistance}px` }"></i>
+    <span class="grid-drag-resize__item__remove" @click="remove" @mousedown.stop @mousemove.stop @mouseup.stop
+        :style="{ top: `${-removeDistance}px`, right: `${-removeDistance}px` }" v-if="removableParsed">
+    </span>
 </div>
 </template>

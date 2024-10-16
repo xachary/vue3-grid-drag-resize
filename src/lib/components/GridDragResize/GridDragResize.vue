@@ -662,6 +662,17 @@ function subClick(e: MouseEvent) {
         clearSelection()
     }
 }
+
+// 移除
+function remove(child: GridDragResizeItemProps) {
+    if (childrenParsed.value) {
+        const idx = childrenParsed.value.findIndex(o => o === child)
+        if (idx > -1) {
+            childrenParsed.value.splice(idx, 1)
+            emit('update:children', childrenParsed.value)
+        }
+    }
+}
 </script>
 
 <template>
@@ -670,7 +681,7 @@ function subClick(e: MouseEvent) {
     <template v-for="(child, idx) of childrenParsed" :key="idx">
         <GridDragResizeItem v-bind="child" v-model:column-start="child.columnStart" v-model:column-end="child.columnEnd"
             v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd" @startDrag="startDrag($event, child)"
-            @select="select(child)" @startResize="resizingStart"
+            @select="select(child)" @startResize="resizingStart" @remove="remove(child)"
             :style="{ 'zIndex': draggingChild === child ? childrenParsed.length + 2 : selectingChild === child ? childrenParsed.length + 1 : idx + 1, cursor: resizingChildCursor }"
             :class="{ 'grid-drag-resize__item--dragging': draggingChild === child, 'grid-drag-resize__item--selected': selectingChild === child }">
             <component :is="child.render" v-bind="child"></component>

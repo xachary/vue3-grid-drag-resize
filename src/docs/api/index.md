@@ -33,6 +33,7 @@
 | dragHandler | string      | ''        | 拖动锚点（querySelector） | 0.0.17 |
 | draggable   | boolean     | true      | 是否可拖动                | 0.0.17 |
 | resizable   | boolean     | true      | 是否可调整大小            | 0.0.17 |
+| removable   | boolean     | true      | 是否可移除                | 0.2.0  |
 | overflow    | string      | 'hidden'  | CSS overflow              | 0.0.17 |
 | render      | () => VNode | undefined | 显示内容                  | 0.0.17 |
 | data        | T           | undefined | 数据项                    | 0.0.17 |

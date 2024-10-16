@@ -17,6 +17,10 @@
       display: block;
     }
 
+    &--selected > &__remove {
+      transform: translate(-12px, 0);
+    }
+
     &__group {
       position: absolute;
       top: 0;
@@ -32,45 +36,73 @@
       width: 10px;
       height: 10px;
       display: none;
+      box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.2);
       &--top {
-        top: -($height/2);
         left: calc(50% - $width/2);
         cursor: ns-resize;
       }
       &--right {
-        right: -($width/2);
         top: calc(50% - $height/2);
         cursor: ew-resize;
       }
       &--bottom {
-        bottom: -($height/2);
         left: calc(50% - $width/2);
         cursor: ns-resize;
       }
       &--left {
-        left: -($width/2);
         top: calc(50% - $height/2);
         cursor: ew-resize;
       }
       &--top-left {
-        top: -($height/2);
-        left: -($width/2);
         cursor: nwse-resize;
       }
       &--top-right {
-        top: -($height/2);
-        right: -($width/2);
         cursor: nesw-resize;
       }
       &--bottom-left {
-        bottom: -($height/2);
-        left: -($width/2);
         cursor: nesw-resize;
       }
       &--bottom-right {
-        bottom: -($height/2);
-        right: -($width/2);
         cursor: nwse-resize;
+      }
+    }
+
+    &__remove {
+      position: absolute;
+      width: 13px;
+      height: 13px;
+      background-color: #fff;
+      border-radius: 50%;
+      top: 0;
+      right: 0;
+      box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      border: 1px solid rgba(255, 0, 0, 0.6);
+      transition: transform 0.3s ease-in-out;
+      opacity: 0.8;
+
+      &:hover {
+        opacity: 1;
+      }
+      &::before,
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 5px;
+        left: 1px;
+        width: 9px;
+        height: 1px;
+        background-color: rgba(255, 0, 0, 0.6);
+        transform-origin: center;
+      }
+
+      &::before {
+        transform: rotate(-45deg);
+      }
+
+      &::after {
+        transform: rotate(45deg);
       }
     }
   }

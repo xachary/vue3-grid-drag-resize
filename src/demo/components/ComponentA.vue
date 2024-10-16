@@ -1,6 +1,7 @@
 <template>
 <div class="component-a">
-    Component A
+    Component A <br>
+    Unremovable
 </div>
 </template>
 

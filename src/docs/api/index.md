@@ -4,19 +4,19 @@
 
 > GridDragResizeProps&lt;T&gt;
 
-| 名称             | 类型                               | 默认值    | 说明                                          | 版本   |
-| :--------------- | :--------------------------------- | :-------- | :-------------------------------------------- | :----- |
-| columns          | number                             | 1         | 列数                                          | 0.0.17 |
-| rows             | number                             | 1         | 行数                                          | 0.0.17 |
-| gap              | number                             | 0         | 间隙                                          | 0.0.17 |
-| columnSize       | number                             | undefined | 列宽，undefined 相当于 1fr                    | 0.0.17 |
-| rowSize          | number                             | undefined | 行高，undefined 相当于 1fr                    | 0.0.17 |
-| columnExpandable | boolean                            | false     | 允许向右扩展列数                              | 0.0.17 |
-| rowExpandable    | boolean                            | false     | 允许向下扩展行数                              | 0.0.17 |
-| children         | GridDragResizeItemProps&lt;T&gt;[] | []        | 子配置项                                      | 0.0.17 |
-| dragHandler      | string                             | ''        | 拖动锚点（querySelector），子组件优先级更高   | 0.0.17 |
-| readonly         | boolean                            | false     | 只读，true 将禁用子配置项的可拖动和可调整大小 | 0.0.17 |
-| sub              | boolean                            | false     | 作为子组件运行                                | 0.0.17 |
+| 名称             | 类型                               | 默认值    | 说明                                             | 版本   |
+| :--------------- | :--------------------------------- | :-------- | :----------------------------------------------- | :----- |
+| columns          | number                             | 1         | 列数                                             | 0.0.17 |
+| rows             | number                             | 1         | 行数                                             | 0.0.17 |
+| gap              | number                             | 0         | 间隙                                             | 0.0.17 |
+| columnSize       | number                             | undefined | 列宽，undefined 相当于 1fr                       | 0.0.17 |
+| rowSize          | number                             | undefined | 行高，undefined 相当于 1fr                       | 0.0.17 |
+| columnExpandable | boolean                            | false     | 允许向右扩展列数                                 | 0.0.17 |
+| rowExpandable    | boolean                            | false     | 允许向下扩展行数                                 | 0.0.17 |
+| children         | GridDragResizeItemProps&lt;T&gt;[] | []        | 子配置项                                         | 0.0.17 |
+| dragHandler      | string                             | ''        | 拖动锚点（querySelector），子组件优先级更高      | 0.0.17 |
+| readonly         | boolean                            | false     | 只读，true 将禁用子配置项的可拖动和可调整大小    | 0.0.17 |
+| sub              | boolean                            | false     | 嵌套组件, columnExpandable、rowExpandable 将失效 | 0.0.17 |
 
 ## 子配置项
 

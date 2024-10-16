@@ -38,7 +38,7 @@ export interface GridDragResizeProps<T = any> {
   //
   sub?: boolean // 嵌套所需
   //
-  debug?: boolean // 用于调试
+  debug?: boolean // 嵌套组件, columnExpandable、rowExpandable 将失效
 }
 
 // 子组件 startDrag 事件返回数据

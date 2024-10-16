@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, provide, watch, type Ref } from 'vue'
+import { ref, computed, provide, inject, watch, type Ref } from 'vue'
 
 import type { GridDragResizeProps, GridDragResizeItemProps, StartResizeEvent, StartDragEvent } from './types'
 
@@ -35,6 +35,26 @@ const readonlyParsed = ref(false)
 // 给子组件穿透转递组件 Props
 const propsParsed: Ref<GridDragResizeProps | undefined> = ref(props)
 provide('parent', { props: propsParsed })
+
+// 单例 state 透传
+let state = inject<{ actionEle: Ref<HTMLElement | undefined> } | null>('state', null)
+if (state === null) {
+    state = {
+        actionEle: ref() // 当前正在 drag、resize 的 GridDragResize 组件
+    }
+}
+provide('state', state)
+
+// 更新状态
+function stateActionDown(v: boolean) {
+    if (state) {
+        if (v) {
+            state.actionEle.value = rootEle.value // 记录 当前正在 drag、resize 的 GridDragResize 组件
+        } else {
+            state.actionEle.value = undefined
+        }
+    }
+}
 
 // 判断是否处于 draggable 的节点内部
 watch(() => [props.readonly, rootEle.value], () => {
@@ -277,6 +297,7 @@ function calcResizeStartEnd(opts: { size: number, gap: number, max: number, offs
 
 function resizingReset() {
     resizing = false
+    stateActionDown(false)
 
     resizingChildBefore.value = undefined
     resizingChildRect.value = undefined
@@ -288,6 +309,7 @@ function resizingReset() {
 
 function dragReset() {
     dragging = false
+    stateActionDown(false)
 
     draggingChild.value = undefined
     draggingChildBefore.value = undefined
@@ -347,6 +369,7 @@ function resizingStart(...args: any[] | unknown[]) {
     // 状态互斥
     dragReset()
     resizing = true
+    stateActionDown(true)
 
     // 更新计算所需信息
     resizingChildRect.value = rect
@@ -379,6 +402,7 @@ function dragStart(e: MouseEvent) {
             // 状态互斥
             resizingReset()
             dragging = true
+            stateActionDown(true)
 
             // 记录 拖动开始位置
             dragStartClientX = e.clientX
@@ -654,9 +678,24 @@ if (!props.sub) {
     window.addEventListener('dragover', dropover)
 }
 
+// 是否阻止事件传递
+const sholdStop = computed(() => {
+    if (rootEle.value && state) {
+        if (state.actionEle.value) {
+            // 通过“contains”、“判断是否为自身”两种方式判断：
+            // 高层的 GridDragResize 或是 自身 正在 drag、resize 操作
+            return !state.actionEle.value.contains(rootEle.value) || state.actionEle.value === rootEle.value
+        }
+    }
+
+    // 假如没有上面的逻辑，均返回 true （阻止）
+    // 将会导致高层的 GridDragResize 往内部 resize 的时候失效
+    return true
+})
+
 // 嵌套时，控制事件传递
 function subDragStart(e: MouseEvent) {
-    if (props.sub) {
+    if (props.sub && sholdStop.value) {
         e.stopPropagation()
 
         dragStart(e)
@@ -664,7 +703,7 @@ function subDragStart(e: MouseEvent) {
 }
 
 function subDragMove(e: MouseEvent) {
-    if (props.sub) {
+    if (props.sub && sholdStop.value) {
         e.stopPropagation()
 
         dragMove(e)
@@ -672,7 +711,7 @@ function subDragMove(e: MouseEvent) {
 }
 
 function subDragEnd(e: MouseEvent) {
-    if (props.sub) {
+    if (props.sub && sholdStop.value) {
         e.stopPropagation()
 
         dragEnd(e)

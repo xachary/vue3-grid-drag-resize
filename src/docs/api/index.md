@@ -17,7 +17,7 @@
 | dragHandler        | string                             | ''        | 拖动锚点（querySelector），子组件优先级更高      | 0.0.17 |
 | readonly           | boolean                            | false     | 只读，true 将禁用子配置项的可拖动和可调整大小    | 0.0.17 |
 | sub                | boolean                            | false     | 嵌套组件, columnExpandable、rowExpandable 将失效 | 0.0.17 |
-| droppingChild      | GridDragResizeItemProps            | false     | 正在拖入的配置项                                 | 0.2.6  |
+| droppingChild      | GridDragResizeItemProps            | undefined | 正在拖入的配置项                                 | 0.2.6  |
 
 ## 子配置项
 

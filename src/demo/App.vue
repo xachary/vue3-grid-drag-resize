@@ -42,8 +42,10 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     }
   },
   {
-    rowStart: 4,
+    rowStart: 5,
     columnStart: 4,
+    rows: 2,
+    columns: 2,
     dragHandler: '.demo-item>button',
     render: () => h('div', { class: "demo-item", style: { background: '#eb9c64' } }, [h('button', 'Drag handler')]),
     data: {
@@ -52,7 +54,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
   },
   {
     rowStart: 2,
-    rowEnd: 4,
+    rowEnd: 3,
     columnStart: 1,
     columnEnd: 2,
     render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Component D'),
@@ -63,7 +65,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
   {
     rowStart: 3,
     rowEnd: 7,
-    columnStart: 2,
+    columnStart: 1,
     columnEnd: 3,
     render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, 'Component E'),
     data: {
@@ -71,10 +73,10 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     }
   },
   {
-    rowStart: 5,
-    rowEnd: 7,
+    rowStart: 4,
+    rowEnd: 6,
     columnStart: 3,
-    columnEnd: 5,
+    columnEnd: 4,
     render: () => h('div', { class: "demo-item", style: { background: '#c2baa6' } }, 'Component F'),
     data: {
       id: nanoid()
@@ -82,9 +84,9 @@ const children: Ref<GridDragResizeProps['children']> = ref([
   },
   {
     rowStart: 1,
-    rowEnd: 3,
-    columnStart: 3,
-    columnEnd: 5,
+    rowEnd: 4,
+    columnStart: 4,
+    columnEnd: 6,
     removable: false,
     render: () => h(ComponentG),
     data: {
@@ -159,7 +161,7 @@ function dragend() {
     </header>
     <footer v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></footer>
   </header>
-  <GridDragResize :columns="4" :gap="10" :row-size="100" :row-expandable="true" :readonly="false"
+  <GridDragResize :columns="5" :gap="10" :row-size="100" :row-expandable="true" :readonly="false"
     v-model:children="children" ref="gridDragResize">
   </GridDragResize>
 </div>

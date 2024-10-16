@@ -12,6 +12,7 @@ import type { GridDragResizeProps, GridDragResizeItemProps } from '@/lib/compone
 import ComponentA from '@/demo/components/ComponentA.vue'
 import ComponentB from '@/demo/components/ComponentB.vue'
 import ComponentC from '@/demo/components/ComponentC.vue'
+import ComponentG from '@/demo/components/ComponentG.vue'
 
 // 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
@@ -74,6 +75,16 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     columnStart: 3,
     columnEnd: 5,
     render: () => h('div', { class: "demo-item", style: { background: '#c2baa6' } }, 'Component F'),
+    data: {
+      id: nanoid()
+    }
+  },
+  {
+    rowStart: 1,
+    rowEnd: 3,
+    columnStart: 3,
+    columnEnd: 5,
+    render: () => h(ComponentG),
     data: {
       id: nanoid()
     }

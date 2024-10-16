@@ -15,7 +15,11 @@ const props = withDefaults(defineProps<GridDragResizeProps>(), {
     children: () => [],
     //
     dragHandler: '',
-    readonly: false
+    readonly: false,
+    //
+    sub: false,
+    //
+    debug: false,
 });
 
 const columnsParsed = computed(() => props.columns || 1)
@@ -342,8 +346,6 @@ function updateDrag(child: GridDragResizeItemProps, rect: DOMRect, target: HTMLE
 
 // 拖动开始
 function dragStart(e: MouseEvent) {
-    e.stopPropagation()
-
     // 更新 点击开始位置
     clickStartX = e.clientX
     clickStartY = e.clientY
@@ -368,8 +370,6 @@ function dragStart(e: MouseEvent) {
 
 // 拖动中
 function dragMove(e: MouseEvent) {
-    e.stopPropagation()
-
     if (dragging && draggingChild.value) {
         // 计算 拖动偏移量
         dragOffsetClientColumn = e.clientX - dragStartClientX
@@ -482,8 +482,6 @@ function dragMove(e: MouseEvent) {
 
 // 拖动结束
 function dragEnd(e: MouseEvent) {
-    e.stopPropagation()
-
     // 计算 点击拖动偏移量
     clickOffsetX = e.clientX - clickStartX
     clickOffsetY = e.clientY - clickStartY
@@ -521,10 +519,29 @@ function select(child: GridDragResizeItemProps) {
     }
 }
 
-// 鼠标处理事件
-window.addEventListener('mousedown', dragStart)
-window.addEventListener('mousemove', dragMove)
-window.addEventListener('mouseup', dragEnd)
+if (props.sub) {
+    // 补充 鼠标超出区域时 计算是否为点击
+    window.addEventListener('mousedown', (e: MouseEvent) => {
+        // 更新 点击开始位置
+        clickStartX = e.clientX
+        clickStartY = e.clientY
+    })
+    window.addEventListener('mouseup', (e: MouseEvent) => {
+        // 计算 点击拖动偏移量
+        clickOffsetX = e.clientX - clickStartX
+        clickOffsetY = e.clientY - clickStartY
+
+        // 状态重置
+        {
+            resizingReset()
+            dragReset()
+        }
+    })
+} else {
+    window.addEventListener('mousedown', dragStart)
+    window.addEventListener('mousemove', dragMove)
+    window.addEventListener('mouseup', dragEnd)
+}
 
 // 点击空白区域，清空选择
 window.addEventListener('click', clearSelection)
@@ -608,13 +625,48 @@ function drop(e: DragEvent) {
     droppingChild.value = undefined
 }
 
-// 鼠标处理事件
-window.addEventListener('dragover', dropover)
-window.addEventListener('drop', drop)
+if (!props.sub) {
+    // 鼠标处理事件（处理拖入中的扩展）
+    window.addEventListener('dragover', dropover)
+}
+
+// 嵌套时，控制事件传递
+function subDragStart(e: MouseEvent) {
+    if (props.sub) {
+        e.stopPropagation()
+
+        dragStart(e)
+    }
+}
+
+function subDragMove(e: MouseEvent) {
+    if (props.sub) {
+        e.stopPropagation()
+
+        dragMove(e)
+    }
+}
+
+function subDragEnd(e: MouseEvent) {
+    if (props.sub) {
+        e.stopPropagation()
+
+        dragEnd(e)
+    }
+}
+
+function subClick(e: MouseEvent) {
+    if (props.sub) {
+        e.stopPropagation()
+
+        clearSelection()
+    }
+}
 </script>
 
 <template>
-<div class="grid-drag-resize" :style="style" ref="rootEle" @dragover="dropover" @drop="drop">
+<div class="grid-drag-resize" :style="style" ref="rootEle" @dragover="dropover" @drop="drop" @mousedown="subDragStart"
+    @mousemove="subDragMove" @mouseup="subDragEnd" @click="subClick">
     <template v-for="(child, idx) of childrenParsed" :key="idx">
         <GridDragResizeItem v-bind="child" v-model:column-start="child.columnStart" v-model:column-end="child.columnEnd"
             v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd" @startDrag="startDrag($event, child)"

@@ -35,6 +35,10 @@ export interface GridDragResizeProps<T = any> {
   //
   dragHandler?: string // 拖动锚点（querySelector），优先级低于子组件的 dragHandler
   readonly?: boolean // 只读，优先级高于子组件的 draggable、resizable
+  //
+  sub?: boolean // 嵌套所需
+  //
+  debug?: boolean // 用于调试
 }
 
 // 子组件 startDrag 事件返回数据

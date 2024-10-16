@@ -6,13 +6,13 @@ import type { GridDragResizeProps, GridDragResizeItemProps, StartResizeEvent, St
 const parentProps = inject<GridDragResizeProps>('parentProps')
 
 const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
-    columns: 1,
-    rows: 1,
+    columns: 0,
+    rows: 0,
     //
-    columnStart: 1,
-    columnEnd: 2,
-    rowStart: 1,
-    rowEnd: 2,
+    columnStart: 0,
+    columnEnd: 0,
+    rowStart: 0,
+    rowEnd: 0,
     //
     dragHandler: '',
     draggable: true,
@@ -87,13 +87,13 @@ watchEffect(() => {
         }
     }
 
-    if (props.columns === void 0) {
+    if (props.columns === void 0 || props.columns < 1) {
         if (props.columnStart !== void 0 && props.columnEnd !== void 0) {
             emit('update:columns', props.columnEnd - props.columnStart)
         }
     }
 
-    if (props.rows === void 0) {
+    if (props.rows === void 0 || props.rows < 1) {
         if (props.rowEnd !== void 0 && props.rowStart !== void 0) {
             emit('update:rows', props.rowEnd - props.rowStart)
         }

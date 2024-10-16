@@ -46,7 +46,7 @@ function gridTemplateParse(count: number, size?: number) {
 }
 
 // 如果没定义 行数/列数，根据 children 计算合适的 行数/列数
-function calcMaxCount(target: string, count?: number, more: GridDragResizeItemProps[] = []) {
+function calcMaxCount(target: string, min?: number, more: GridDragResizeItemProps[] = []) {
     const calc = [...childrenParsed.value, ...more].reduce((max, child) => {
         const end = { rows: child.rowEnd, columns: child.columnEnd }[target]
         if (end && end > 1) {
@@ -57,13 +57,13 @@ function calcMaxCount(target: string, count?: number, more: GridDragResizeItemPr
         return max
     }, 1)
 
-    return count === void 0 ? calc : (count < calc ? calc : count)
+    return min === void 0 ? calc : (min < calc ? calc : min)
 }
 
 const rows = ref(1)
 const columns = ref(1)
 
-watch(() => [props.rows, props.columns], () => {
+watch(() => [props.rows, props.columns, childrenParsed.value], () => {
     rows.value = calcMaxCount('rows', rowsParsed.value)
     columns.value = calcMaxCount('columns', columnsParsed.value)
 
@@ -75,7 +75,8 @@ watch(() => [props.rows, props.columns], () => {
         emit('update:columns', columns.value)
     }
 }, {
-    immediate: true
+    immediate: true,
+    deep: true
 })
 
 // grid 样式
@@ -400,7 +401,7 @@ function dragMove(e: MouseEvent) {
 
         if (props.rowExpandable) {
             // 向下扩展
-            rows.value = calcMaxCount('rows')
+            rows.value = calcMaxCount('rows', rowsParsed.value)
         }
 
         // 计算列方向上，移动后最新的位置和大小
@@ -410,7 +411,7 @@ function dragMove(e: MouseEvent) {
 
         if (props.columnExpandable) {
             // 向右扩展
-            columns.value = calcMaxCount('columns')
+            columns.value = calcMaxCount('columns', columnsParsed.value)
         }
 
         // 更新 当前拖动子组件的数据项
@@ -447,7 +448,7 @@ function dragMove(e: MouseEvent) {
 
                 if (props.rowExpandable) {
                     // 向下扩展
-                    rows.value = calcMaxCount('rows')
+                    rows.value = calcMaxCount('rows', rowsParsed.value)
                 }
             }
 
@@ -469,7 +470,7 @@ function dragMove(e: MouseEvent) {
 
                 if (props.columnExpandable) {
                     // 向右扩展
-                    columns.value = calcMaxCount('columns')
+                    columns.value = calcMaxCount('columns', columnsParsed.value)
                 }
             }
         }
@@ -595,7 +596,7 @@ function dropover(e: DragEvent) {
 
         if (props.rowExpandable) {
             // 向下扩展
-            rows.value = calcMaxCount('rows', undefined, [droppingChild.value])
+            rows.value = calcMaxCount('rows', rowsParsed.value, [droppingChild.value])
         }
 
         // 计算列方向上，移动后最新的位置和大小
@@ -609,7 +610,7 @@ function dropover(e: DragEvent) {
 
         if (props.columnExpandable) {
             // 向右扩展
-            columns.value = calcMaxCount('columns', undefined, [droppingChild.value])
+            columns.value = calcMaxCount('columns', columnsParsed.value, [droppingChild.value])
         }
     }
 }
@@ -680,8 +681,9 @@ function remove(child: GridDragResizeItemProps) {
     @mousemove="subDragMove" @mouseup="subDragEnd" @click="subClick">
     <template v-for="(child, idx) of childrenParsed" :key="idx">
         <GridDragResizeItem v-bind="child" v-model:column-start="child.columnStart" v-model:column-end="child.columnEnd"
-            v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd" @startDrag="startDrag($event, child)"
-            @select="select(child)" @startResize="resizingStart" @remove="remove(child)"
+            v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd" v-model:rows="child.rows"
+            v-model:columns="child.columns" @startDrag="startDrag($event, child)" @select="select(child)"
+            @startResize="resizingStart" @remove="remove(child)"
             :style="{ 'zIndex': draggingChild === child ? childrenParsed.length + 2 : selectingChild === child ? childrenParsed.length + 1 : idx + 1, cursor: resizingChildCursor }"
             :class="{ 'grid-drag-resize__item--dragging': draggingChild === child, 'grid-drag-resize__item--selected': selectingChild === child }">
             <component :is="child.render" v-bind="child"></component>

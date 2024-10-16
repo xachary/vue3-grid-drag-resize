@@ -42,7 +42,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     }
   },
   {
-    rowStart: 5,
+    rowStart: 4,
     columnStart: 4,
     rows: 2,
     columns: 2,
@@ -64,7 +64,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
   },
   {
     rowStart: 3,
-    rowEnd: 7,
+    rowEnd: 6,
     columnStart: 1,
     columnEnd: 3,
     render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, 'Component E'),
@@ -161,7 +161,7 @@ function dragend() {
     </header>
     <footer v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></footer>
   </header>
-  <GridDragResize :columns="5" :gap="10" :row-size="100" :row-expandable="true" :readonly="false"
+  <GridDragResize :columns="5" :rows="6" :gap="10" :row-size="100" :row-expandable="true" :readonly="false"
     v-model:children="children" ref="gridDragResize">
   </GridDragResize>
 </div>

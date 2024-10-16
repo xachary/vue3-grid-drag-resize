@@ -2,9 +2,9 @@
 <div class="component-g">
     <header>
         <p>Component G</p>
-        <p>(Nested GridDragResize)</p>
+        <p>(GridDragResize nested)</p>
     </header>
-    <GridDragResize :columns="3" :rows="3" :gap="5" :children="children" sub debug></GridDragResize>
+    <GridDragResize :columns="4" :rows="4" :gap="5" :children="children" sub debug></GridDragResize>
 </div>
 </template>
 
@@ -75,10 +75,10 @@ const children: Ref<GridDragResizeProps['children']> = ref([
         }
     },
     {
-        rowStart: 1,
-        rowEnd: 4,
+        rowStart: 2,
+        rowEnd: 5,
         columnStart: 3,
-        columnEnd: 4,
+        columnEnd: 5,
         render: () => h(ComponentH),
         data: {
             id: nanoid()

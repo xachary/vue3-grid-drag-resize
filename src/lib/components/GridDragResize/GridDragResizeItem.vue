@@ -3,7 +3,7 @@ import { ref, computed, watch, watchEffect, inject, type Ref } from 'vue'
 
 import type { GridDragResizeProps, GridDragResizeItemProps, StartResizeEvent, StartDragEvent } from './types'
 
-const parentProps = inject<GridDragResizeProps>('parentProps')
+const parent = inject<{ props: Ref<GridDragResizeProps> }>('parent')
 
 const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
     columns: 0,
@@ -29,10 +29,10 @@ const columnEndParsed = computed(() => props.columnEnd < 2 ? 2 : props.columnEnd
 const rowStartParsed = computed(() => props.rowStart < 1 ? 1 : props.rowStart)
 const rowEndParsed = computed(() => props.rowEnd < 2 ? 2 : props.rowEnd)
 
-const dragHandlerParsed = computed(() => props.dragHandler || parentProps?.dragHandler)
-const draggableParsed = computed(() => parentProps?.readonly ? false : props.draggable)
-const resizableParsed = computed(() => parentProps?.readonly ? false : props.resizable)
-const removableParsed = computed(() => parentProps?.readonly ? false : props.removable)
+const dragHandlerParsed = computed(() => props.dragHandler || parent?.props.value?.dragHandler)
+const draggableParsed = computed(() => parent?.props.value?.readonly ? false : props.draggable)
+const resizableParsed = computed(() => parent?.props.value?.readonly ? false : props.resizable)
+const removableParsed = computed(() => parent?.props.value?.readonly ? false : props.removable)
 
 type Emit = {
     (e: 'update:columnStart', val: number): void
@@ -183,14 +183,14 @@ function remove(e: MouseEvent) {
 // 自适应间距
 const removeDistance = computed(() => {
     const size = 13 / 2
-    const gap = (parentProps?.gap ?? 0)
+    const gap = (parent?.props.value?.gap ?? 0)
     return (gap < size ? gap : size)
 })
 
 // 自适应间距
 const adjustDistance = computed(() => {
     const size = 10 / 2
-    const gap = (parentProps?.gap ?? 0)
+    const gap = (parent?.props.value?.gap ?? 0)
     return (gap < size ? gap : size)
 })
 </script>

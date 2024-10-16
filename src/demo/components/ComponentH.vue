@@ -2,7 +2,7 @@
 <div class="component-h">
     <header>
         <p>Component H</p>
-        <p>(Nested GridDragResize)</p>
+        <p>(GridDragResize nested)</p>
     </header>
     <GridDragResize :columns="2" :rows="2" :gap="5" :children="children" sub></GridDragResize>
 </div>

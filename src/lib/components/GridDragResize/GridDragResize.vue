@@ -28,6 +28,34 @@ const gapParsed = computed(() => props.gap || 0)
 
 const childrenParsed: Ref<GridDragResizeItemProps[]> = ref([...props.children])
 
+const rootEle: Ref<HTMLElement | undefined> = ref()
+
+const readonlyParsed = ref(false)
+
+// 给子组件穿透转递组件 Props
+const propsParsed: Ref<GridDragResizeProps | undefined> = ref(props)
+provide('parent', { props: propsParsed })
+
+// 判断是否处于 draggable 的节点内部
+watch(() => [props.readonly, rootEle.value], () => {
+    let underDraggable = false
+    if (rootEle.value) {
+        let parent = rootEle.value.parentElement
+        while (parent && !parent.draggable) {
+            parent = parent.parentElement
+        }
+        if (parent) {
+            underDraggable = true
+        }
+    }
+    readonlyParsed.value = props.readonly || underDraggable
+
+    // 更新
+    propsParsed.value = { ...props, readonly: readonlyParsed.value }
+}, {
+    immediate: true
+})
+
 watch(() => props.children, () => {
     childrenParsed.value = [...props.children]
 })
@@ -87,11 +115,6 @@ const style = computed(() => {
         'grid-gap': gapParsed.value > 0 ? `${gapParsed.value}px ${gapParsed.value}px` : ''
     }
 })
-
-const rootEle: Ref<HTMLElement | undefined> = ref()
-
-// 给子组件穿透转递组件 Props
-provide('parentProps', props)
 
 // 组件位置、大小信息
 const rootRect = computed(() => {
@@ -351,7 +374,7 @@ function dragStart(e: MouseEvent) {
     clickStartX = e.clientX
     clickStartY = e.clientY
 
-    if (!props.readonly) {
+    if (!readonlyParsed.value) {
         if (draggingChild.value && draggingChildRect.value) {
             // 状态互斥
             resizingReset()

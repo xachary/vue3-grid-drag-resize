@@ -80,6 +80,7 @@
       border: 1px solid rgba(255, 0, 0, 0.6);
       transition: transform 0.3s ease-in-out;
       opacity: 0.8;
+      display: none;
 
       &:hover {
         opacity: 1;
@@ -104,6 +105,10 @@
       &::after {
         transform: rotate(45deg);
       }
+    }
+
+    &:hover > &__remove {
+      display: block;
     }
   }
 }

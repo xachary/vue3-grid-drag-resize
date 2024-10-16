@@ -87,7 +87,6 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     rowEnd: 4,
     columnStart: 4,
     columnEnd: 6,
-    removable: false,
     render: () => h(ComponentG),
     data: {
       id: nanoid()
@@ -120,9 +119,13 @@ function createCandidate(columns = 1, rows = 1, background = '#fff') {
 
 // 待拖入内容
 const candidate: Ref<GridDragResizeProps['children']> = ref([
-  createCandidate(1, 1, '#6c35de'),
-  createCandidate(2, 3, '#ffc7ff'),
-  createCandidate(4, 2, '#cb80ff'),
+  createCandidate(1, 2, '#6c35de'),
+  createCandidate(5, 1, '#ffc7ff'),
+  {
+    columns: 2,
+    rows: 2,
+    render: () => h(ComponentG),
+  }
 ])
 
 // 组件实例
@@ -147,7 +150,7 @@ function dragend() {
     // 清除 拖入子组件的数据项
     gridDragResize.value.clearDropping()
   }
-} 
+}
 </script>
 
 <template>
@@ -205,7 +208,7 @@ body {
 </style>
 <style lang="less">
 .page {
-  padding: 32px;
+  padding: 16px;
   display: flex;
   align-items: flex-start;
   min-height: 100vh;
@@ -218,15 +221,18 @@ body {
     align-self: stretch;
     border: 1px solid #ddd;
     margin-right: 32px;
+    width: 400px;
+    flex-shrink: 0;
 
     &>header,
     &>footer {
-      flex-grow: 1;
       height: 0;
       overflow: auto;
     }
 
     &>header {
+      flex-grow: 2;
+
       &>div {
         height: 100px;
         border-bottom: 1px solid #eee;
@@ -234,10 +240,14 @@ body {
         user-select: none;
         background-color: #fff;
 
+        &:last-child {
+          height: 250px;
+        }
       }
     }
 
     &>footer {
+      flex-grow: 1;
       border-top: 1px solid #eee;
     }
   }

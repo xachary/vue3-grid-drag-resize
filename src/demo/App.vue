@@ -128,28 +128,24 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
   }
 ])
 
-// 组件实例
-const gridDragResize: Ref<InstanceType<typeof GridDragResize> | undefined> = ref()
+// 拖入子组件的数据项
+const droppingChild: Ref<GridDragResizeItemProps | undefined> = ref()
 
 // 开始拖入
 function dragstart(e: DragEvent, idx: number) {
-  if (gridDragResize.value) {
-    // 目标 拖入子组件的数据项
-    const item = candidate.value?.[idx]
-    if (item) {
-      item.data = { id: nanoid() }
-      // 设置 拖入子组件的数据项
-      gridDragResize.value.setDropping(item)
-    }
+  // 目标 拖入子组件的数据项
+  const item = candidate.value?.[idx]
+  if (item) {
+    item.data = { id: nanoid() }
+    // 设置 拖入子组件的数据项
+    droppingChild.value = item
   }
 }
 
 // 拖入终止
 function dragend() {
-  if (gridDragResize.value) {
-    // 清除 拖入子组件的数据项
-    gridDragResize.value.clearDropping()
-  }
+  // 清除 拖入子组件的数据项
+  droppingChild.value = undefined
 }
 </script>
 
@@ -165,7 +161,7 @@ function dragend() {
     <footer v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></footer>
   </header>
   <GridDragResize :columns="5" :rows="6" :gap="10" :row-size="100" :row-expandable="true" :readonly="false"
-    v-model:children="children" ref="gridDragResize">
+    v-model:children="children" :dropping-child="droppingChild">
   </GridDragResize>
 </div>
 </template>

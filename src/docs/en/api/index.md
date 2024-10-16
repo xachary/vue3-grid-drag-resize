@@ -17,6 +17,7 @@
 | dragHandler        | string                             | ''        | Drag anchor (querySelector), children has higher priority                  | 0.0.17  |
 | readonly           | boolean                            | false     | Readonly, true will disable the draggable/resizable/removable of children  | 0.0.17  |
 | sub                | boolean                            | false     | Work as sub component, columnExpandable and rowExpandable will be disabled | 0.0.17  |
+| droppingChild      | GridDragResizeItemProps            | false     | Child which is dropping                                                    | 0.2.6   |
 
 ## children Props
 
@@ -38,9 +39,3 @@
 | render                | () => VNode | undefined | Content                     | 0.0.17  |
 | data                  | T           | undefined | Data                        | 0.0.17  |
 
-## Methods
-
-| Name          | Type                                        | Desc                   | Version |
-| :------------ | :------------------------------------------ | :--------------------- | :------ |
-| setDropping   | (child: GridDragResizeItemProps) =&gt; void | Set drop child Props   | 0.0.17  |
-| clearDropping | () =&gt; void                               | Clear drop child Props | 0.0.17  |

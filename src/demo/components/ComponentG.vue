@@ -4,7 +4,8 @@
         <p>Component G</p>
         <p>(GridDragResize nested)</p>
     </header>
-    <GridDragResize :columns="4" :rows="4" :gap="5" :children="children" sub debug></GridDragResize>
+    <GridDragResize :columns="4" :rows="4" :gap="5" :children="children" sub debug>
+    </GridDragResize>
 </div>
 </template>
 

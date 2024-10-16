@@ -39,6 +39,8 @@ export interface GridDragResizeProps<T = any> {
   //
   sub?: boolean // 嵌套所需
   //
+  droppingChild?: GridDragResizeItemProps // 拖入子组件的数据项
+  //
   debug?: boolean // 嵌套组件, columnExpandable、rowExpandable 将失效
 }
 

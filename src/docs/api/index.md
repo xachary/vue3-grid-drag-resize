@@ -17,6 +17,7 @@
 | dragHandler        | string                             | ''        | 拖动锚点（querySelector），子组件优先级更高      | 0.0.17 |
 | readonly           | boolean                            | false     | 只读，true 将禁用子配置项的可拖动和可调整大小    | 0.0.17 |
 | sub                | boolean                            | false     | 嵌套组件, columnExpandable、rowExpandable 将失效 | 0.0.17 |
+| droppingChild      | GridDragResizeItemProps            | false     | 正在拖入的配置项                                 | 0.2.6  |
 
 ## 子配置项
 
@@ -37,10 +38,3 @@
 | overflow              | string      | 'hidden'  | CSS overflow              | 0.0.17 |
 | render                | () => VNode | undefined | 显示内容                  | 0.0.17 |
 | data                  | T           | undefined | 数据项                    | 0.0.17 |
-
-## 方法
-
-| 名称          | 类型                                        | 说明               | 版本   |
-| :------------ | :------------------------------------------ | :----------------- | :----- |
-| setDropping   | (child: GridDragResizeItemProps) =&gt; void | 设置拖入的子配置项 | 0.0.17 |
-| clearDropping | () =&gt; void                               | 清除拖入的子配置项 | 0.0.17 |

@@ -120,7 +120,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
   :row-expandable="true"
   :readonly="false"
   v-model:children="children"
-  ref="gridDragResize"
+  :dropping-child="droppingChild"
 >
 </GridDragResize>
 ```
@@ -187,28 +187,23 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
 ### Event handlers
 
 ```ts
-// Instance of GridDragResize
-const gridDragResize: Ref<InstanceType<typeof GridDragResize> | undefined> = ref()
+// Child which is dropping
+const droppingChild: Ref<GridDragResizeItemProps | undefined> = ref()
 
 // Drop start
 function dragstart(e: DragEvent, idx: number) {
-  if (gridDragResize.value) {
-    // Dropping data item
-    const item = candidate.value?.[idx]
-    if (item) {
-      item.data = { id: nanoid() }
-      // Set dropping data item
-      gridDragResize.value.setDropping(item)
-    }
+  // Dropping data item
+  const item = candidate.value?.[idx]
+  if (item) {
+    item.data = { id: nanoid() }
+    // Set dropping data item
+    droppingChild.value = item
   }
 }
 
 // Drop end
 function dragend() {
-  if (gridDragResize.value) {
-    // Clear dropping data item
-    gridDragResize.value.clearDropping()
-  }
+  droppingChild.value = undefined
 }
 ```
 
@@ -334,28 +329,23 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
   createCandidate(4, 2, '#cb80ff')
 ])
 
-// Instance of GridDragResize
-const gridDragResize: Ref<InstanceType<typeof GridDragResize> | undefined> = ref()
+// Child which is dropping
+const droppingChild: Ref<GridDragResizeItemProps | undefined> = ref()
 
 // Drop start
 function dragstart(e: DragEvent, idx: number) {
-  if (gridDragResize.value) {
-    // Dropping data item
-    const item = candidate.value?.[idx]
-    if (item) {
-      item.data = { id: nanoid() }
-      // Set dropping data item
-      gridDragResize.value.setDropping(item)
-    }
+  // Dropping data item
+  const item = candidate.value?.[idx]
+  if (item) {
+    item.data = { id: nanoid() }
+    // Set dropping data item
+    droppingChild.value = item
   }
 }
 
 // Drop end
 function dragend() {
-  if (gridDragResize.value) {
-    // Clear dropping data item
-    gridDragResize.value.clearDropping()
-  }
+  droppingChild.value = undefined
 }
 </script>
 
@@ -384,7 +374,7 @@ function dragend() {
       :row-expandable="true"
       :readonly="false"
       v-model:children="children"
-      ref="gridDragResize"
+      :dropping-child="droppingChild"
     >
     </GridDragResize>
   </div>

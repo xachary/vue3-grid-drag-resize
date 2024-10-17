@@ -17,6 +17,36 @@ import ComponentG from '@/demo/components/ComponentG.vue'
 // 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
   {
+    rowStart: 3,
+    rowEnd: 6,
+    columnStart: 1,
+    columnEnd: 3,
+    data: {
+      id: nanoid()
+    },
+    child: {
+      className: 'demo-child',
+      columns: 3,
+      rows: 3,
+      children: [
+        {
+          rowStart: 1,
+          rows: 1,
+          columnStart: 1,
+          columns: 1,
+          render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, 'Child A'),
+        },
+        {
+          rowStart: 2,
+          rows: 2,
+          columnStart: 2,
+          columns: 2,
+          render: () => h('div', { class: "demo-item", style: { background: '#6FBFF9' } }, 'Child B'),
+        }
+      ]
+    }
+  },
+  {
     removable: false,
     render: () => h(ComponentA),
     data: {
@@ -63,16 +93,6 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     }
   },
   {
-    rowStart: 3,
-    rowEnd: 6,
-    columnStart: 1,
-    columnEnd: 3,
-    render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, 'Component E'),
-    data: {
-      id: nanoid()
-    }
-  },
-  {
     rowStart: 4,
     rowEnd: 6,
     columnStart: 3,
@@ -99,8 +119,6 @@ function candidateRender(columns: number, rows: number, background: string, prop
   if ([props.columnStart, props.columnEnd, props.rowStart, props.rowEnd].every(o => o !== void 0)) {
     const info = [
       h('div', `${props.columns} x ${props.rows}`),
-      h('div', `column: start ~ end = ${props.columnStart} ~ ${props.columnEnd}`),
-      h('div', `row: start ~ end = ${props.rowStart} ~ ${props.rowEnd}`),
     ]
     return h('div', { class: "demo-item", style: { background } }, info)
   } else {
@@ -261,9 +279,14 @@ body {
   flex-direction: column;
 }
 
+.demo-child {
+  padding: 20px;
+  border: 1px solid #f00;
+}
+
 .grid-drag-resize {
   background-color: #eee;
-  width: 80%;
+  flex-grow: 1;
 
   .grid-drag-resize__item {
     background-color: #ddd;

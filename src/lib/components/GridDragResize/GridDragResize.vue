@@ -4,6 +4,7 @@ import { ref, computed, provide, inject, watch, type Ref } from 'vue'
 import type { GridDragResizeProps, GridDragResizeItemProps, StartResizeEvent, StartDragEvent } from './types'
 
 import GridDragResizeItem from './GridDragResizeItem.vue'
+import GridDragResize from './GridDragResize.vue'
 
 const props = withDefaults(defineProps<GridDragResizeProps>(), {
     columns: 1,
@@ -618,10 +619,6 @@ if (props.sub) {
 // 点击空白区域，清空选择
 window.addEventListener('click', clearSelection)
 
-watch(() => state?.droppingEle?.value, () => {
-    console.log(state.droppingEle.value)
-})
-
 const dropping = computed(() => state?.droppingEle?.value === rootEle.value)
 
 // 拖入中
@@ -716,9 +713,13 @@ const sholdStop = computed(() => {
     return true
 })
 
+let draggingBlank = false
+
 // 嵌套时，控制事件传递
 function subDragStart(e: MouseEvent) {
-    if (props.sub && sholdStop.value) {
+    draggingBlank = e.target === rootEle.value
+
+    if (props.sub && sholdStop.value && !draggingBlank) {
         e.stopPropagation()
 
         dragStart(e)
@@ -726,7 +727,7 @@ function subDragStart(e: MouseEvent) {
 }
 
 function subDragMove(e: MouseEvent) {
-    if (props.sub && sholdStop.value) {
+    if (props.sub && sholdStop.value && !draggingBlank) {
         e.stopPropagation()
 
         dragMove(e)
@@ -734,15 +735,17 @@ function subDragMove(e: MouseEvent) {
 }
 
 function subDragEnd(e: MouseEvent) {
-    if (props.sub && sholdStop.value) {
+    if (props.sub && sholdStop.value && !draggingBlank) {
         e.stopPropagation()
 
         dragEnd(e)
     }
+
+    draggingBlank = false
 }
 
 function subClick(e: MouseEvent) {
-    if (props.sub) {
+    if (props.sub && e.target !== rootEle.value) {
         e.stopPropagation()
 
         clearSelection()
@@ -780,8 +783,10 @@ function subDropover(e: DragEvent) {
 </script>
 
 <template>
-<div class="grid-drag-resize" :style="style" ref="rootEle" @dragover="subDropover" @drop="drop"
-    @mousedown="subDragStart" @mousemove="subDragMove" @mouseup="subDragEnd" @click="subClick">
+<div class="grid-drag-resize"
+    :class="[...(props.className ? [props.className] : []), ...(sub ? ['grid-drag-resize--sub'] : [])]" :style="style"
+    ref="rootEle" @dragover="subDropover" @drop="drop" @mousedown="subDragStart" @mousemove="subDragMove"
+    @mouseup="subDragEnd" @click="subClick">
     <template v-for="(child, idx) of childrenParsed" :key="idx">
         <GridDragResizeItem v-bind="child" v-model:column-start="child.columnStart" v-model:column-end="child.columnEnd"
             v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd" v-model:rows="child.rows"
@@ -789,7 +794,10 @@ function subDropover(e: DragEvent) {
             @startResize="resizingStart" @remove="remove(child)"
             :style="{ 'zIndex': draggingChild === child ? childrenParsed.length + 2 : selectingChild === child ? childrenParsed.length + 1 : idx + 1, cursor: resizingChildCursor }"
             :class="{ 'grid-drag-resize__item--dragging': draggingChild === child, 'grid-drag-resize__item--selected': selectingChild === child }">
-            <component :is="child.render" v-bind="child"></component>
+            <GridDragResize v-bind="child.child" v-model:children="child.child.children"
+                :dropping-child="droppingChildParsed" sub v-if="child.child">
+            </GridDragResize>
+            <component :is="child.render" v-bind="child" v-else></component>
         </GridDragResizeItem>
     </template>
     <GridDragResizeItem v-show="droppingChildParsed && dropping" :draggable="false" :resizable="false"

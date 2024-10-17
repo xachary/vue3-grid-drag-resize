@@ -20,6 +20,8 @@ export interface GridDragResizeItemProps<T = any> {
   render?: () => VNode // 显示内容
   //
   data?: T // 数据项
+  //
+  child?: GridDragResizeProps<T> // 子 GridDragResize
 }
 
 // 组件的 Props
@@ -40,6 +42,8 @@ export interface GridDragResizeProps<T = any> {
   sub?: boolean // 嵌套所需
   //
   droppingChild?: GridDragResizeItemProps // 拖入子组件的数据项
+  //
+  className?: string // 附加 CSS Class
   //
   debug?: boolean // 嵌套组件, columnExpandable、rowExpandable 将失效
 }

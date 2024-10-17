@@ -26,11 +26,6 @@
         padding-bottom: 10px;
         text-align: center;
     }
-
-    .grid-drag-resize {
-        width: 100%;
-        height: 100%;
-    }
 }
 </style>
 

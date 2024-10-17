@@ -65,37 +65,45 @@ watch(() => [props.rows, props.columns], () => {
 watchEffect(() => {
     if (props.columnStart === void 0 || props.columnStart < 1) {
         emit('update:columnStart', 1)
+        return
     }
 
     if (props.columnEnd === void 0 || props.columnEnd < props.columnStart) {
         if (props.columns === void 0 || props.columns < 1) {
             emit('update:columnEnd', props.columnStart + 1)
+            return
         } else {
             emit('update:columnEnd', props.columnStart + props.columns)
+            return
         }
     }
 
     if (props.rowStart === void 0 || props.rowStart < 1) {
         emit('update:rowStart', 1)
+        return
     }
 
     if (props.rowEnd === void 0 || props.rowEnd < props.rowStart) {
         if (props.rows === void 0 || props.rows < 1) {
             emit('update:rowEnd', props.rowStart + 1)
+            return
         } else {
             emit('update:rowEnd', props.rowStart + props.rows)
+            return
         }
     }
 
-    if (props.columns === void 0 || props.columns < 1) {
+    if (props.columns === void 0 || props.columns < 1 || props.columnEnd - props.columnStart) {
         if (props.columnStart !== void 0 && props.columnEnd !== void 0) {
             emit('update:columns', props.columnEnd - props.columnStart)
+            return
         }
     }
 
-    if (props.rows === void 0 || props.rows < 1) {
+    if (props.rows === void 0 || props.rows < 1 || props.rows > props.rowEnd - props.rowStart) {
         if (props.rowEnd !== void 0 && props.rowStart !== void 0) {
             emit('update:rows', props.rowEnd - props.rowStart)
+            return
         }
     }
 })

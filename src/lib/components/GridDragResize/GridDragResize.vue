@@ -799,6 +799,13 @@ function remove(child: GridDragResizeItemProps) {
     }
 }
 
+function dropStart(val: {
+    ele: HTMLElement | undefined;
+    remove: () => void | undefined;
+}, child: GridDragResizeItemProps) {
+    childDropStart(child, val)
+}
+
 const droppingRowColumn = computed(() => {
     const rowColumn = {
         columnStart: droppingChildParsed?.value?.columnStart ?? 1,
@@ -844,7 +851,7 @@ function childDropEnd() {
         <GridDragResizeItem v-bind="child" v-model:column-start="child.columnStart" v-model:column-end="child.columnEnd"
             v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd" v-model:rows="child.rows"
             v-model:columns="child.columns" @startDrag="startDrag($event, child)" @select="select(child)"
-            @startResize="resizingStart" @remove="remove(child)" @dropStart="(val) => childDropStart(child, val)"
+            @startResize="resizingStart" @remove="remove(child)" @dropStart="dropStart($event, child)"
             @dropEnd="childDropEnd"
             :style="{ 'zIndex': draggingChild === child ? childrenParsed.length + 2 : selectingChild === child ? childrenParsed.length + 1 : idx + 1, cursor: resizingChildCursor }"
             :class="{ 'grid-drag-resize__item--dragging': draggingChild === child, 'grid-drag-resize__item--selected': selectingChild === child }">

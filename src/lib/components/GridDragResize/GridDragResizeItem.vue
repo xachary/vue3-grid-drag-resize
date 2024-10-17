@@ -44,11 +44,11 @@ type Emit = {
     (e: 'update:rows', val: number): void
     (e: 'update:columns', val: number): void
     (e: 'startDrag', val: StartDragEvent): void
-    (e: 'select', val?: any): void
+    (e: 'select'): void
     (e: 'startResize', val: StartResizeEvent): void
-    (e: 'remove', val?: any): void
+    (e: 'remove'): void
     (e: 'dropStart', val: { ele: HTMLElement | undefined, remove: () => void | undefined }): void
-    (e: 'dropEnd', val?: any): void
+    (e: 'dropEnd'): void
 }
 
 const emit = defineEmits<Emit>()

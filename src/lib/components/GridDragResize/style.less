@@ -5,7 +5,7 @@
     position: relative;
 
     &--draggable-full {
-      cursor: grab;
+      cursor: move;
       user-select: none;
     }
 
@@ -19,6 +19,10 @@
 
     &--selected > &__remove {
       transform: translate(-14px, 0);
+    }
+
+    &--selected > &__drop {
+      transform: translate(-16px, 0);
     }
 
     &__group {
@@ -107,7 +111,25 @@
       }
     }
 
-    &:hover > &__remove {
+    &__drop {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 1);
+      width: 18px;
+      height: 18px;
+      left: calc(50% - ($width/2));
+      cursor: grab;
+      display: none;
+      border: 1px solid #666;
+      opacity: 0.8;
+      border-radius: 50%;
+      transition: transform 0.3s ease-in-out;
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    &:hover > &__remove,
+    &:hover > &__drop {
       display: block;
     }
   }

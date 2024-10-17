@@ -18,6 +18,7 @@
 | readonly           | boolean                            | false     | 只读，true 将禁用子配置项的可拖动和可调整大小    | 0.0.17 |
 | sub                | boolean                            | false     | 嵌套组件, columnExpandable、rowExpandable 将失效 | 0.0.17 |
 | droppingChild      | GridDragResizeItemProps            | undefined | 正在拖入的配置项                                 | 0.2.6  |
+| droppable          | boolean                            | true      | 是否能拖入                                       | 0.5.0  |
 | className          | string                             | undefined | 附加 CSS Class                                   | 0.4.0  |
 
 ## 子配置项
@@ -36,6 +37,7 @@
 | draggable             | boolean                      | true      | 是否可拖动                | 0.0.17 |
 | resizable             | boolean                      | true      | 是否可调整大小            | 0.0.17 |
 | removable             | boolean                      | true      | 是否可移除                | 0.2.0  |
+| droppable             | boolean                      | true      | 是否能拖出                | 0.5.0  |
 | overflow              | string                       | 'hidden'  | CSS overflow              | 0.0.17 |
 | render                | () => VNode                  | undefined | 显示内容                  | 0.0.17 |
 | data                  | T                            | undefined | 数据项                    | 0.0.17 |

@@ -15,6 +15,7 @@ export interface GridDragResizeItemProps<T = any> {
   draggable?: boolean // 是否可拖动
   resizable?: boolean // 是否可调整大小
   removable?: boolean // 是否移除
+  droppable?: boolean // 是否可拖出
   overflow?: string // CSS overflow
   //
   render?: () => VNode // 显示内容
@@ -41,6 +42,7 @@ export interface GridDragResizeProps<T = any> {
   //
   sub?: boolean // 嵌套所需
   //
+  droppable?: boolean // 是否可拖入
   droppingChild?: GridDragResizeItemProps // 拖入子组件的数据项
   //
   className?: string // 附加 CSS Class

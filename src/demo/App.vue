@@ -17,8 +17,8 @@ import ComponentG from '@/demo/components/ComponentG.vue'
 // 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
   {
-    rowStart: 3,
-    rowEnd: 6,
+    rowStart: 4,
+    rowEnd: 7,
     columnStart: 1,
     columnEnd: 3,
     data: {
@@ -34,14 +34,14 @@ const children: Ref<GridDragResizeProps['children']> = ref([
           rows: 1,
           columnStart: 1,
           columns: 1,
-          render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, 'Child A'),
+          render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, 'Nest'),
         },
         {
           rowStart: 2,
           rows: 2,
           columnStart: 2,
           columns: 2,
-          render: () => h('div', { class: "demo-item", style: { background: '#6FBFF9' } }, 'Child B'),
+          render: () => h('div', { class: "demo-item", style: { background: '#6FBFF9' } }, 'by prop child'),
         }
       ]
     }
@@ -50,7 +50,8 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     removable: false,
     render: () => h(ComponentA),
     data: {
-      id: nanoid()
+      id: nanoid(),
+      name: 'ComponentA'
     }
   },
   {
@@ -59,7 +60,8 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     draggable: false,
     render: () => h(ComponentB),
     data: {
-      id: nanoid()
+      id: nanoid(),
+      name: 'ComponentB'
     }
   },
   {
@@ -68,14 +70,15 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     resizable: false,
     render: () => h(ComponentC),
     data: {
-      id: nanoid()
+      id: nanoid(),
+      name: 'ComponentC'
     }
   },
   {
     rowStart: 4,
-    columnStart: 4,
+    columnStart: 5,
     rows: 2,
-    columns: 2,
+    columns: 1,
     dragHandler: '.demo-item>button',
     render: () => h('div', { class: "demo-item", style: { background: '#eb9c64' } }, [h('button', 'Drag handler')]),
     data: {
@@ -87,19 +90,24 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     rowEnd: 3,
     columnStart: 1,
     columnEnd: 2,
-    render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Component D'),
+    render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Component D 1'),
     data: {
       id: nanoid()
     }
   },
   {
     rowStart: 4,
-    rowEnd: 6,
+    rowEnd: 7,
     columnStart: 3,
-    columnEnd: 4,
-    render: () => h('div', { class: "demo-item", style: { background: '#c2baa6' } }, 'Component F'),
+    columnEnd: 5,
     data: {
       id: nanoid()
+    },
+    child: {
+      className: 'demo-child',
+      columns: 3,
+      rows: 3,
+      children: []
     }
   },
   {
@@ -108,6 +116,16 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     columnStart: 4,
     columnEnd: 6,
     render: () => h(ComponentG),
+    data: {
+      id: nanoid()
+    }
+  },
+  {
+    rowStart: 3,
+    rowEnd: 4,
+    columnStart: 1,
+    columnEnd: 2,
+    render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Component D2'),
     data: {
       id: nanoid()
     }
@@ -152,9 +170,10 @@ const droppingChild: Ref<GridDragResizeItemProps | undefined> = ref()
 // 开始拖入
 function dragstart(e: DragEvent, idx: number) {
   // 目标 拖入子组件的数据项
-  const item = candidate.value?.[idx]
-  if (item) {
+  if (candidate.value?.[idx]) {
+    const item = { ...candidate.value?.[idx] }
     item.data = { id: nanoid() }
+
     // 设置 拖入子组件的数据项
     droppingChild.value = item
   }
@@ -177,6 +196,7 @@ function dragend() {
       </div>
     </header>
     <footer v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></footer>
+    <!-- <footer v-html="JSON.stringify(candidate, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></footer> -->
   </header>
   <GridDragResize :columns="5" :rows="6" :gap="10" :row-size="100" :row-expandable="true" :readonly="false"
     v-model:children="children" :dropping-child="droppingChild">
@@ -287,6 +307,10 @@ body {
 .grid-drag-resize {
   background-color: #eee;
   flex-grow: 1;
+
+  &--dropping {
+    box-shadow: 0 0 6px 2px #00ff00 inset;
+  }
 
   .grid-drag-resize__item {
     background-color: #ddd;

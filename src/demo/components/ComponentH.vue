@@ -2,9 +2,9 @@
 <div class="component-h">
     <header>
         <p>Component H</p>
-        <p>(GridDragResize nested)</p>
+        <p>[GridDragResize nested]</p>
     </header>
-    <GridDragResize :columns="2" :rows="2" :gap="5" :children="children" sub></GridDragResize>
+    <GridDragResize :columns="2" :rows="2" :gap="5" v-model:children="children" sub></GridDragResize>
 </div>
 </template>
 

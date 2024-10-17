@@ -18,6 +18,7 @@
 | readonly           | boolean                            | false     | Readonly, true will disable the draggable/resizable/removable of children  | 0.0.17  |
 | sub                | boolean                            | false     | Work as sub component, columnExpandable and rowExpandable will be disabled | 0.0.17  |
 | droppingChild      | GridDragResizeItemProps            | undefined | Child which is dropping                                                    | 0.2.6   |
+| droppable          | boolean                            | true      | Enable drop in                                                             | 0.5.0   |
 | className          | string                             | undefined | Add CSS Class                                                              | 0.4.0   |
 
 ## children Props
@@ -36,6 +37,7 @@
 | draggable             | boolean                      | true      | Draggable                   | 0.0.17  |
 | resizable             | boolean                      | true      | Resizable                   | 0.0.17  |
 | removable             | boolean                      | true      | Removable                   | 0.2.0   |
+| droppable             | boolean                      | true      | Enable drop out             | 0.5.0   |
 | overflow              | string                       | 'hidden'  | CSS overflow                | 0.0.17  |
 | render                | () => VNode                  | undefined | Content                     | 0.0.17  |
 | data                  | T                            | undefined | Data                        | 0.0.17  |

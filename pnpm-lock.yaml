@@ -24,8 +24,8 @@ importers:
         specifier: ^3.4.21
         version: 3.4.21(typescript@5.4.3)
       vue3-grid-drag-resize:
-        specifier: ^0.4.0
-        version: 0.4.0(typescript@5.4.3)
+        specifier: ^0.5.0
+        version: 0.5.0(typescript@5.4.3)
     devDependencies:
       '@commitlint/cli':
         specifier: 19.2.1
@@ -2504,8 +2504,8 @@ packages:
     peerDependencies:
       typescript: '*'
 
-  vue3-grid-drag-resize@0.4.0:
-    resolution: {integrity: sha512-Z5ATnSFrrTifKts1v+Hor5UG9viKl9VKqlGuSZFnukCOUHdcLderXJcQljwWDWLP8DDIi8n7EMiFNCEdGyEc3w==}
+  vue3-grid-drag-resize@0.5.0:
+    resolution: {integrity: sha512-FNRmcWkUC1PB71oydcT5zUz4p4qHJt8QE4UMzP7cTQ9oxGzS32+d3CwQnPl0ZbpQs2Cfsfl3H8G3TANm6RFIbg==}
 
   vue@3.4.21:
     resolution: {integrity: sha512-5hjyV/jLEIKD/jYl4cavMcnzKwjMKohureP8ejn3hhEjwhWIhWeuzL2kJAjzl/WyVsgPY56Sy4Z40C3lVshxXA==}
@@ -4993,7 +4993,7 @@ snapshots:
       semver: 7.6.0
       typescript: 5.4.3
 
-  vue3-grid-drag-resize@0.4.0(typescript@5.4.3):
+  vue3-grid-drag-resize@0.5.0(typescript@5.4.3):
     dependencies:
       '@types/lodash-es': 4.17.12
       dayjs: 1.11.13

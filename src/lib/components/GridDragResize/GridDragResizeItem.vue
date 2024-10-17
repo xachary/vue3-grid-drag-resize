@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
     draggable: true,
     resizable: true,
     removable: true,
+    droppable: true,
     overflow: 'hidden'
 });
 
@@ -33,6 +34,7 @@ const dragHandlerParsed = computed(() => props.dragHandler || parent?.props.valu
 const draggableParsed = computed(() => parent?.props.value?.readonly ? false : props.draggable)
 const resizableParsed = computed(() => parent?.props.value?.readonly ? false : props.resizable)
 const removableParsed = computed(() => parent?.props.value?.readonly ? false : props.removable)
+const droppableParsed = computed(() => parent?.props.value?.readonly ? false : props.droppable)
 
 type Emit = {
     (e: 'update:columnStart', val: number): void
@@ -45,6 +47,8 @@ type Emit = {
     (e: 'select'): void
     (e: 'startResize', val: StartResizeEvent): void
     (e: 'remove'): void
+    (e: 'dropStart', val: { ele: HTMLElement | undefined, remove: () => void | undefined }): void
+    (e: 'dropEnd'): void
 }
 
 const emit = defineEmits<Emit>()
@@ -65,45 +69,37 @@ watch(() => [props.rows, props.columns], () => {
 watchEffect(() => {
     if (props.columnStart === void 0 || props.columnStart < 1) {
         emit('update:columnStart', 1)
-        return
     }
 
     if (props.columnEnd === void 0 || props.columnEnd < props.columnStart) {
         if (props.columns === void 0 || props.columns < 1) {
             emit('update:columnEnd', props.columnStart + 1)
-            return
         } else {
             emit('update:columnEnd', props.columnStart + props.columns)
-            return
         }
     }
 
     if (props.rowStart === void 0 || props.rowStart < 1) {
         emit('update:rowStart', 1)
-        return
     }
 
     if (props.rowEnd === void 0 || props.rowEnd < props.rowStart) {
         if (props.rows === void 0 || props.rows < 1) {
             emit('update:rowEnd', props.rowStart + 1)
-            return
         } else {
             emit('update:rowEnd', props.rowStart + props.rows)
-            return
         }
     }
 
     if (props.columns === void 0 || props.columns < 1 || props.columnEnd - props.columnStart) {
         if (props.columnStart !== void 0 && props.columnEnd !== void 0) {
             emit('update:columns', props.columnEnd - props.columnStart)
-            return
         }
     }
 
     if (props.rows === void 0 || props.rows < 1 || props.rows > props.rowEnd - props.rowStart) {
         if (props.rowEnd !== void 0 && props.rowStart !== void 0) {
             emit('update:rows', props.rowEnd - props.rowStart)
-            return
         }
     }
 })
@@ -201,6 +197,26 @@ const adjustDistance = computed(() => {
     const gap = (parent?.props.value?.gap ?? 0)
     return (gap < size ? gap : size)
 })
+
+// 自适应间距
+const dropDistance = computed(() => {
+    const size = 16 / 2
+    const gap = (parent?.props.value?.gap ?? 0)
+    return (gap < size ? gap : size)
+})
+
+function dropStart() {
+    emit('dropStart', {
+        ele: itemEle.value,
+        remove: () => {
+            removableParsed.value && emit('remove')
+        }
+    })
+}
+
+function dropEnd() {
+    emit('dropEnd')
+}
 </script>
 
 <template>
@@ -236,5 +252,8 @@ const adjustDistance = computed(() => {
     <span class="grid-drag-resize__item__remove" @click="remove" @mousedown.stop @mousemove.stop @mouseup.stop
         :style="{ top: `${-removeDistance}px`, right: `${-removeDistance}px` }" v-if="removableParsed">
     </span>
+    <div class="grid-drag-resize__item__drop" draggable="true" @mousedown.stop="dropStart" @mousemove.stop @mouseup.stop
+        @dragstart.stop @dragend.stop="dropEnd" :style="{ top: `${-dropDistance}px` }" v-if="droppableParsed">
+    </div>
 </div>
 </template>

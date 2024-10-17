@@ -1,6 +1,6 @@
 {
   "name": "vue3-grid-drag-resize",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "type": "module",
   "files": [
     "dist"
@@ -27,12 +27,8 @@
     "docs:preview": "vitepress preview src/docs --port 6173"
   },
   "dependencies": {
-    "@types/lodash-es": "4.17.12",
-    "dayjs": "^1.11.13",
-    "lodash-es": "4.17.21",
-    "nanoid": "5.0.6",
     "vue": "^3.4.21",
-    "vue3-grid-drag-resize": "^0.5.1"
+    "vue3-grid-drag-resize": "^0.5.2"
   },
   "devDependencies": {
     "@commitlint/cli": "19.2.1",
@@ -44,6 +40,7 @@
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
     "@vue/tsconfig": "^0.5.1",
+    "dayjs": "^1.11.13",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
     "git-rev-sync": "^3.0.2",

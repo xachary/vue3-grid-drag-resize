@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { ref, h, type Ref } from 'vue'
-import { nanoid } from 'nanoid'
 
 // Build test:
 // import { GridDragResize, type GridDragResizeProps } from 'vue3-grid-drag-resize'
-// import { GridDragResize } from '../../dist/vue3-grid-drag-resize/index.js'
+import { GridDragResize } from '../../dist/index.js'
 
-import { GridDragResize } from '@/lib/components/GridDragResize'
+// import { GridDragResize } from '@/lib/components/GridDragResize'
 import type { GridDragResizeProps, GridDragResizeItemProps } from '@/lib/components/GridDragResize/types'
 
 import ComponentA from '@/demo/components/ComponentA.vue'
 import ComponentB from '@/demo/components/ComponentB.vue'
 import ComponentC from '@/demo/components/ComponentC.vue'
 import ComponentG from '@/demo/components/ComponentG.vue'
+
+let id = 0
 
 // 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
@@ -22,7 +23,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     columnStart: 1,
     columnEnd: 3,
     data: {
-      id: nanoid()
+      id: ++id
     },
     child: {
       className: 'demo-child',
@@ -53,14 +54,14 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     columnEnd: 6,
     render: () => h(ComponentG),
     data: {
-      id: nanoid()
+      id: ++id
     }
   },
   {
     removable: false,
     render: () => h(ComponentA),
     data: {
-      id: nanoid(),
+      id: ++id,
       name: 'ComponentA'
     }
   },
@@ -70,7 +71,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     draggable: false,
     render: () => h(ComponentB),
     data: {
-      id: nanoid(),
+      id: ++id,
       name: 'ComponentB'
     }
   },
@@ -80,7 +81,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     resizable: false,
     render: () => h(ComponentC),
     data: {
-      id: nanoid(),
+      id: ++id,
       name: 'ComponentC'
     }
   },
@@ -92,7 +93,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     dragHandler: '.demo-item>button',
     render: () => h('div', { class: "demo-item", style: { background: '#eb9c64' } }, [h('button', 'Drag handler')]),
     data: {
-      id: nanoid()
+      id: ++id
     }
   },
   {
@@ -102,7 +103,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     columnEnd: 2,
     render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Component D 1'),
     data: {
-      id: nanoid()
+      id: ++id
     }
   },
   {
@@ -111,7 +112,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     columnStart: 3,
     columnEnd: 5,
     data: {
-      id: nanoid()
+      id: ++id
     },
     child: {
       className: 'demo-child',
@@ -127,7 +128,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     columnEnd: 2,
     render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Component D2'),
     data: {
-      id: nanoid()
+      id: ++id
     }
   },
 ])
@@ -172,7 +173,7 @@ function dragstart(e: DragEvent, idx: number) {
   // 目标 拖入子组件的数据项
   if (candidate.value?.[idx]) {
     const item = { ...candidate.value?.[idx] }
-    item.data = { id: nanoid() }
+    item.data = { id: ++id }
 
     // 设置 拖入子组件的数据项
     droppingChild.value = item

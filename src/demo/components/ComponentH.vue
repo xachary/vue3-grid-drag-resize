@@ -36,10 +36,11 @@
 
 <script setup lang="ts">
 import { ref, h, type Ref } from 'vue'
-import { nanoid } from 'nanoid'
 
 import { GridDragResize } from '@/lib/components/GridDragResize'
 import type { GridDragResizeProps } from '@/lib/components/GridDragResize/types'
+
+let id = 0
 
 // 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
@@ -50,7 +51,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
         columnEnd: 2,
         render: () => h('div', { class: "demo-item", style: { background: '#8e5c6a' } }, 'A'),
         data: {
-            id: nanoid()
+            id: `H${++id}`
         }
     },
     {
@@ -60,7 +61,7 @@ const children: Ref<GridDragResizeProps['children']> = ref([
         columnEnd: 3,
         render: () => h('div', { class: "demo-item", style: { background: '#F2BAC9' } }, 'B'),
         data: {
-            id: nanoid()
+            id: `H${++id}`
         }
     },
 ])

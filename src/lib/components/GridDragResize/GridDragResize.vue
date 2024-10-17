@@ -847,7 +847,7 @@ function childDropEnd() {
     :class="[...(props.className ? [props.className] : []), ...(sub ? ['grid-drag-resize--sub'] : []), ...(droppingChildParsed && dropping ? ['grid-drag-resize--dropping'] : [])]"
     :style="style" ref="rootEle" @dragover="subDropover" @drop="drop" @mousedown="subDragStart" @mousemove="subDragMove"
     @mouseup="subDragEnd" @click="subClick">
-    <template v-for="(child, idx) of childrenParsed" :key="idx">
+    <template v-for="(child, idx) of childrenParsed" :key="child">
         <GridDragResizeItem v-bind="child" v-model:column-start="child.columnStart" v-model:column-end="child.columnEnd"
             v-model:row-start="child.rowStart" v-model:row-end="child.rowEnd" v-model:rows="child.rows"
             v-model:columns="child.columns" @startDrag="startDrag($event, child)" @select="select(child)"

@@ -1,10 +1,10 @@
 <template>
 <div class="component-g">
     <header>
-        <p>Component G(undroppable)</p>
+        <p>Component G</p>
         <p>[GridDragResize nested]</p>
     </header>
-    <GridDragResize :columns="4" :rows="4" :gap="5" v-model:children="children" sub :droppable="false">
+    <GridDragResize :columns="4" :rows="4" :gap="5" v-model:children="children" sub>
     </GridDragResize>
 </div>
 </template>

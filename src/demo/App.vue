@@ -47,6 +47,16 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     }
   },
   {
+    rowStart: 1,
+    rowEnd: 4,
+    columnStart: 4,
+    columnEnd: 6,
+    render: () => h(ComponentG),
+    data: {
+      id: nanoid()
+    }
+  },
+  {
     removable: false,
     render: () => h(ComponentA),
     data: {
@@ -108,16 +118,6 @@ const children: Ref<GridDragResizeProps['children']> = ref([
       columns: 3,
       rows: 3,
       children: []
-    }
-  },
-  {
-    rowStart: 1,
-    rowEnd: 4,
-    columnStart: 4,
-    columnEnd: 6,
-    render: () => h(ComponentG),
-    data: {
-      id: nanoid()
     }
   },
   {

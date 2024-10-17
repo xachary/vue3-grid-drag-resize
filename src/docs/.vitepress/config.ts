@@ -26,7 +26,8 @@ export default defineConfig({
           { text: '首页', link: '/index' },
           { text: '快速上手', link: '/guide/intro' },
           { text: 'API', link: '/api/index' },
-          { text: '示例', link: 'https://xachary.github.io/vue3-grid-drag-resize/demo' }
+          { text: '示例', link: 'https://xachary.github.io/vue3-grid-drag-resize/demo' },
+          { text: '请我喝杯&#129380;!', link: '/donate' }
         ],
         sidebar: {
           '/guide/': [
@@ -61,7 +62,8 @@ export default defineConfig({
           { text: 'Home', link: '/en/index' },
           { text: 'Guide', link: '/en/guide/intro' },
           { text: 'API', link: '/en/api/index' },
-          { text: 'Demo', link: 'https://xachary.github.io/vue3-grid-drag-resize/demo' }
+          { text: 'Demo', link: 'https://xachary.github.io/vue3-grid-drag-resize/demo' },
+          { text: 'Buy me a &#129380;!', link: '/donate' }
         ],
         sidebar: {
           '/en/guide/': [

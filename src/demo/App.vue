@@ -3,9 +3,9 @@ import { ref, h, type Ref } from 'vue'
 
 // Build test:
 // import { GridDragResize, type GridDragResizeProps } from 'vue3-grid-drag-resize'
-import { GridDragResize } from '../../dist/index.js'
+// import { GridDragResize } from '../../dist/index.js'
 
-// import { GridDragResize } from '@/lib/components/GridDragResize'
+import { GridDragResize } from '@/lib/components/GridDragResize'
 import type { GridDragResizeProps, GridDragResizeItemProps } from '@/lib/components/GridDragResize/types'
 
 import ComponentA from '@/demo/components/ComponentA.vue'

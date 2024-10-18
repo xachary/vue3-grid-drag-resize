@@ -23,8 +23,7 @@ const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
   draggable: true,
   resizable: true,
   removable: true,
-  droppable: true,
-  overflow: 'hidden'
+  droppable: true
 })
 
 const columnsParsed = computed(() => props.columns || 1)
@@ -40,6 +39,7 @@ const draggableParsed = computed(() => (parent?.props.value?.readonly ? false : 
 const resizableParsed = computed(() => (parent?.props.value?.readonly ? false : props.resizable))
 const removableParsed = computed(() => (parent?.props.value?.readonly ? false : props.removable))
 const droppableParsed = computed(() => (parent?.props.value?.readonly ? false : props.droppable))
+const overflowParsed = computed(() => props.overflow || parent?.props.value?.overflow)
 
 type Emit = {
   (e: 'update:columnStart', val: number): void
@@ -244,7 +244,7 @@ function dropEnd() {
     @click="select"
     ref="itemEle"
   >
-    <div class="grid-drag-resize__item__group" :style="{ overflow: props.overflow }">
+    <div class="grid-drag-resize__item__group" :style="{ overflow: overflowParsed }">
       <slot></slot>
     </div>
     <i

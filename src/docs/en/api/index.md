@@ -16,6 +16,7 @@
 | children (v-model) | GridDragResizeItemProps&lt;T&gt;[] | []        | children Props                                                             | 0.0.17  |
 | dragHandler        | string                             | ''        | Drag anchor (querySelector), children has higher priority                  | 0.0.17  |
 | readonly           | boolean                            | false     | Readonly, true will disable the draggable/resizable/removable of children  | 0.0.17  |
+| overflow           | string                             | undefined | CSS overflow, children has higher priority                                 | 0.6.0   |
 | sub                | boolean                            | false     | Work as sub component, columnExpandable and rowExpandable will be disabled | 0.0.17  |
 | droppingChild      | GridDragResizeItemProps            | undefined | Child which is dropping                                                    | 0.2.6   |
 | droppable          | boolean                            | true      | Enable drop in                                                             | 0.5.0   |
@@ -38,7 +39,7 @@
 | resizable             | boolean                      | true      | Resizable                   | 0.0.17  |
 | removable             | boolean                      | true      | Removable                   | 0.2.0   |
 | droppable             | boolean                      | true      | Enable drop out             | 0.5.0   |
-| overflow              | string                       | 'hidden'  | CSS overflow                | 0.0.17  |
+| overflow              | string                       | undefined | CSS overflow                | 0.6.0   |
 | render                | () => VNode                  | undefined | Content                     | 0.0.17  |
 | data                  | T                            | undefined | Data                        | 0.0.17  |
 | child                 | GridDragResizeProps&lt;T&gt; | undefined | Sub GridDragResize          | 0.4.0   |

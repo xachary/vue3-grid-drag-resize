@@ -4,7 +4,7 @@
       <p>Component G</p>
       <p>[GridDragResize nested]</p>
     </header>
-    <GridDragResize :columns="4" :rows="4" :gap="5" v-model:children="children" sub>
+    <GridDragResize :columns="4" :rows="4" :gap="5" sub v-model:children="children">
     </GridDragResize>
   </div>
 </template>

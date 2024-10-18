@@ -990,6 +990,19 @@ function childDropEnd() {
   >
     <template v-for="(child, idx) of childrenParsed" :key="child">
       <GridDragResizeItem
+        :class="{
+          'grid-drag-resize__item--dragging': draggingChild === child,
+          'grid-drag-resize__item--selected': selectingChild === child
+        }"
+        :style="{
+          zIndex:
+            draggingChild === child
+              ? childrenParsed.length + 2
+              : selectingChild === child
+                ? childrenParsed.length + 1
+                : idx + 1,
+          cursor: resizingChildCursor
+        }"
         v-bind="child"
         v-model:column-start="child.columnStart"
         v-model:column-end="child.columnEnd"
@@ -1003,19 +1016,6 @@ function childDropEnd() {
         @remove="remove(child)"
         @dropStart="dropStart($event, child)"
         @dropEnd="childDropEnd"
-        :style="{
-          zIndex:
-            draggingChild === child
-              ? childrenParsed.length + 2
-              : selectingChild === child
-                ? childrenParsed.length + 1
-                : idx + 1,
-          cursor: resizingChildCursor
-        }"
-        :class="{
-          'grid-drag-resize__item--dragging': draggingChild === child,
-          'grid-drag-resize__item--selected': selectingChild === child
-        }"
       >
         <GridDragResize
           v-bind="child.child"
@@ -1025,16 +1025,16 @@ function childDropEnd() {
           v-if="child.child"
         >
         </GridDragResize>
-        <component :is="child.render" v-bind="child" v-else></component>
+        <component v-bind="child" :is="child.render" v-else></component>
       </GridDragResizeItem>
     </template>
     <GridDragResizeItem
-      v-show="droppingChildParsed && dropping"
+      class="grid-drag-resize__item--shadow"
+      :style="{ zIndex: childrenParsed.length + 3 }"
+      v-bind="droppingRowColumn"
       :draggable="false"
       :resizable="false"
-      v-bind="droppingRowColumn"
-      :style="{ zIndex: childrenParsed.length + 3 }"
-      class="grid-drag-resize__item--shadow"
+      v-show="droppingChildParsed && dropping"
     >
     </GridDragResizeItem>
   </div>

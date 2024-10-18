@@ -249,71 +249,71 @@ function dropEnd() {
     </div>
     <i
       class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top"
-      @mousedown="resizeStart($event, 'top')"
       :style="{ top: `${-adjustDistance}px` }"
+      @mousedown="resizeStart($event, 'top')"
     >
     </i>
     <i
       class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--right"
-      @mousedown="resizeStart($event, 'right')"
       :style="{ right: `${-adjustDistance}px` }"
+      @mousedown="resizeStart($event, 'right')"
     >
     </i>
     <i
       class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom"
-      @mousedown="resizeStart($event, 'bottom')"
       :style="{ bottom: `${-adjustDistance}px` }"
+      @mousedown="resizeStart($event, 'bottom')"
     >
     </i>
     <i
       class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--left"
-      @mousedown="resizeStart($event, 'left')"
       :style="{ left: `${-adjustDistance}px` }"
+      @mousedown="resizeStart($event, 'left')"
     >
     </i>
     <i
       class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-left"
-      @mousedown="resizeStart($event, 'top-left')"
       :style="{ top: `${-adjustDistance}px`, left: `${-adjustDistance}px` }"
+      @mousedown="resizeStart($event, 'top-left')"
     >
     </i>
     <i
       class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top-right"
-      @mousedown="resizeStart($event, 'top-right')"
       :style="{ top: `${-adjustDistance}px`, right: `${-adjustDistance}px` }"
+      @mousedown="resizeStart($event, 'top-right')"
     >
     </i>
     <i
       class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-left"
-      @mousedown="resizeStart($event, 'bottom-left')"
       :style="{ bottom: `${-adjustDistance}px`, left: `${-adjustDistance}px` }"
+      @mousedown="resizeStart($event, 'bottom-left')"
     >
     </i>
     <i
       class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--bottom-right"
-      @mousedown="resizeStart($event, 'bottom-right')"
       :style="{ bottom: `${-adjustDistance}px`, right: `${-adjustDistance}px` }"
+      @mousedown="resizeStart($event, 'bottom-right')"
     >
     </i>
     <span
       class="grid-drag-resize__item__remove"
+      :style="{ top: `${-removeDistance}px`, right: `${-removeDistance}px` }"
       @click="remove"
       @mousedown.stop
       @mousemove.stop
       @mouseup.stop
-      :style="{ top: `${-removeDistance}px`, right: `${-removeDistance}px` }"
       v-if="removableParsed"
     >
     </span>
     <div
       class="grid-drag-resize__item__drop"
+      :style="{ top: `${-dropDistance}px` }"
       draggable="true"
       @mousedown.stop="dropStart"
       @mousemove.stop
       @mouseup.stop
       @dragstart.stop
       @dragend.stop="dropEnd"
-      :style="{ top: `${-dropDistance}px` }"
       v-if="droppableParsed"
     ></div>
   </div>

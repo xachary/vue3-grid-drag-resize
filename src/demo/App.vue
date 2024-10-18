@@ -229,8 +229,8 @@ function dragend() {
       :row-size="100"
       :row-expandable="true"
       :readonly="false"
-      v-model:children="children"
       :dropping-child="droppingChild"
+      v-model:children="children"
     >
     </GridDragResize>
   </div>

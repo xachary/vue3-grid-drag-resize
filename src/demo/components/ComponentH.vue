@@ -8,8 +8,8 @@
       :columns="2"
       :rows="2"
       :gap="5"
-      v-model:children="children"
       sub
+      v-model:children="children"
     ></GridDragResize>
   </div>
 </template>

@@ -34,61 +34,70 @@
     }
 
     &__adjust {
+      display: none;
       position: absolute;
-      border: 1px solid #666;
-      background-color: white;
       width: 10px;
       height: 10px;
-      display: none;
-      box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.2);
+      border: 1px solid #666;
+      background-color: white;
+      box-shadow: 1px 1px 2px 0 rgb(0 0 0 / 20%);
+
       &--top {
         left: calc(50% - $width/2);
         cursor: ns-resize;
       }
+
       &--right {
         top: calc(50% - $height/2);
         cursor: ew-resize;
       }
+
       &--bottom {
         left: calc(50% - $width/2);
         cursor: ns-resize;
       }
+
       &--left {
         top: calc(50% - $height/2);
         cursor: ew-resize;
       }
+
       &--top-left {
         cursor: nwse-resize;
       }
+
       &--top-right {
         cursor: nesw-resize;
       }
+
       &--bottom-left {
         cursor: nesw-resize;
       }
+
       &--bottom-right {
         cursor: nwse-resize;
       }
     }
 
     &__remove {
+      display: none;
       position: absolute;
-      width: 13px;
-      height: 13px;
-      background-color: #fff;
-      border-radius: 50%;
       top: 0;
       right: 0;
-      box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.2);
-      cursor: pointer;
-      border: 1px solid rgba(255, 0, 0, 0.6);
+      width: 13px;
+      height: 13px;
       transition: transform 0.3s ease-in-out;
+      border: 1px solid rgb(255 0 0 / 60%);
+      border-radius: 50%;
       opacity: 0.8;
-      display: none;
+      background-color: #fff;
+      box-shadow: 0 0 2px 0 rgb(0 0 0 / 20%);
+      cursor: pointer;
 
       &:hover {
         opacity: 1;
       }
+
       &::before,
       &::after {
         content: '';
@@ -98,8 +107,8 @@
         left: 1px;
         width: 9px;
         height: 1px;
-        background-color: rgba(255, 0, 0, 0.6);
         transform-origin: center;
+        background-color: rgb(255 0 0 / 60%);
       }
 
       &::before {
@@ -112,17 +121,18 @@
     }
 
     &__drop {
+      display: none;
       position: absolute;
-      background-color: rgba(255, 255, 255, 1);
+      left: calc(50% - ($width/2));
       width: 18px;
       height: 18px;
-      left: calc(50% - ($width/2));
-      cursor: grab;
-      display: none;
-      border: 1px solid #666;
-      opacity: 0.8;
-      border-radius: 50%;
       transition: transform 0.3s ease-in-out;
+      border: 1px solid #666;
+      border-radius: 50%;
+      opacity: 0.8;
+      background-color: rgb(255 255 255 / 100%);
+      cursor: grab;
+
       &:hover {
         opacity: 1;
       }

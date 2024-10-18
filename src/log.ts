@@ -18,7 +18,7 @@ const logArray = (words: string[]) => {
           v
         ]
       }, [])
-      
+
       ;(console as unknown as any)[type](format, ...array)
     }
   } catch (e) {

@@ -6,7 +6,10 @@ import { ref, h, type Ref } from 'vue'
 // import { GridDragResize } from '../../dist/index.js'
 
 import { GridDragResize } from '@/lib/components/GridDragResize'
-import type { GridDragResizeProps, GridDragResizeItemProps } from '@/lib/components/GridDragResize/types'
+import type {
+  GridDragResizeProps,
+  GridDragResizeItemProps
+} from '@/lib/components/GridDragResize/types'
 
 import ComponentA from '@/demo/components/ComponentA.vue'
 import ComponentB from '@/demo/components/ComponentB.vue'
@@ -35,14 +38,15 @@ const children: Ref<GridDragResizeProps['children']> = ref([
           rows: 1,
           columnStart: 1,
           columns: 1,
-          render: () => h('div', { class: "demo-item", style: { background: '#346145' } }, 'Nest'),
+          render: () => h('div', { class: 'demo-item', style: { background: '#346145' } }, 'Nest')
         },
         {
           rowStart: 2,
           rows: 2,
           columnStart: 2,
           columns: 2,
-          render: () => h('div', { class: "demo-item", style: { background: '#6FBFF9' } }, 'by prop child'),
+          render: () =>
+            h('div', { class: 'demo-item', style: { background: '#6FBFF9' } }, 'by prop child')
         }
       ]
     }
@@ -91,7 +95,10 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     rows: 2,
     columns: 1,
     dragHandler: '.demo-item>button',
-    render: () => h('div', { class: "demo-item", style: { background: '#eb9c64' } }, [h('button', 'Drag handler')]),
+    render: () =>
+      h('div', { class: 'demo-item', style: { background: '#eb9c64' } }, [
+        h('button', 'Drag handler')
+      ]),
     data: {
       id: ++id
     }
@@ -101,7 +108,8 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     rowEnd: 3,
     columnStart: 1,
     columnEnd: 2,
-    render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Component D 1'),
+    render: () =>
+      h('div', { class: 'demo-item', style: { background: '#8fbf9f' } }, 'Component D 1'),
     data: {
       id: ++id
     }
@@ -126,22 +134,30 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     rowEnd: 4,
     columnStart: 1,
     columnEnd: 2,
-    render: () => h('div', { class: "demo-item", style: { background: '#8fbf9f' } }, 'Component D2'),
+    render: () =>
+      h('div', { class: 'demo-item', style: { background: '#8fbf9f' } }, 'Component D2'),
     data: {
       id: ++id
     }
-  },
+  }
 ])
 
 // 生成 render
-function candidateRender(columns: number, rows: number, background: string, props: GridDragResizeItemProps) {
-  if ([props.columnStart, props.columnEnd, props.rowStart, props.rowEnd].every(o => o !== void 0)) {
-    const info = [
-      h('div', `${props.columns} x ${props.rows}`),
-    ]
-    return h('div', { class: "demo-item", style: { background } }, info)
+function candidateRender(
+  columns: number,
+  rows: number,
+  background: string,
+  props: GridDragResizeItemProps
+) {
+  if (
+    [props.columnStart, props.columnEnd, props.rowStart, props.rowEnd].every((o) => o !== void 0)
+  ) {
+    const info = [h('div', `${props.columns} x ${props.rows}`)]
+    return h('div', { class: 'demo-item', style: { background } }, info)
   } else {
-    return h('div', { class: "demo-item", style: { background } }, [h('div', `${props.columns ?? columns}x${props.rows ?? rows}`)])
+    return h('div', { class: 'demo-item', style: { background } }, [
+      h('div', `${props.columns ?? columns}x${props.rows ?? rows}`)
+    ])
   }
 }
 
@@ -150,7 +166,7 @@ function createCandidate(columns = 1, rows = 1, background = '#fff') {
   return {
     columns,
     rows,
-    render: (props: GridDragResizeItemProps) => candidateRender(columns, rows, background, props),
+    render: (props: GridDragResizeItemProps) => candidateRender(columns, rows, background, props)
   } as GridDragResizeItemProps
 }
 
@@ -161,7 +177,7 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
   {
     columns: 2,
     rows: 2,
-    render: () => h(ComponentG),
+    render: () => h(ComponentG)
   }
 ])
 
@@ -188,21 +204,36 @@ function dragend() {
 </script>
 
 <template>
-<div class="page">
-  <header>
+  <div class="page">
     <header>
-      <div v-for="(item, idx) of candidate" :key="idx" draggable="true" @dragstart="dragstart($event, idx)"
-        @dragend="dragend">
-        <component :is="item.render"></component>
-      </div>
+      <header>
+        <div
+          v-for="(item, idx) of candidate"
+          :key="idx"
+          draggable="true"
+          @dragstart="dragstart($event, idx)"
+          @dragend="dragend"
+        >
+          <component :is="item.render"></component>
+        </div>
+      </header>
+      <footer
+        v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"
+      ></footer>
+      <!-- <footer v-html="JSON.stringify(candidate, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></footer> -->
     </header>
-    <footer v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></footer>
-    <!-- <footer v-html="JSON.stringify(candidate, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></footer> -->
-  </header>
-  <GridDragResize :columns="5" :rows="6" :gap="10" :row-size="100" :row-expandable="true" :readonly="false"
-    v-model:children="children" :dropping-child="droppingChild">
-  </GridDragResize>
-</div>
+    <GridDragResize
+      :columns="5"
+      :rows="6"
+      :gap="10"
+      :row-size="100"
+      :row-expandable="true"
+      :readonly="false"
+      v-model:children="children"
+      :dropping-child="droppingChild"
+    >
+    </GridDragResize>
+  </div>
 </template>
 
 <style lang="less">
@@ -216,12 +247,11 @@ function dragend() {
 
 body {
   min-height: 100vh;
-  color: var(--color-text);
-  background: var(--color-background);
   transition:
     color 0.5s,
     background-color 0.5s;
-  line-height: 1.6;
+  background: var(--color-background);
+  color: var(--color-text);
   font-family:
     Inter,
     -apple-system,
@@ -236,44 +266,45 @@ body {
     'Helvetica Neue',
     sans-serif;
   font-size: 15px;
-  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  text-rendering: optimizelegibility;
 }
 </style>
 <style lang="less">
 .page {
-  padding: 16px;
   display: flex;
   align-items: flex-start;
   min-height: 100vh;
+  padding: 16px;
 
   // height: 100vh;
   // overflow: auto;
-  &>header {
+  & > header {
     display: flex;
     flex-direction: column;
-    align-self: stretch;
-    border: 1px solid #ddd;
-    margin-right: 32px;
-    width: 400px;
     flex-shrink: 0;
+    align-self: stretch;
+    width: 400px;
+    margin-right: 32px;
+    border: 1px solid #ddd;
 
-    &>header,
-    &>footer {
+    & > header,
+    & > footer {
       height: 0;
       overflow: auto;
     }
 
-    &>header {
+    & > header {
       flex-grow: 2;
 
-      &>div {
+      & > div {
         height: 100px;
         border-bottom: 1px solid #eee;
+        background-color: #fff;
         cursor: grab;
         user-select: none;
-        background-color: #fff;
 
         &:last-child {
           height: 250px;
@@ -281,7 +312,7 @@ body {
       }
     }
 
-    &>footer {
+    & > footer {
       flex-grow: 1;
       border-top: 1px solid #eee;
     }
@@ -289,15 +320,15 @@ body {
 }
 
 .demo-item {
-  padding: 10px;
-  height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100%;
+  padding: 10px;
+  color: #fff;
   font-size: 18px;
   line-height: 1.1em;
-  color: #fff;
-  flex-direction: column;
 }
 
 .demo-child {
@@ -306,22 +337,22 @@ body {
 }
 
 .grid-drag-resize {
-  background-color: #eee;
   flex-grow: 1;
+  background-color: #eee;
 
   &--dropping {
-    box-shadow: 0 0 6px 2px #00ff00 inset;
+    box-shadow: 0 0 6px 2px #0f0 inset;
   }
 
   .grid-drag-resize__item {
     background-color: #ddd;
 
     &--dragging {
-      box-shadow: 0 0 6px 2px #0000ff;
+      box-shadow: 0 0 6px 2px #00f;
     }
 
     &--selected {
-      box-shadow: 0 0 6px 2px #ff00ff;
+      box-shadow: 0 0 6px 2px #f0f;
     }
   }
 }

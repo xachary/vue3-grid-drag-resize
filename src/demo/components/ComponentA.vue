@@ -1,21 +1,21 @@
 <template>
-<div class="component-a">
-    Component A <br>
+  <div class="component-a">
+    Component A <br />
     Unremovable
-</div>
+  </div>
 </template>
 
 <style lang="less" scoped>
 .component-a {
-    background: #eb9c64;
-    padding: 10px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    line-height: 1.1em;
-    flex-direction: column;
-    color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 10px;
+  background: #eb9c64;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.1em;
 }
 </style>

@@ -11,22 +11,26 @@ import type {
 import GridDragResizeItem from './GridDragResizeItem.vue'
 import GridDragResize from './GridDragResize.vue'
 
+import { ParentInjectSymbol, ChildInjectSymbol, StateInjectSymbol } from './const'
+
 const props = withDefaults(defineProps<GridDragResizeProps>(), {
   columns: 1,
   rows: 1,
   gap: 0,
+  //
   columnExpandable: false,
   rowExpandable: false,
   //
   children: () => [],
+  tagName: 'div',
   //
-  dragHandler: '',
-  readonly: false,
-  //
-  sub: false,
-  droppable: true,
-  //
-  debug: false
+  // 未传递，保留 undefined
+  readonly: undefined,
+  draggable: undefined,
+  resizable: undefined,
+  removable: undefined,
+  droppableIn: undefined,
+  droppableOut: undefined
 })
 
 type Emit = {
@@ -46,72 +50,171 @@ const childrenParsed: Ref<GridDragResizeItemProps[]> = ref([...props.children])
 
 const rootEle: Ref<HTMLElement | undefined> = ref()
 
-const readonlyParsed = ref(false)
-
 // 给子组件穿透转递组件 Props
-const propsParsed: Ref<GridDragResizeProps | undefined> = ref(props)
-provide('parent', { props: propsParsed })
+const parentInject = inject<{ props: Ref<GridDragResizeProps> }>(ParentInjectSymbol, {
+  props: ref(props)
+})
+// 给子组件穿透转递组件 Props
+const childInject = inject<{ props: Ref<GridDragResizeItemProps> } | undefined>(
+  ChildInjectSymbol,
+  undefined
+)
+
+// 判断嵌套
+const sub = parentInject.props.value !== props
+
+// 穿透 Props 处理
+const overflowParsed = computed(
+  () => props.overflow || childInject?.props.value.overflow || parentInject.props.value.overflow
+)
+const dragHandlerParsed = computed(
+  () =>
+    props.dragHandler ||
+    childInject?.props.value.dragHandler ||
+    parentInject.props.value.dragHandler
+)
+//
+const readonlyParsed = computed(
+  () => props.readonly ?? childInject?.props.value.readonly ?? parentInject.props.value.readonly
+)
+//
+const draggableParsed = computed(() =>
+  readonlyParsed.value
+    ? false
+    : props.draggable ?? childInject?.props.value.draggable ?? parentInject.props.value.draggable
+)
+const resizableParsed = computed(() =>
+  readonlyParsed.value
+    ? false
+    : props.resizable ?? childInject?.props.value.resizable ?? parentInject.props.value.resizable
+)
+const removableParsed = computed(() =>
+  readonlyParsed.value
+    ? false
+    : props.removable ?? childInject?.props.value.removable ?? parentInject.props.value.removable
+)
+const droppableOutParsed = computed(() =>
+  readonlyParsed.value
+    ? false
+    : props.droppableOut ??
+      childInject?.props.value.droppableOut ??
+      parentInject.props.value.droppableOut
+)
+//
+const debugParsed = computed(
+  () => props.debug ?? childInject?.props.value.debug ?? parentInject.props.value.debug
+)
+//
+const droppableInParsed = computed(() =>
+  readonlyParsed.value ? false : props.droppableIn ?? parentInject.props.value.droppableIn
+)
+//
+const beforeDropParsed = computed(() => props.beforeDrop ?? parentInject.props.value.beforeDrop)
+//
+const classNameParsed = computed(() => props.className || parentInject.props.value.className)
+const tagNameParsed = computed(() => props.tagName || parentInject.props.value.tagName)
+
+const providePropsRef = ref({
+  ...props,
+  //
+  dragHandler: dragHandlerParsed.value,
+  overflow: overflowParsed.value,
+  //
+  readonly: readonlyParsed.value,
+  //
+  draggable: draggableParsed.value,
+  resizable: resizableParsed.value,
+  removable: removableParsed.value,
+  droppableOut: droppableOutParsed.value,
+  //
+  debug: debugParsed.value,
+  //
+  droppableIn: droppableInParsed.value,
+  //
+  before: beforeDropParsed.value,
+  //
+  className: classNameParsed.value,
+  tagName: tagNameParsed.value
+})
+
+provide(ParentInjectSymbol, {
+  props: providePropsRef
+})
+
+// 默认值处理
+const droppableInDefault = computed(() => droppableInParsed.value ?? true)
+
+if (debugParsed.value) {
+  console.log(providePropsRef.value)
+}
 
 // 单例 state 透传
-let state = inject<{
+let stateInject = inject<{
   actionEle: Ref<HTMLElement | undefined>
   droppingChild: Ref<GridDragResizeItemProps | undefined>
   droppingChildEle: Ref<HTMLElement | undefined>
   droppingChildRaw: Ref<GridDragResizeItemProps | undefined>
   droppingChildRemove: (() => void) | undefined
   droppingEle: Ref<HTMLElement | undefined>
-} | null>('state', null)
-if (state === null) {
-  state = {
+  hoverEle: Ref<HTMLElement | undefined>
+  dragging: Ref<boolean>
+  resizing: Ref<boolean>
+} | null>(StateInjectSymbol, null)
+if (stateInject === null) {
+  stateInject = {
     actionEle: ref(), // 当前正在 drag、resize 的 GridDragResize 组件
     droppingChild: ref(props.droppingChild), // 当前正在 drop 的 配置（副本）
     droppingChildRaw: ref(props.droppingChild), // 当前正在 drop 的 配置（原本）
     droppingChildEle: ref(), // 当前正在 drop 的 GridDragResizeItem 的 ele
     droppingChildRemove: undefined, // 当前正在 drop 的 GridDragResizeItem 的移除方法
-    droppingEle: ref() // 当前正在承接 drop 的 GridDragResize 的 ele
+    droppingEle: ref(), // 当前正在承接 drop 的 GridDragResize 的 ele
+    hoverEle: ref(), // hover 目标
+    dragging: ref(false), // dragging 状态
+    resizing: ref(false) // dragging 状态
   }
 }
-provide('state', state)
+provide(StateInjectSymbol, stateInject)
 
-// 正在拖入的目标
+// 正在拖入的目标（仅外部用）
 watch(
   () => props.droppingChild,
   () => {
-    if (state) {
-      state.droppingChild.value = props.droppingChild
+    if (stateInject) {
+      stateInject.droppingChild.value = { ...props.droppingChild }
     }
-  }
+  },
+  { immediate: true }
 )
 
 const droppingChildParsed = computed(() => {
-  return props.droppingChild ?? state?.droppingChild.value
+  return stateInject?.droppingChild.value ?? props.droppingChild
 })
 
 // 清空 drop 相关状态
 function droppingChildClear() {
   emit('update:droppingChild', undefined)
 
-  if (state) {
-    state.droppingChild.value = undefined
-    state.droppingChildEle.value = undefined
-    state.droppingChildRaw.value = undefined
-    state.droppingEle.value = undefined
-    state.droppingChildRemove = undefined
+  if (stateInject) {
+    stateInject.droppingChild.value = undefined
+    stateInject.droppingChildEle.value = undefined
+    stateInject.droppingChildRaw.value = undefined
+    stateInject.droppingEle.value = undefined
+    stateInject.droppingChildRemove = undefined
   }
 }
 
 // 拖入操作中
 const dropping = computed(
-  () => state?.droppingEle?.value === rootEle.value && !droppingSelfOrParent.value
+  () => stateInject?.droppingEle?.value === rootEle.value && !droppingSelfOrParent.value
 )
 
 // 在自己内部、自己的 parent drop 不算数
 const droppingSelfOrParent = computed(() => {
-  if (state) {
-    if (state.droppingChildRaw.value && rootEle.value) {
+  if (stateInject) {
+    if (stateInject.droppingChildRaw.value && rootEle.value) {
       return (
-        childrenParsed.value.includes(state.droppingChildRaw.value) ||
-        state?.droppingChildEle.value?.contains(rootEle.value)
+        childrenParsed.value.includes(stateInject.droppingChildRaw.value) ||
+        stateInject?.droppingChildEle.value?.contains(rootEle.value)
       )
     }
   }
@@ -124,39 +227,39 @@ const rowExpandableParsed = computed(() => props.rowExpandable && !droppingSelfO
 const columnExpandableParsed = computed(() => props.columnExpandable && !droppingSelfOrParent.value)
 
 // 更新状态
-function stateActionDown(v: boolean) {
-  if (state) {
+function stateInjectActionDown(v: boolean) {
+  if (stateInject) {
     if (v) {
-      state.actionEle.value = rootEle.value // 记录 当前正在 drag、resize 的 GridDragResize 组件
+      stateInject.actionEle.value = rootEle.value // 记录 当前正在 drag、resize 的 GridDragResize 组件
     } else {
-      state.actionEle.value = undefined
+      stateInject.actionEle.value = undefined
     }
   }
 }
 
-// 判断是否处于 draggable 的节点内部
-watch(
-  () => [props.readonly, rootEle.value],
-  () => {
-    let underDraggable = false
-    if (rootEle.value) {
-      let parent = rootEle.value.parentElement
-      while (parent && !parent.draggable) {
-        parent = parent.parentElement
-      }
-      if (parent) {
-        underDraggable = true
-      }
-    }
-    readonlyParsed.value = props.readonly || underDraggable
+// // 判断是否处于 draggable 的节点内部
+// watch(
+//   () => [props.readonly, rootEle.value],
+//   () => {
+//     let underDraggable = false
+//     if (rootEle.value) {
+//       let parent = rootEle.value.parentElement
+//       while (parent && !parent.draggable) {
+//         parent = parent.parentElement
+//       }
+//       if (parent) {
+//         underDraggable = true
+//       }
+//     }
+//     readonlyParsed.value = props.readonly || underDraggable
 
-    // 更新
-    propsParsed.value = { ...props, readonly: readonlyParsed.value }
-  },
-  {
-    immediate: true
-  }
-)
+//     // 更新
+//     propsParsed.value = { ...props, readonly: readonlyParsed.value }
+//   },
+//   {
+//     immediate: true
+//   }
+// )
 
 // 同步外部 children 变化
 watch(
@@ -221,31 +324,32 @@ const style = computed(() => {
   }
 })
 
-// 组件位置、大小信息
-const rootRect = computed(() => {
-  return (
-    rootEle?.value?.getBoundingClientRect() ?? {
-      height: 0,
-      width: 0,
-      x: 0,
-      y: 0,
-      bottom: 0,
-      right: 0
-    }
-  )
-})
-
 // 列宽
 const columnSize = computed(() => {
+  const rootRect = rootEle?.value?.getBoundingClientRect() ?? {
+    height: 0,
+    width: 0,
+    x: 0,
+    y: 0,
+    bottom: 0,
+    right: 0
+  }
   return (
-    props.columnSize ??
-    (rootRect.value.width - gapParsed.value * (columns.value - 1)) / columns.value
+    props.columnSize ?? (rootRect.width - gapParsed.value * (columns.value - 1)) / columns.value
   )
 })
 
 // 行高
 const rowSize = computed(() => {
-  return props.rowSize ?? (rootRect.value.height - gapParsed.value * (rows.value - 1)) / rows.value
+  const rootRect = rootEle?.value?.getBoundingClientRect() ?? {
+    height: 0,
+    width: 0,
+    x: 0,
+    y: 0,
+    bottom: 0,
+    right: 0
+  }
+  return props.rowSize ?? (rootRect.height - gapParsed.value * (rows.value - 1)) / rows.value
 })
 
 // 点击开始位置
@@ -254,9 +358,6 @@ let clickStartX = 0,
 // 点击偏移量
 let clickOffsetX = 0,
   clickOffsetY = 0
-
-// 调整大小
-let resizing = false
 
 // 当前选中子组件的数据项
 const selectingChild: Ref<GridDragResizeItemProps | undefined> = ref()
@@ -278,9 +379,6 @@ let resizeStartClientX = 0,
 // 调整大小拖动偏移量
 let resizeOffsetClientRow = 0,
   resizeOffsetClientColumn = 0
-
-// 拖动中
-let dragging = false
 
 // 当前拖动子组件的数据项
 const draggingChild: Ref<GridDragResizeItemProps | undefined> = ref()
@@ -346,6 +444,8 @@ function calcDragStartEndByPos(opts: {
   expandable: boolean
 }) {
   let { size, gap, span, max, pos, expandable } = opts
+
+  console.log(pos)
 
   // 虚拟地在 grid 四边补充二分之一的 gap 距离
   // 如此，通过计算 拖动位置（相对于组件）与 大小+间隙 的倍数即可
@@ -418,8 +518,10 @@ function calcResizeStartEnd(opts: {
 }
 
 function resizingReset() {
-  resizing = false
-  stateActionDown(false)
+  if (stateInject) {
+    stateInject.resizing.value = false
+  }
+  stateInjectActionDown(false)
 
   resizingChildBefore.value = undefined
   resizingChildRect.value = undefined
@@ -430,8 +532,10 @@ function resizingReset() {
 }
 
 function dragReset() {
-  dragging = false
-  stateActionDown(false)
+  if (stateInject) {
+    stateInject.dragging.value = false
+  }
+  stateInjectActionDown(false)
 
   draggingChild.value = undefined
   draggingChildBefore.value = undefined
@@ -490,8 +594,10 @@ function resizingStart(...args: any[] | unknown[]) {
 
   // 状态互斥
   dragReset()
-  resizing = true
-  stateActionDown(true)
+  if (stateInject) {
+    stateInject.resizing.value = true
+  }
+  stateInjectActionDown(true)
 
   // 更新计算所需信息
   resizingChildRect.value = rect
@@ -523,8 +629,10 @@ function dragStart(e: MouseEvent) {
     if (draggingChild.value && draggingChildRect.value) {
       // 状态互斥
       resizingReset()
-      dragging = true
-      stateActionDown(true)
+      if (stateInject) {
+        stateInject.dragging.value = true
+      }
+      stateInjectActionDown(true)
 
       // 记录 拖动开始位置
       dragStartClientX = e.clientX
@@ -540,7 +648,7 @@ function dragStart(e: MouseEvent) {
 
 // 拖动中
 function dragMove(e: MouseEvent) {
-  if (dragging && draggingChild.value) {
+  if (stateInject?.dragging.value && draggingChild.value) {
     // 计算 拖动偏移量
     dragOffsetClientColumn = e.clientX - dragStartClientX
     dragOffsetClientRow = e.clientY - dragStartClientY
@@ -610,7 +718,7 @@ function dragMove(e: MouseEvent) {
     // 滚动跟随
     scrollIntoViewIfNeeded(draggingChildEle.value)
   }
-  if (resizing) {
+  if (stateInject?.resizing.value) {
     // 计算 调整大小拖动偏移量
     resizeOffsetClientColumn = e.clientX - resizeStartClientX
     resizeOffsetClientRow = e.clientY - resizeStartClientY
@@ -733,7 +841,7 @@ function select(child: GridDragResizeItemProps) {
   }
 }
 
-if (props.sub) {
+if (sub) {
   // 补充 鼠标超出区域时 计算是否为点击
   window.addEventListener('mousedown', (e: MouseEvent) => {
     // 更新 点击开始位置
@@ -762,12 +870,12 @@ window.addEventListener('click', clearSelection)
 
 // 拖入中
 function dropover(e: DragEvent) {
-  if (props.droppable) {
+  if (droppableInDefault.value) {
     e.stopPropagation()
     e.preventDefault()
 
-    if (state) {
-      state.droppingEle.value = rootEle.value
+    if (stateInject) {
+      stateInject.droppingEle.value = rootEle.value
     }
 
     if (droppingChildParsed.value) {
@@ -775,19 +883,28 @@ function dropover(e: DragEvent) {
       let rowSpan = droppingChildParsed.value.rows ?? 1
       let columnSpan = droppingChildParsed.value.columns ?? 1
 
-      // 相对于 组件 的鼠标位置（并考虑 相对于 当前拖动子组件 的鼠标位置）
-      let posY = e.clientY - rootRect.value.y
-      if (posY < 0) {
-        posY = 0
-      } else if (!rowExpandableParsed.value && posY > rootRect.value.height) {
-        posY = rootRect.value.height
+      const rootRect = rootEle?.value?.getBoundingClientRect() ?? {
+        height: 0,
+        width: 0,
+        x: 0,
+        y: 0,
+        bottom: 0,
+        right: 0
       }
 
-      let posX = e.clientX - rootRect.value.x
+      // 相对于 组件 的鼠标位置（并考虑 相对于 当前拖动子组件 的鼠标位置）
+      let posY = e.clientY - rootRect.y
+      if (posY < 0) {
+        posY = 0
+      } else if (!rowExpandableParsed.value && posY > rootRect.height) {
+        posY = rootRect.height
+      }
+
+      let posX = e.clientX - rootRect.x
       if (posX < 0) {
         posX = 0
-      } else if (!columnExpandableParsed.value && posX > rootRect.value.width) {
-        posX = rootRect.value.width
+      } else if (!columnExpandableParsed.value && posX > rootRect.width) {
+        posX = rootRect.width
       }
 
       // 计算行方向上，移动后最新的位置和大小
@@ -833,36 +950,59 @@ function dropover(e: DragEvent) {
 
 // 拖入结束
 function drop(e: DragEvent) {
-  if (props.droppable) {
+  if (droppableInDefault.value) {
     e.stopPropagation()
     e.preventDefault()
 
     // 在自己的 parent drop 不算数
     if (droppingChildParsed.value && !droppingSelfOrParent.value) {
       // 拖出删除
-      state?.droppingChildRemove?.()
+      stateInject?.droppingChildRemove?.()
 
-      childrenParsed.value?.push({ ...droppingChildParsed.value })
-      emit('update:children', childrenParsed.value)
+      let child = { ...droppingChildParsed.value }
+      if (beforeDropParsed.value instanceof Function) {
+        const res = beforeDropParsed.value(child)
+        if (res instanceof Promise) {
+          res
+            .then((c) => {
+              child = c ?? child
+
+              childrenParsed.value?.push(child)
+              emit('update:children', childrenParsed.value)
+            })
+            .catch((e) => {
+              console.error(e)
+            })
+        } else {
+          child = res ?? child
+
+          childrenParsed.value?.push(child)
+          emit('update:children', childrenParsed.value)
+        }
+      } else {
+        childrenParsed.value?.push(child)
+        emit('update:children', childrenParsed.value)
+      }
     }
 
     droppingChildClear()
   }
 }
 
-if (!props.sub) {
+if (!sub) {
   // 鼠标处理事件（处理拖入中的扩展）
   window.addEventListener('dragover', dropover)
 }
 
 // 是否阻止事件传递
 const sholdStop = computed(() => {
-  if (rootEle.value && state) {
-    if (state.actionEle.value) {
+  if (rootEle.value && stateInject) {
+    if (stateInject.actionEle.value) {
       // 通过“contains”、“判断是否为自身”两种方式判断：
       // 高层的 GridDragResize 或是 自身 正在 drag、resize 操作
       return (
-        !state.actionEle.value.contains(rootEle.value) || state.actionEle.value === rootEle.value
+        !stateInject.actionEle.value.contains(rootEle.value) ||
+        stateInject.actionEle.value === rootEle.value
       )
     }
   }
@@ -878,7 +1018,7 @@ let draggingBlank = false
 function subDragStart(e: MouseEvent) {
   draggingBlank = e.target === rootEle.value
 
-  if (props.sub && sholdStop.value && !draggingBlank) {
+  if (sub && sholdStop.value && !draggingBlank) {
     e.stopPropagation()
 
     dragStart(e)
@@ -886,7 +1026,7 @@ function subDragStart(e: MouseEvent) {
 }
 
 function subDragMove(e: MouseEvent) {
-  if (props.sub && sholdStop.value && !draggingBlank) {
+  if (sub && sholdStop.value && !draggingBlank) {
     e.stopPropagation()
 
     dragMove(e)
@@ -894,7 +1034,7 @@ function subDragMove(e: MouseEvent) {
 }
 
 function subDragEnd(e: MouseEvent) {
-  if (props.sub && sholdStop.value && !draggingBlank) {
+  if (sub && sholdStop.value && !draggingBlank) {
     e.stopPropagation()
 
     dragEnd(e)
@@ -904,7 +1044,7 @@ function subDragEnd(e: MouseEvent) {
 }
 
 function subClick(e: MouseEvent) {
-  if (props.sub && e.target !== rootEle.value) {
+  if (sub && e.target !== rootEle.value) {
     e.stopPropagation()
 
     clearSelection()
@@ -943,11 +1083,28 @@ const droppingRowColumn = computed(() => {
 })
 
 function subDropover(e: DragEvent) {
-  if (props.sub && props.droppable) {
+  if (sub && droppableInDefault.value) {
     e.stopPropagation()
 
     dropover(e)
   }
+}
+
+// 克隆
+function deepClone(child: Record<string, any>): GridDragResizeItemProps {
+  const copy: Record<string, any> = {}
+  for (const p in child) {
+    if (Array.isArray(child[p])) {
+      copy[p] = child[p].map((o: any) => deepClone(o))
+    } else if (child[p] instanceof Function) {
+      copy[p] = child[p]
+    } else if (child[p] instanceof Object) {
+      copy[p] = deepClone(child[p])
+    } else {
+      copy[p] = child[p]
+    }
+  }
+  return copy as GridDragResizeItemProps
 }
 
 // 内部互 drop 开始
@@ -955,11 +1112,13 @@ function childDropStart(
   child: GridDragResizeItemProps,
   val: { ele: HTMLElement | undefined; remove: () => void }
 ) {
-  if (state) {
-    state.droppingChild.value = { ...child }
-    state.droppingChildEle.value = val.ele
-    state.droppingChildRaw.value = child
-    state.droppingChildRemove = val.remove
+  if (stateInject) {
+    stateInject.droppingChild.value = deepClone(child)
+    stateInject.droppingChildEle.value = val.ele
+    stateInject.droppingChildRaw.value = child
+    stateInject.droppingChildRemove = val.remove
+
+    emit('update:droppingChild', stateInject.droppingChild.value)
   }
 }
 
@@ -972,10 +1131,11 @@ function childDropEnd() {
 </script>
 
 <template>
-  <div
+  <component
+    :is="tagNameParsed"
     class="grid-drag-resize"
     :class="[
-      ...(props.className ? [props.className] : []),
+      ...(classNameParsed ? [classNameParsed] : []),
       ...(sub ? ['grid-drag-resize--sub'] : []),
       ...(droppingChildParsed && dropping ? ['grid-drag-resize--dropping'] : [])
     ]"
@@ -987,6 +1147,7 @@ function childDropEnd() {
     @mousemove="subDragMove"
     @mouseup="subDragEnd"
     @click="subClick"
+    v-if="$slots.default === void 0"
   >
     <template v-for="(child, idx) of childrenParsed" :key="child">
       <GridDragResizeItem
@@ -1020,8 +1181,6 @@ function childDropEnd() {
         <GridDragResize
           v-bind="child.child"
           v-model:children="child.child.children"
-          :dropping-child="droppingChildParsed"
-          sub
           v-if="child.child"
         >
         </GridDragResize>
@@ -1037,5 +1196,17 @@ function childDropEnd() {
       v-show="droppingChildParsed && dropping"
     >
     </GridDragResizeItem>
-  </div>
+  </component>
+  <component
+    :is="tagNameParsed"
+    class="grid-drag-resize"
+    :class="[
+      ...(classNameParsed ? [classNameParsed] : []),
+      ...(sub ? ['grid-drag-resize--sub'] : [])
+    ]"
+    ref="rootEle"
+    v-else
+  >
+    <slot></slot>
+  </component>
 </template>

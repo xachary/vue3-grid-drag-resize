@@ -1,8 +1,5 @@
 <template>
-  <div class="component-a">
-    Component A <br />
-    Unremovable
-  </div>
+  <div class="component-a">Unremovable</div>
 </template>
 
 <style lang="less" scoped>
@@ -15,7 +12,6 @@
   padding: 10px;
   background: #eb9c64;
   color: #fff;
-  font-size: 18px;
   line-height: 1.1em;
 }
 </style>

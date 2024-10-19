@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, watchEffect, inject, type Ref } from 'vue'
+import { ref, computed, watch, watchEffect, inject, provide, type Ref } from 'vue'
 
 import type {
   GridDragResizeProps,
@@ -8,7 +8,7 @@ import type {
   StartDragEvent
 } from './types'
 
-const parent = inject<{ props: Ref<GridDragResizeProps> }>('parent')
+import { ParentInjectSymbol, ChildInjectSymbol, StateInjectSymbol } from './const'
 
 const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
   columns: 0,
@@ -19,11 +19,13 @@ const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
   rowStart: 0,
   rowEnd: 0,
   //
-  dragHandler: '',
-  draggable: true,
-  resizable: true,
-  removable: true,
-  droppable: true
+  // 未传递，保留 undefined
+  readonly: undefined,
+  draggable: undefined,
+  resizable: undefined,
+  removable: undefined,
+  droppableIn: undefined,
+  droppableOut: undefined
 })
 
 const columnsParsed = computed(() => props.columns || 1)
@@ -34,12 +36,76 @@ const columnEndParsed = computed(() => (props.columnEnd < 2 ? 2 : props.columnEn
 const rowStartParsed = computed(() => (props.rowStart < 1 ? 1 : props.rowStart))
 const rowEndParsed = computed(() => (props.rowEnd < 2 ? 2 : props.rowEnd))
 
-const dragHandlerParsed = computed(() => props.dragHandler || parent?.props.value?.dragHandler)
-const draggableParsed = computed(() => (parent?.props.value?.readonly ? false : props.draggable))
-const resizableParsed = computed(() => (parent?.props.value?.readonly ? false : props.resizable))
-const removableParsed = computed(() => (parent?.props.value?.readonly ? false : props.removable))
-const droppableParsed = computed(() => (parent?.props.value?.readonly ? false : props.droppable))
-const overflowParsed = computed(() => props.overflow || parent?.props.value?.overflow)
+// 单例 state 透传
+let stateInject = inject<{
+  actionEle: Ref<HTMLElement | undefined>
+  droppingChild: Ref<GridDragResizeItemProps | undefined>
+  droppingChildEle: Ref<HTMLElement | undefined>
+  droppingChildRaw: Ref<GridDragResizeItemProps | undefined>
+  droppingChildRemove: (() => void) | undefined
+  droppingEle: Ref<HTMLElement | undefined>
+  hoverEle: Ref<HTMLElement | undefined>
+  dragging: Ref<boolean>
+  resizing: Ref<boolean>
+} | null>(StateInjectSymbol, null)
+
+// 给子组件穿透转递组件 Props
+const parentInject = inject<{ props: Ref<GridDragResizeProps> }>(ParentInjectSymbol)
+
+// 穿透 Props 处理
+const dragHandlerParsed = computed(() => props.dragHandler || parentInject?.props.value.dragHandler)
+const overflowParsed = computed(() => props.overflow || parentInject?.props.value.overflow)
+//
+const readonlyParsed = computed(() => props.readonly ?? parentInject?.props.value.readonly)
+//
+const draggableParsed = computed(() =>
+  readonlyParsed.value ? false : props.draggable ?? parentInject?.props.value.draggable
+)
+const resizableParsed = computed(() =>
+  readonlyParsed.value ? false : props.resizable ?? parentInject?.props.value.resizable
+)
+const removableParsed = computed(() =>
+  readonlyParsed.value ? false : props.removable ?? parentInject?.props.value.removable
+)
+const droppableOutParsed = computed(() =>
+  readonlyParsed.value
+    ? false
+    : parentInject?.props.value?.droppableOut ??
+      props.droppableOut ??
+      parentInject?.props.value.droppableOut
+)
+//
+const debugParsed = computed(() => props.debug ?? parentInject?.props.value.debug)
+
+// 默认值处理
+const draggableDefault = computed(() => draggableParsed.value ?? true)
+const resizableDefault = computed(() => resizableParsed.value ?? true)
+const removableDefault = computed(() => removableParsed.value ?? true)
+const droppableDefault = computed(() => droppableOutParsed.value ?? true)
+
+if (debugParsed.value) {
+  console.log(parentInject?.props.value)
+}
+
+const providePropsRef = ref({
+  ...props,
+  //
+  dragHandler: dragHandlerParsed.value,
+  overflow: overflowParsed.value,
+  //
+  readonly: readonlyParsed.value,
+  //
+  draggable: draggableParsed.value,
+  resizable: resizableParsed.value,
+  removable: removableParsed.value,
+  droppableOut: droppableOutParsed.value,
+  //
+  debug: debugParsed.value
+})
+
+provide(ChildInjectSymbol, {
+  props: providePropsRef
+})
 
 type Emit = {
   (e: 'update:columnStart', val: number): void
@@ -127,7 +193,7 @@ const itemEle: Ref<HTMLElement | undefined> = ref()
 
 // dragHandler 定位、处理、事件绑定
 watchEffect(() => {
-  if (draggableParsed.value && dragHandlerParsed.value && itemEle.value) {
+  if (draggableDefault.value && dragHandlerParsed.value && itemEle.value) {
     const handlerEle = itemEle.value.querySelector(dragHandlerParsed.value)
     if (handlerEle instanceof HTMLElement) {
       handlerEle.style.cursor = 'grab'
@@ -139,7 +205,7 @@ watchEffect(() => {
 
 // 拖动开始
 function dragstart(e: MouseEvent) {
-  if (draggableParsed.value) {
+  if (draggableDefault.value) {
     // 通知父组件 当前拖动子组件
     emit('startDrag', {
       event: e,
@@ -159,7 +225,7 @@ function dragstart(e: MouseEvent) {
 
 // 选中
 function select(e: MouseEvent) {
-  if (resizableParsed.value) {
+  if (resizableDefault.value) {
     e.stopPropagation()
 
     // 通知父组件 选中子组件
@@ -169,7 +235,7 @@ function select(e: MouseEvent) {
 
 // 开始改变大小
 function resizeStart(e: MouseEvent, direction: string) {
-  if (resizableParsed.value) {
+  if (resizableDefault.value) {
     e.stopPropagation()
 
     emit('startResize', {
@@ -200,21 +266,21 @@ function remove(e: MouseEvent) {
 // 自适应间距
 const removeDistance = computed(() => {
   const size = 13 / 2
-  const gap = parent?.props.value?.gap ?? 0
+  const gap = parentInject?.props.value?.gap ?? 0
   return gap < size ? gap : size
 })
 
 // 自适应间距
 const adjustDistance = computed(() => {
   const size = 10 / 2
-  const gap = parent?.props.value?.gap ?? 0
+  const gap = parentInject?.props.value?.gap ?? 0
   return gap < size ? gap : size
 })
 
 // 自适应间距
 const dropDistance = computed(() => {
   const size = 16 / 2
-  const gap = parent?.props.value?.gap ?? 0
+  const gap = parentInject?.props.value?.gap ?? 0
   return gap < size ? gap : size
 })
 
@@ -222,7 +288,7 @@ function dropStart() {
   emit('dropStart', {
     ele: itemEle.value,
     remove: () => {
-      removableParsed.value && emit('remove')
+      removableDefault.value && emit('remove')
     }
   })
 }
@@ -230,18 +296,38 @@ function dropStart() {
 function dropEnd() {
   emit('dropEnd')
 }
+
+function mouseover(e: MouseEvent) {
+  if (stateInject && e.currentTarget instanceof HTMLElement) {
+    stateInject.hoverEle.value = e.currentTarget
+  }
+}
+
+function mouseleave() {
+  if (stateInject) {
+    stateInject.hoverEle.value = undefined
+  }
+}
+
+const hover = computed(() => {
+  return stateInject?.hoverEle.value === itemEle.value
+})
 </script>
 
 <template>
   <div
     class="grid-drag-resize__item"
     :class="{
-      'grid-drag-resize__item--draggable': draggableParsed,
-      'grid-drag-resize__item--draggable-full': draggableParsed && !dragHandlerParsed
+      'grid-drag-resize__item--draggable': draggableDefault,
+      'grid-drag-resize__item--draggable-full': draggableDefault && !dragHandlerParsed,
+      'grid-drag-resize__item--hover':
+        hover && !stateInject?.dragging.value && !stateInject?.resizing.value
     }"
     :style="style"
     @mousedown="(e: MouseEvent) => (dragHandlerParsed ? undefined : dragstart(e))"
     @click="select"
+    @mouseover.capture="mouseover"
+    @mouseleave.capture="mouseleave"
     ref="itemEle"
   >
     <div class="grid-drag-resize__item__group" :style="{ overflow: overflowParsed }">
@@ -302,19 +388,19 @@ function dropEnd() {
       @mousedown.stop
       @mousemove.stop
       @mouseup.stop
-      v-if="removableParsed"
+      v-if="removableDefault"
     >
     </span>
     <div
-      class="grid-drag-resize__item__drop"
-      :style="{ top: `${-dropDistance}px` }"
+      :class="'grid-drag-resize__item__drop'"
+      :style="{ top: draggableDefault ? `${-dropDistance}px` : '' }"
       draggable="true"
       @mousedown.stop="dropStart"
       @mousemove.stop
       @mouseup.stop
       @dragstart.stop
       @dragend.stop="dropEnd"
-      v-if="droppableParsed"
+      v-if="droppableDefault"
     ></div>
   </div>
 </template>

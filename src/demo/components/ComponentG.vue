@@ -2,10 +2,17 @@
   <div class="component-g">
     <header>
       <p>Component G</p>
-      <p>[GridDragResize nested]</p>
     </header>
-    <GridDragResize :columns="4" :rows="4" :gap="5" sub v-model:children="children">
-    </GridDragResize>
+    <footer>
+      <GridDragResize
+        :columns="4"
+        :rows="4"
+        :gap="4"
+        :beforeDrop="beforeDrop"
+        v-model:children="children"
+      >
+      </GridDragResize>
+    </footer>
   </div>
 </template>
 
@@ -13,18 +20,23 @@
 .component-g {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
   height: 100%;
   padding: 10px;
   background: #345c81;
   color: #fff;
-  font-size: 18px;
   line-height: 1.1em;
 
   & > header {
+    flex-shrink: 0;
     padding-bottom: 10px;
     text-align: center;
+  }
+
+  & > footer {
+    flex-grow: 1;
+    height: 0;
+    background-color: #fff;
   }
 }
 </style>
@@ -33,11 +45,12 @@
 import { ref, h, type Ref } from 'vue'
 
 import { GridDragResize } from '@/lib/components/GridDragResize'
-import type { GridDragResizeProps } from '@/lib/components/GridDragResize/types'
+import type {
+  GridDragResizeProps,
+  GridDragResizeItemProps
+} from '@/lib/components/GridDragResize/types'
 
 import ComponentH from '@/demo/components/ComponentH.vue'
-
-let id = 0
 
 // 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
@@ -46,40 +59,38 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     rowEnd: 2,
     columnStart: 1,
     columnEnd: 2,
-    render: () => h('div', { class: 'demo-item', style: { background: '#0085ff' } }, 'Child 1'),
-    data: {
-      id: `G${++id}`
-    }
+    render: () => h('div', { class: 'demo-item', style: { background: '#0085ff' } }, 'Child 1')
   },
   {
     rowStart: 2,
     rowEnd: 3,
     columnStart: 2,
     columnEnd: 3,
-    render: () => h('div', { class: 'demo-item', style: { background: '#c2402a' } }, 'Child 2'),
-    data: {
-      id: `G${++id}`
-    }
+    render: () => h('div', { class: 'demo-item', style: { background: '#c2402a' } }, 'Child 2')
   },
   {
     rowStart: 3,
     rowEnd: 4,
     columnStart: 1,
     columnEnd: 3,
-    render: () => h('div', { class: 'demo-item', style: { background: '#FF6347' } }, 'Child 3'),
-    data: {
-      id: `G${++id}`
-    }
+    render: () => h('div', { class: 'demo-item', style: { background: '#FF6347' } }, 'Child 3')
   },
   {
     rowStart: 2,
     rowEnd: 5,
     columnStart: 3,
     columnEnd: 5,
-    render: () => h(ComponentH),
-    data: {
-      id: `G${++id}`
-    }
+    render: () => h(ComponentH)
   }
 ])
+
+// 拖入之前进行处理（同步）
+function beforeDrop(child: GridDragResizeItemProps): GridDragResizeItemProps {
+  child.data = {
+    ...(child.data ?? {}),
+    time: Date.now()
+  }
+
+  return child
+}
 </script>

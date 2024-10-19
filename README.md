@@ -1,7 +1,9 @@
 # vue3-grid-drag-resize
+
 Drag and resize element in grid.
 
 ## 拖动 | Drag
+
 > 基本拖动 | Basic drag
 
 ![1](https://github.com/user-attachments/assets/b8836f09-e552-4464-a98a-1063959a03f5)
@@ -15,6 +17,7 @@ Drag and resize element in grid.
 ![13](https://github.com/user-attachments/assets/0a6fcb91-1f20-4fdb-a99f-60946b814a16)
 
 ## 调整大小 | Resize
+
 > Basic resize
 
 ![3](https://github.com/user-attachments/assets/f9c44e73-6000-4680-9e6e-36d96b5585ef)
@@ -24,6 +27,7 @@ Drag and resize element in grid.
 ![4](https://github.com/user-attachments/assets/2c043703-5956-4ff6-b71a-6c3bb27ce20c)
 
 ## 拖入
+
 > 从外部拖入（设置了默认占用空间）| Drag in from outside (default space is set)
 
 ![5](https://github.com/user-attachments/assets/9f7936a5-a68a-4701-84cf-2b02232ed02a)
@@ -32,21 +36,24 @@ Drag and resize element in grid.
 
 ![6](https://github.com/user-attachments/assets/2894dadc-981e-4a74-87d4-32477059fef2)
 
-> 跨嵌套拖入 | Drop in cross nested
+> 跨嵌套拖入 | Drop in cross group
 
 ![7](https://github.com/user-attachments/assets/50221885-27df-42ac-96d0-db23b73711d7)
 
 ## 拖出
-> 跨嵌套拖出 | Drop out cross nested
+
+> 跨嵌套拖出 | Drop out cross group
 
 ![8](https://github.com/user-attachments/assets/f426ffbf-254a-4ccc-bf49-d09dec755149)
 
 ## 嵌套
-> 层层嵌套 | Nest
+
+> 层层嵌套 | Group
 
 ![9](https://github.com/user-attachments/assets/1d158bb8-7039-45e2-8331-f1bd177e900b)
 
 ## 删除 | Remove
+
 > 躲避选中 | Avoid selection
 
 ![10](https://github.com/user-attachments/assets/9f5b8b8b-a33a-4505-a52a-37b5e70351f6)
@@ -72,5 +79,3 @@ Drag and resize element in grid.
 [CSDN](https://blog.csdn.net/xachary2/category_12804120.html)
 
 [稀土掘金](https://juejin.cn/column/7423692195735224335)
-
-

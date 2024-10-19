@@ -14,133 +14,8 @@ import type {
 import ComponentA from '@/demo/components/ComponentA.vue'
 import ComponentB from '@/demo/components/ComponentB.vue'
 import ComponentC from '@/demo/components/ComponentC.vue'
+import ComponentD from '@/demo/components/ComponentD.vue'
 import ComponentG from '@/demo/components/ComponentG.vue'
-
-let id = 0
-
-// 已拖入内容
-const children: Ref<GridDragResizeProps['children']> = ref([
-  {
-    rowStart: 4,
-    rowEnd: 7,
-    columnStart: 1,
-    columnEnd: 3,
-    data: {
-      id: ++id
-    },
-    child: {
-      className: 'demo-child',
-      columns: 3,
-      rows: 3,
-      children: [
-        {
-          rowStart: 1,
-          rows: 1,
-          columnStart: 1,
-          columns: 1,
-          render: () => h('div', { class: 'demo-item', style: { background: '#346145' } }, 'Nest')
-        },
-        {
-          rowStart: 2,
-          rows: 2,
-          columnStart: 2,
-          columns: 2,
-          render: () =>
-            h('div', { class: 'demo-item', style: { background: '#6FBFF9' } }, 'by prop child')
-        }
-      ]
-    }
-  },
-  {
-    rowStart: 1,
-    rowEnd: 4,
-    columnStart: 4,
-    columnEnd: 6,
-    render: () => h(ComponentG),
-    data: {
-      id: ++id
-    }
-  },
-  {
-    removable: false,
-    render: () => h(ComponentA),
-    data: {
-      id: ++id,
-      name: 'ComponentA'
-    }
-  },
-  {
-    columnStart: 2,
-    rowStart: 2,
-    draggable: false,
-    render: () => h(ComponentB),
-    data: {
-      id: ++id,
-      name: 'ComponentB'
-    }
-  },
-  {
-    rowStart: 3,
-    columnStart: 3,
-    resizable: false,
-    render: () => h(ComponentC),
-    data: {
-      id: ++id,
-      name: 'ComponentC'
-    }
-  },
-  {
-    rowStart: 4,
-    columnStart: 5,
-    rows: 2,
-    columns: 1,
-    dragHandler: '.demo-item>button',
-    render: () =>
-      h('div', { class: 'demo-item', style: { background: '#eb9c64' } }, [
-        h('button', 'Drag handler')
-      ]),
-    data: {
-      id: ++id
-    }
-  },
-  {
-    rowStart: 2,
-    rowEnd: 3,
-    columnStart: 1,
-    columnEnd: 2,
-    render: () =>
-      h('div', { class: 'demo-item', style: { background: '#8fbf9f' } }, 'Component D 1'),
-    data: {
-      id: ++id
-    }
-  },
-  {
-    rowStart: 4,
-    rowEnd: 7,
-    columnStart: 3,
-    columnEnd: 5,
-    data: {
-      id: ++id
-    },
-    child: {
-      className: 'demo-child',
-      columns: 3,
-      rows: 3,
-      children: []
-    }
-  },
-  {
-    rowStart: 3,
-    rowEnd: 4,
-    columnStart: 1,
-    columnEnd: 2,
-    render: () =>
-      h('div', { class: 'demo-item', style: { background: '#8fbf9f' } }, 'Component D2'),
-    data: {
-      id: ++id
-    }
-  }
-])
 
 // 生成 render
 function candidateRender(
@@ -162,78 +37,195 @@ function candidateRender(
 }
 
 // 生成拖入内容
-function createCandidate(columns = 1, rows = 1, background = '#fff') {
+function createCandidate(
+  columns = 1,
+  rows = 1,
+  columnStart = 1,
+  rowStart = 1,
+  background = '#fff'
+) {
   return {
     columns,
     rows,
+    columnStart,
+    rowStart,
     render: (props: GridDragResizeItemProps) => candidateRender(columns, rows, background, props)
   } as GridDragResizeItemProps
 }
 
 // 待拖入内容
 const candidate: Ref<GridDragResizeProps['children']> = ref([
-  createCandidate(1, 2, '#6c35de'),
-  createCandidate(5, 1, '#ffc7ff'),
+  createCandidate(1, 1, 1, 1, '#E09F6D'),
+  createCandidate(2, 1, 2, 1, '#6c35de'),
+  createCandidate(3, 1, 1, 2, '#ffc7ff'),
+  createCandidate(2, 2, 4, 1, '#282828'),
   {
+    rowStart: 1,
     columns: 2,
+    columnStart: 6,
+    removable: false,
+    render: () => h(ComponentA),
+    data: {
+      name: 'A'
+    }
+  },
+  {
+    rowStart: 2,
+    columns: 2,
+    columnStart: 6,
+    draggable: false,
+    render: () => h(ComponentB),
+    data: {
+      name: 'B'
+    }
+  },
+  {
+    rowStart: 3,
+    columns: 2,
+    columnStart: 6,
+    resizable: false,
+    render: () => h(ComponentC),
+    data: {
+      name: 'C'
+    }
+  },
+  {
+    rowStart: 4,
+    columns: 2,
+    columnStart: 6,
+    droppableOut: false,
+    render: () => h(ComponentD),
+    data: {
+      name: 'D'
+    }
+  },
+  {
     rows: 2,
-    render: () => h(ComponentG)
+    rowStart: 5,
+    columns: 2,
+    columnStart: 6,
+    dragHandler: '.demo-item>button',
+    render: () =>
+      h('div', { class: 'demo-item', style: { background: '#eb9c64' } }, [h('button', 'Drag here')])
+  },
+  {
+    columns: 5,
+    rows: 4,
+    columnStart: 1,
+    rowStart: 3,
+    child: {
+      className: 'group',
+      columns: 3,
+      rows: 3,
+      children: []
+    },
+    data: {
+      name: 'Group 3 x 3'
+    }
+  },
+  {
+    columns: 5,
+    rows: 2,
+    columnStart: 1,
+    rowStart: 7,
+    child: {
+      className: 'group-undroppable',
+      columns: 3,
+      rows: 3,
+      children: [],
+      droppableIn: false
+    },
+    data: {
+      name: 'Group but undroppable in'
+    }
+  },
+  {
+    columns: 5,
+    rows: 2,
+    columnStart: 1,
+    rowStart: 9,
+    readonly: true,
+    child: {
+      className: 'group-readonly',
+      columns: 3,
+      rows: 2,
+      children: [createCandidate(1, 1, 1, 2, '#E09F6D'), createCandidate(1, 1, 3, 2, '#E09F6D')]
+    },
+    data: {
+      name: 'Group but readonly'
+    }
   }
 ])
 
-// 拖入子组件的数据项
-const droppingChild: Ref<GridDragResizeItemProps | undefined> = ref()
-
-// 开始拖入
-function dragstart(e: DragEvent, idx: number) {
-  // 目标 拖入子组件的数据项
-  if (candidate.value?.[idx]) {
-    const item = { ...candidate.value?.[idx] }
-    item.data = { id: ++id }
-
-    // 设置 拖入子组件的数据项
-    droppingChild.value = item
+// 已拖入内容
+const children: Ref<GridDragResizeProps['children']> = ref([
+  {
+    rowStart: 2,
+    rowEnd: 6,
+    columnStart: 2,
+    columnEnd: 8,
+    render: () => h(ComponentG),
+    data: {
+      name: 'Component G'
+    }
   }
-}
+])
 
-// 拖入终止
-function dragend() {
-  // 清除 拖入子组件的数据项
-  droppingChild.value = undefined
+// 拖入之前进行处理（异步）
+async function beforeDrop(child: GridDragResizeItemProps): Promise<GridDragResizeItemProps> {
+  return await (() =>
+    new Promise((resolve) => {
+      setTimeout(() => {
+        child.data = {
+          ...(child.data ?? {}),
+          time: Date.now()
+        }
+        resolve(child)
+      }, 100)
+    }))()
 }
 </script>
 
 <template>
-  <div class="page">
-    <header>
-      <header>
-        <div
-          v-for="(item, idx) of candidate"
-          :key="idx"
-          draggable="true"
-          @dragstart="dragstart($event, idx)"
-          @dragend="dragend"
-        >
-          <component :is="item.render"></component>
-        </div>
-      </header>
-      <footer
+  <!-- GridDragResize: 状态共享 | State share -->
+  <GridDragResize class="page">
+    <section style="padding: 4px; border: 1px solid #666">
+      <div
+        v-html="JSON.stringify(candidate, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"
+      ></div>
+    </section>
+    <section>
+      <GridDragResize
+        :column-size="50"
+        :row-size="50"
+        :gap="10"
+        overflow="hidden"
+        rowExpandable
+        columnExpandable
+        v-model:children="candidate"
+      ></GridDragResize>
+    </section>
+    <div style="display: flex; align-items: center; justify-content: center">
+      <span>&lt;-&gt;</span>
+    </div>
+    <section>
+      <GridDragResize
+        :column-size="50"
+        :row-size="50"
+        :gap="10"
+        overflow="hidden"
+        columnExpandable
+        rowExpandable
+        :beforeDrop="beforeDrop"
+        v-model:children="children"
+      ></GridDragResize>
+    </section>
+    <section style="padding: 4px; border: 1px solid #666">
+      <div
         v-html="JSON.stringify(children, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"
-      ></footer>
-      <!-- <footer v-html="JSON.stringify(candidate, null, 2).replace(/\n/g, '<br>').replace(/\s/g, '&nbsp; ')"></footer> -->
-    </header>
-    <GridDragResize
-      :columns="5"
-      :rows="6"
-      :gap="10"
-      :row-size="100"
-      :row-expandable="true"
-      :readonly="false"
-      :dropping-child="droppingChild"
-      v-model:children="children"
-    >
-    </GridDragResize>
-  </div>
+      ></div>
+    </section>
+  </GridDragResize>
 </template>
 
 <style lang="less">
@@ -272,53 +264,29 @@ body {
   text-rendering: optimizelegibility;
 }
 </style>
+
+<style lang="less">
+.grid-drag-resize {
+  padding: 10px;
+}
+</style>
+
 <style lang="less">
 .page {
-  display: flex;
-  align-items: flex-start;
-  min-height: 100vh;
+  display: grid;
+  grid-template: 1fr/1fr 2fr 30px 2fr 1fr;
+  height: 100vh;
   padding: 16px;
+  gap: 10px;
 
-  // height: 100vh;
-  // overflow: auto;
-  & > header {
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    align-self: stretch;
-    width: 400px;
-    margin-right: 32px;
-    border: 1px solid #ddd;
-
-    & > header,
-    & > footer {
-      height: 0;
-      overflow: auto;
-    }
-
-    & > header {
-      flex-grow: 2;
-
-      & > div {
-        height: 100px;
-        border-bottom: 1px solid #eee;
-        background-color: #fff;
-        cursor: grab;
-        user-select: none;
-
-        &:last-child {
-          height: 250px;
-        }
-      }
-    }
-
-    & > footer {
-      flex-grow: 1;
-      border-top: 1px solid #eee;
-    }
+  & > section {
+    overflow: auto;
+    border: 1px solid #666;
   }
 }
+</style>
 
+<style lang="less">
 .demo-item {
   display: flex;
   flex-direction: column;
@@ -327,33 +295,53 @@ body {
   height: 100%;
   padding: 10px;
   color: #fff;
-  font-size: 18px;
   line-height: 1.1em;
 }
 
-.demo-child {
-  padding: 20px;
-  border: 1px solid #f00;
+.group {
+  padding: 10px;
+  border: 1px solid #61bc84;
+
+  &::before {
+    content: 'Group 3 x 3';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    color: #999;
+    text-align: center;
+  }
 }
 
-.grid-drag-resize {
-  flex-grow: 1;
-  background-color: #eee;
+.group-undroppable {
+  padding: 10px;
+  border: 1px solid #999;
 
-  &--dropping {
-    box-shadow: 0 0 6px 2px #0f0 inset;
+  &::before {
+    content: 'Group but undroppable in';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    color: #999;
+    text-align: center;
   }
+}
 
-  .grid-drag-resize__item {
-    background-color: #ddd;
+.group-readonly {
+  padding: 10px;
+  border: 1px solid #999;
 
-    &--dragging {
-      box-shadow: 0 0 6px 2px #00f;
-    }
-
-    &--selected {
-      box-shadow: 0 0 6px 2px #f0f;
-    }
+  &::before {
+    content: 'Group but readonly';
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    color: #999;
+    text-align: center;
   }
 }
 </style>

@@ -1,16 +1,16 @@
 <template>
-  <div class="component-d">Unresizable</div>
+  <div class="component-c">Undroppable</div>
 </template>
 
 <style lang="less" scoped>
-.component-d {
+.component-c {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
   padding: 10px;
-  background: #554e4f;
+  background: #2e8b57;
   color: #fff;
   line-height: 1.1em;
 }

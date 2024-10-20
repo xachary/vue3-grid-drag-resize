@@ -415,7 +415,6 @@ let dragOffsetClientRow = 0,
   dragOffsetClientColumn = 0
 
 // 计算移动方向
-// let lastClientX = 0, lastClientY = 0
 let rowDirection = 0,
   columnDirection = 0
 
@@ -653,11 +652,6 @@ function dragStart(e: MouseEvent) {
       // 记录 拖动开始位置
       dragStartClientX = e.clientX
       dragStartClientY = e.clientY
-
-      // lastClientX = e.clientX
-      // lastClientY = e.clientY
-      // rowDirection = 0
-      // columnDirection = 0
     }
   }
 }
@@ -668,9 +662,6 @@ function dragMove(e: MouseEvent) {
     // 计算 拖动偏移量
     dragOffsetClientColumn = e.clientX - dragStartClientX
     dragOffsetClientRow = e.clientY - dragStartClientY
-
-    // lastClientX = e.clientX
-    // lastClientY = e.clientY
 
     // 当前拖动子组件的 grid 大小
     let rowSpan =

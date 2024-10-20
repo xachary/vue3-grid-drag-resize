@@ -125,15 +125,15 @@
     }
 
     &__remove {
-      display: none;
       position: absolute;
       z-index: 4;
       top: 0;
       right: 0;
-      width: 13px;
-      height: 13px;
+      width: 0;
+      height: 0;
+      overflow: hidden;
       transition: transform 0.3s ease-in-out;
-      border: 1px solid rgb(255 0 0 / 60%);
+      border: 0 solid rgb(255 0 0 / 60%);
       border-radius: 50%;
       opacity: 0.8;
       background-color: #fff;
@@ -167,14 +167,14 @@
     }
 
     &__drop {
-      display: none;
       position: absolute;
       z-index: 4;
-      left: calc(50% - ($width/2));
-      width: 18px;
-      height: 18px;
+      left: calc(50% - (18px / 2));
+      width: 0;
+      height: 0;
+      overflow: hidden;
       transition: transform 0.3s ease-in-out;
-      border: 1px solid #666;
+      border: 0 solid #666;
       border-radius: 50%;
       opacity: 0.8;
       background-color: rgb(255 255 255 / 100%);
@@ -185,9 +185,16 @@
       }
     }
 
-    &--hover > &__remove,
+    &--hover > &__remove {
+      width: 13px;
+      height: 13px;
+      border-width: 1px;
+    }
+
     &--hover > &__drop {
-      display: block;
+      width: 18px;
+      height: 18px;
+      border-width: 1px;
     }
   }
 

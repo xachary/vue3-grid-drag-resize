@@ -1,6 +1,6 @@
 {
   "name": "vue3-grid-drag-resize",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "type": "module",
   "files": [
     "dist"
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "vue": "^3.4.21",
-    "vue3-grid-drag-resize": "^0.9.0"
+    "vue3-grid-drag-resize": "^0.9.1"
   },
   "devDependencies": {
     "@commitlint/cli": "19.2.1",

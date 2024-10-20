@@ -4,6 +4,8 @@ import type { VNode } from 'vue'
 export interface GridDragResizeCoommonProps {
   overflow?: string // CSS overflow
   dragHandler?: string // 拖动锚点（querySelector）
+  dropOutHandler?: string // 拖出锚点（querySelector）
+  removeHandler?: string // 删除锚点（querySelector）
   //
   readonly?: boolean // * 只读，true 将禁用所有的 xxxable
   //

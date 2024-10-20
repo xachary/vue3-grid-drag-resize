@@ -12,8 +12,8 @@ importers:
         specifier: ^3.4.21
         version: 3.4.21(typescript@5.4.3)
       vue3-grid-drag-resize:
-        specifier: ^0.8.0
-        version: 0.8.0(typescript@5.4.3)
+        specifier: ^0.9.0
+        version: 0.9.0(typescript@5.4.3)
     devDependencies:
       '@commitlint/cli':
         specifier: 19.2.1
@@ -2774,8 +2774,8 @@ packages:
     peerDependencies:
       typescript: '*'
 
-  vue3-grid-drag-resize@0.8.0:
-    resolution: {integrity: sha512-Z3a0xf+2jpyMpRvYOwmWXq5+lX1j4ijbBtUCiRENnQeTabxOwJAbVaNeFd1ECAXmrgVAKoRALxpXx+hLQRA07Q==}
+  vue3-grid-drag-resize@0.9.0:
+    resolution: {integrity: sha512-BUhSljYAqrLQBKWkMJX4OEN7t0a+mAzX9sV5rNZ96RnP4w8AqQo+svqJykwMaufYhoftrmIaBz9qjdyf3slwjw==}
 
   vue@3.4.21:
     resolution: {integrity: sha512-5hjyV/jLEIKD/jYl4cavMcnzKwjMKohureP8ejn3hhEjwhWIhWeuzL2kJAjzl/WyVsgPY56Sy4Z40C3lVshxXA==}
@@ -5531,7 +5531,7 @@ snapshots:
       semver: 7.6.0
       typescript: 5.4.3
 
-  vue3-grid-drag-resize@0.8.0(typescript@5.4.3):
+  vue3-grid-drag-resize@0.9.0(typescript@5.4.3):
     dependencies:
       vue: 3.5.12(typescript@5.4.3)
     transitivePeerDependencies:

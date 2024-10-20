@@ -6,16 +6,18 @@
 >
 > 这些配置在嵌套过程中，会从外到内传递继承。
 
-| 名称         | 类型    | 默认值    | 说明                                        | 版本   |
-| :----------- | :------ | :-------- | :------------------------------------------ | :----- |
-| overflow     | string  | undefined | CSS overflow ，子组件优先级更高             | 0.6.0  |
-| dragHandler  | string  | ''        | 拖动锚点（querySelector），子组件优先级更高 | 0.0.17 |
-| readonly     | boolean | false     | 只读，true 将禁用所有的 xxxable             | 0.0.17 |
-| draggable    | boolean | true      | 是否可拖动                                  | 0.0.17 |
-| resizable    | boolean | true      | 是否可调整大小                              | 0.0.17 |
-| removable    | boolean | true      | 是否可移除                                  | 0.2.0  |
-| droppableIn  | boolean | true      | 是否能拖入                                  | 0.7.0  |
-| droppableOut | boolean | true      | 是否能拖出                                  | 0.7.0  |
+| 名称           | 类型    | 默认值    | 说明                                        | 版本   |
+| :------------- | :------ | :-------- | :------------------------------------------ | :----- |
+| overflow       | string  | undefined | CSS overflow ，子组件优先级更高             | 0.6.0  |
+| dragHandler    | string  | ''        | 拖动锚点（querySelector），子组件优先级更高 | 0.0.17 |
+| dropOutHandler | string  | ''        | 拖出锚点（querySelector），子组件优先级更高 | 0.9.0  |
+| removeHandler  | string  | ''        | 移除锚点（querySelector），子组件优先级更高 | 0.9.0  |
+| readonly       | boolean | false     | 只读，true 将禁用所有的 xxxable             | 0.0.17 |
+| draggable      | boolean | true      | 是否可拖动                                  | 0.0.17 |
+| resizable      | boolean | true      | 是否可调整大小                              | 0.0.17 |
+| removable      | boolean | true      | 是否可移除                                  | 0.2.0  |
+| droppableIn    | boolean | true      | 是否能拖入                                  | 0.7.0  |
+| droppableOut   | boolean | true      | 是否能拖出                                  | 0.7.0  |
 
 > GridDragResizeProps&lt;T&gt;
 

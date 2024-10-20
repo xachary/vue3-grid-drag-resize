@@ -115,6 +115,28 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
       h('div', { class: 'demo-item', style: { background: '#eb9c64' } }, [h('button', 'Drag here')])
   },
   {
+    rows: 2,
+    rowStart: 7,
+    columns: 2,
+    columnStart: 6,
+    dropOutHandler: '.demo-item>button',
+    render: () =>
+      h('div', { class: 'demo-item', style: { background: '#58BEE6' } }, [
+        h('button', 'Drop out here')
+      ])
+  },
+  {
+    rows: 2,
+    rowStart: 9,
+    columns: 2,
+    columnStart: 6,
+    removeHandler: '.demo-item>button',
+    render: () =>
+      h('div', { class: 'demo-item', style: { background: '#B73929' } }, [
+        h('button', 'Remove here')
+      ])
+  },
+  {
     columns: 5,
     rows: 4,
     columnStart: 1,

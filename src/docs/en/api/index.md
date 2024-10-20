@@ -6,16 +6,18 @@
 >
 > These props are inherited from the outside to the inside during the nesting group.
 
-| 名称         | 类型    | 默认值    | 说明                                                      | 版本   |
-| :----------- | :------ | :-------- | :-------------------------------------------------------- | :----- |
-| overflow     | string  | undefined | CSS overflow, children has higher priority                | 0.6.0  |
-| dragHandler  | string  | ''        | Drag anchor (querySelector), children has higher priority | 0.0.17 |
-| readonly     | boolean | false     | Readonly, true will disable all xxxable                   | 0.0.17 |
-| draggable    | boolean | true      | Draggable                                                 | 0.0.17 |
-| resizable    | boolean | true      | Resizable                                                 | 0.0.17 |
-| removable    | boolean | true      | Removable                                                 | 0.2.0  |
-| droppableIn  | boolean | true      | Droppable in                                              | 0.7.0  |
-| droppableOut | boolean | true      | Droppable out                                             | 0.7.0  |
+| 名称           | 类型    | 默认值    | 说明                                                      | 版本   |
+| :------------- | :------ | :-------- | :-------------------------------------------------------- | :----- |
+| overflow       | string  | undefined | CSS overflow, children has higher priority                | 0.6.0  |
+| dragHandler    | string  | ''        | Drag anchor (querySelector), children has higher priority | 0.0.17 |
+| dropOutHandler | string  | ''        | Drop out（querySelector），children has higher priority   | 0.9.0  |
+| removeHandler  | string  | ''        | Remove（querySelector），children has higher priority     | 0.9.0  |
+| readonly       | boolean | false     | Readonly, true will disable all xxxable                   | 0.0.17 |
+| draggable      | boolean | true      | Draggable                                                 | 0.0.17 |
+| resizable      | boolean | true      | Resizable                                                 | 0.0.17 |
+| removable      | boolean | true      | Removable                                                 | 0.2.0  |
+| droppableIn    | boolean | true      | Droppable in                                              | 0.7.0  |
+| droppableOut   | boolean | true      | Droppable out                                             | 0.7.0  |
 
 > GridDragResizeProps&lt;T&gt;
 

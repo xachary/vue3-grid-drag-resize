@@ -54,6 +54,12 @@ const parentInject = inject<{ props: Ref<GridDragResizeProps> }>(ParentInjectSym
 
 // 穿透 Props 处理
 const dragHandlerParsed = computed(() => props.dragHandler || parentInject?.props.value.dragHandler)
+const dropOutHandlerParsed = computed(
+  () => props.dropOutHandler || parentInject?.props.value.dropOutHandler
+)
+const removeHandlerParsed = computed(
+  () => props.removeHandler || parentInject?.props.value.removeHandler
+)
 const overflowParsed = computed(() => props.overflow || parentInject?.props.value.overflow)
 //
 const readonlyParsed = computed(() => props.readonly ?? parentInject?.props.value.readonly)
@@ -81,7 +87,7 @@ const debugParsed = computed(() => props.debug ?? parentInject?.props.value.debu
 const draggableDefault = computed(() => draggableParsed.value ?? true)
 const resizableDefault = computed(() => resizableParsed.value ?? true)
 const removableDefault = computed(() => removableParsed.value ?? true)
-const droppableDefault = computed(() => droppableOutParsed.value ?? true)
+const droppableOutDefault = computed(() => droppableOutParsed.value ?? true)
 
 if (debugParsed.value) {
   console.log(parentInject?.props.value)
@@ -91,6 +97,8 @@ const providePropsRef = ref({
   ...props,
   //
   dragHandler: dragHandlerParsed.value,
+  dropOutHandler: dropOutHandlerParsed.value,
+  removeHandler: removeHandlerParsed.value,
   overflow: overflowParsed.value,
   //
   readonly: readonlyParsed.value,
@@ -197,9 +205,63 @@ watchEffect(() => {
   if (draggableDefault.value && dragHandlerParsed.value && itemEle.value) {
     const handlerEle = itemEle.value.querySelector(dragHandlerParsed.value)
     if (handlerEle instanceof HTMLElement) {
-      handlerEle.style.cursor = 'grab'
+      handlerEle.style.cursor = 'move'
 
       handlerEle.addEventListener('mousedown', dragstart)
+    }
+  }
+})
+
+// dropOutHandler 定位、处理、事件绑定
+watchEffect(() => {
+  if (droppableOutDefault.value && dropOutHandlerParsed.value && itemEle.value) {
+    const handlerEle = itemEle.value.querySelector(dropOutHandlerParsed.value)
+    if (handlerEle instanceof HTMLElement) {
+      handlerEle.style.cursor = 'grab'
+
+      handlerEle.setAttribute('draggable', 'true')
+
+      handlerEle.addEventListener('mousedown', (e: MouseEvent) => {
+        e.stopPropagation()
+        dropStart()
+      })
+      handlerEle.addEventListener('mousemove', (e: MouseEvent) => {
+        e.stopPropagation()
+      })
+      handlerEle.addEventListener('mouseup', (e: MouseEvent) => {
+        e.stopPropagation()
+      })
+      handlerEle.addEventListener('dragstart', (e: MouseEvent) => {
+        e.stopPropagation()
+      })
+      handlerEle.addEventListener('dragend', (e: MouseEvent) => {
+        e.stopPropagation()
+        dropEnd()
+      })
+    }
+  }
+})
+
+// removeHandler 定位、处理、事件绑定
+watchEffect(() => {
+  if (removableDefault.value && removeHandlerParsed.value && itemEle.value) {
+    const handlerEle = itemEle.value.querySelector(removeHandlerParsed.value)
+    if (handlerEle instanceof HTMLElement) {
+      handlerEle.style.cursor = 'pointer'
+
+      handlerEle.addEventListener('click', (e: MouseEvent) => {
+        remove(e)
+      })
+
+      handlerEle.addEventListener('mousedown', (e: MouseEvent) => {
+        e.stopPropagation()
+      })
+      handlerEle.addEventListener('mousemove', (e: MouseEvent) => {
+        e.stopPropagation()
+      })
+      handlerEle.addEventListener('mouseup', (e: MouseEvent) => {
+        e.stopPropagation()
+      })
     }
   }
 })
@@ -400,19 +462,19 @@ const hover = computed(() => {
       @mousedown.stop
       @mousemove.stop
       @mouseup.stop
-      v-if="removableDefault"
+      v-if="removableDefault && !removeHandlerParsed"
     >
     </span>
     <div
       :class="'grid-drag-resize__item__drop'"
-      :style="{ top: draggableDefault ? `${-dropDistance}px` : '' }"
+      :style="{ top: droppableOutDefault ? `${-dropDistance}px` : '' }"
       draggable="true"
       @mousedown.stop="dropStart"
       @mousemove.stop
       @mouseup.stop
       @dragstart.stop
       @dragend.stop="dropEnd"
-      v-if="droppableDefault"
+      v-if="droppableOutDefault && !dropOutHandlerParsed"
     ></div>
   </div>
 </template>

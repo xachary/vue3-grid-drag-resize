@@ -75,6 +75,18 @@ const dragHandlerParsed = computed(
     childInject?.props.value.dragHandler ||
     parentInject.props.value.dragHandler
 )
+const dropOutHandlerParsed = computed(
+  () =>
+    props.dropOutHandler ||
+    childInject?.props.value.dropOutHandler ||
+    parentInject.props.value.dropOutHandler
+)
+const removeHandlerParsed = computed(
+  () =>
+    props.removeHandler ||
+    childInject?.props.value.removeHandler ||
+    parentInject.props.value.removeHandler
+)
 //
 const readonlyParsed = computed(
   () => props.readonly ?? childInject?.props.value.readonly ?? parentInject.props.value.readonly
@@ -120,6 +132,8 @@ const providePropsRef = ref({
   ...props,
   //
   dragHandler: dragHandlerParsed.value,
+  dropOutHandler: dropOutHandlerParsed.value,
+  removeHandler: removeHandlerParsed.value,
   overflow: overflowParsed.value,
   //
   readonly: readonlyParsed.value,

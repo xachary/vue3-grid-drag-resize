@@ -184,6 +184,7 @@ async function beforeDrop(child: GridDragResizeItemProps): Promise<GridDragResiz
       setTimeout(() => {
         child.data = {
           ...(child.data ?? {}),
+          test: 'o_o',
           time: Date.now()
         }
         resolve(child)

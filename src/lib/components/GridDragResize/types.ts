@@ -1,10 +1,11 @@
 import type { VNode } from 'vue'
 
+// ! 这些配置在嵌套过程中，会从外到内传递继承
 export interface GridDragResizeCoommonProps {
   overflow?: string // CSS overflow
   dragHandler?: string // 拖动锚点（querySelector）
   //
-  readonly?: boolean // 只读，优先级高于子组件的 draggable、resizable
+  readonly?: boolean // * 只读，true 将禁用所有的 xxxable
   //
   draggable?: boolean // 是否可拖动
   resizable?: boolean // 是否可调整大小
@@ -12,7 +13,7 @@ export interface GridDragResizeCoommonProps {
   droppableIn?: boolean // 是否可拖入
   droppableOut?: boolean // 是否可拖出
   //
-  debug?: boolean // 嵌套组件, columnExpandable、rowExpandable 将失效
+  debug?: boolean
 }
 
 // 子组件的 Props
@@ -46,6 +47,7 @@ export interface GridDragResizeProps<T = any> extends GridDragResizeCoommonProps
   children?: GridDragResizeItemProps<T>[] // 子组件配置项
   //
   droppingChild?: GridDragResizeItemProps // 拖入子组件的数据项
+  selectedChild?: GridDragResizeItemProps // 选择项
   //
   beforeDrop?: (
     before: GridDragResizeItemProps

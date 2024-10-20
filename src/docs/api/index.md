@@ -30,9 +30,16 @@
 | rowExpandable           | boolean                                                                                                                 | false     | 允许向下扩展行数（嵌套组件无效） | 0.0.17 |
 | children (v-model)      | GridDragResizeItemProps&lt;T&gt;[]                                                                                      | []        | 子配置项                         | 0.0.17 |
 | droppingChild (v-model) | GridDragResizeItemProps                                                                                                 | undefined | 正在拖入的配置项                 | 0.2.6  |
+| selectedChild (v-model) | GridDragResizeItemProps                                                                                                 | undefined | 选中项                           | 0.8.0  |
 | beforeDrop              | (prop:GridDragResizeItemProps)<br>=&gt;<br>GridDragResizeItemProps \|<br>Promise&lt;<br>GridDragResizeItemProps<br>&gt; | undefined | 拖入之前进行处理                 | 0.7.0  |
 | className               | string                                                                                                                  | undefined | 附加 CSS Class                   | 0.4.0  |
 | tagName                 | string                                                                                                                  | 'div'     | 根节点的 TagName                 | 0.7.0  |
+
+## 事件
+
+| Name   | Type                                        | Default   | Desc | Version |
+| :----- | :------------------------------------------ | :-------- | :--- | :------ |
+| select | (prop:GridDragResizeItemProps)<br>=&gt;void | undefined | 选择 | 0.8.0   |
 
 ## 子配置项
 

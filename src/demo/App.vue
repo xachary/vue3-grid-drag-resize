@@ -27,11 +27,12 @@ function candidateRender(
   if (
     [props.columnStart, props.columnEnd, props.rowStart, props.rowEnd].every((o) => o !== void 0)
   ) {
-    const info = [h('div', `${props.columns} x ${props.rows}`)]
+    const info = [h('div', `${props.columns} x ${props.rows}`), h('div', `${props.data.test}`)]
     return h('div', { class: 'demo-item', style: { background } }, info)
   } else {
     return h('div', { class: 'demo-item', style: { background } }, [
-      h('div', `${props.columns ?? columns}x${props.rows ?? rows}`)
+      h('div', `${props.columns ?? columns}x${props.rows ?? rows}`),
+      h('div', `${props.data.test}`)
     ])
   }
 }
@@ -49,7 +50,12 @@ function createCandidate(
     rows,
     columnStart,
     rowStart,
-    render: (props: GridDragResizeItemProps) => candidateRender(columns, rows, background, props)
+    render: (props: GridDragResizeItemProps) => {
+      return candidateRender(columns, rows, background, props)
+    },
+    data: {
+      test: ''
+    }
   } as GridDragResizeItemProps
 }
 
@@ -184,10 +190,16 @@ async function beforeDrop(child: GridDragResizeItemProps): Promise<GridDragResiz
       }, 100)
     }))()
 }
+
+function select(props: GridDragResizeItemProps | undefined) {
+  if (props?.data) {
+    props.data.test = '^o^'
+  }
+}
 </script>
 
 <template>
-  <!-- GridDragResize: 状态共享 | State share -->
+  <!-- * GridDragResize: 状态共享 | State share -->
   <GridDragResize class="page">
     <section style="padding: 4px; border: 1px solid #666">
       <div
@@ -203,6 +215,7 @@ async function beforeDrop(child: GridDragResizeItemProps): Promise<GridDragResiz
         rowExpandable
         columnExpandable
         v-model:children="candidate"
+        @select="select"
       ></GridDragResize>
     </section>
     <div style="display: flex; align-items: center; justify-content: center">

@@ -19,20 +19,27 @@
 
 > GridDragResizeProps&lt;T&gt;
 
-| Name                    | Type                                                                                                                    | Default   | Desc                                                                | Version |
-| :---------------------- | :---------------------------------------------------------------------------------------------------------------------- | :-------- | :------------------------------------------------------------------ | :------ |
-| columns (v-model)       | number                                                                                                                  | 1         | Number of columns                                                   | 0.0.17  |
-| rows (v-model)          | number                                                                                                                  | 1         | Number of rows                                                      | 0.0.17  |
-| gap                     | number                                                                                                                  | 0         | gap size                                                            | 0.0.17  |
-| columnSize              | number                                                                                                                  | undefined | Column size, undefined as 1fr                                       | 0.0.17  |
-| rowSize                 | number                                                                                                                  | undefined | Row size, undefined undefined as 1fr                                | 0.0.17  |
-| columnExpandable        | boolean                                                                                                                 | false     | Enable columns to expand to the right(Disable when in nested group) | 0.0.17  |
-| rowExpandable           | boolean                                                                                                                 | false     | Enable rows to expand to the bottom(Disable when in nested group)   | 0.0.17  |
-| children (v-model)      | GridDragResizeItemProps&lt;T&gt;[]                                                                                      | []        | children Props                                                      | 0.0.17  |
-| droppingChild (v-model) | GridDragResizeItemProps                                                                                                 | undefined | Child which is dropping                                             | 0.2.6   |
-| beforeDrop              | (prop:GridDragResizeItemProps)<br>=&gt;<br>GridDragResizeItemProps \|<br>Promise&lt;<br>GridDragResizeItemProps<br>&gt; | undefined | Update prop before drop                                             | 0.7.0   |
-| className               | string                                                                                                                  | undefined | Add CSS Class                                                       | 0.4.0   |
-| tagName                 | string                                                                                                                  | 'div'     | Root element TagName                                                | 0.7.0   |
+| Name                    | Type                                                                                                                        | Default   | Desc                                                                | Version |
+| :---------------------- | :-------------------------------------------------------------------------------------------------------------------------- | :-------- | :------------------------------------------------------------------ | :------ |
+| columns (v-model)       | number                                                                                                                      | 1         | Number of columns                                                   | 0.0.17  |
+| rows (v-model)          | number                                                                                                                      | 1         | Number of rows                                                      | 0.0.17  |
+| gap                     | number                                                                                                                      | 0         | gap size                                                            | 0.0.17  |
+| columnSize              | number                                                                                                                      | undefined | Column size, undefined as 1fr                                       | 0.0.17  |
+| rowSize                 | number                                                                                                                      | undefined | Row size, undefined undefined as 1fr                                | 0.0.17  |
+| columnExpandable        | boolean                                                                                                                     | false     | Enable columns to expand to the right(Disable when in nested group) | 0.0.17  |
+| rowExpandable           | boolean                                                                                                                     | false     | Enable rows to expand to the bottom(Disable when in nested group)   | 0.0.17  |
+| children (v-model)      | GridDragResizeItemProps<br>&lt;T&gt;[]                                                                                      | []        | children Props                                                      | 0.0.17  |
+| droppingChild (v-model) | GridDragResizeItemProps                                                                                                     | undefined | Child which is dropping                                             | 0.2.6   |
+| selectedChild (v-model) | GridDragResizeItemProps                                                                                                     | undefined | Child selected                                                      | 0.8.0   |
+| beforeDrop              | (prop:<br>GridDragResizeItemProps)<br>=&gt;<br>GridDragResizeItemProps \|<br>Promise&lt;<br>GridDragResizeItemProps<br>&gt; | undefined | Update prop before drop                                             | 0.7.0   |
+| className               | string                                                                                                                      | undefined | Add CSS Class                                                       | 0.4.0   |
+| tagName                 | string                                                                                                                      | 'div'     | Root element TagName                                                | 0.7.0   |
+
+## Events
+
+| Name   | Type                                        | Default   | Desc   | Version |
+| :----- | :------------------------------------------ | :-------- | :----- | :------ |
+| select | (prop:GridDragResizeItemProps)<br>=&gt;void | undefined | Select | 0.8.0   |
 
 ## children Props
 

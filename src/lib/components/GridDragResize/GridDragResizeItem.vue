@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
   rowStart: 0,
   rowEnd: 0,
   //
-  // 未传递，保留 undefined
+  // ^ 未传递，保留 undefined
   readonly: undefined,
   draggable: undefined,
   resizable: undefined,
@@ -116,6 +116,7 @@ type Emit = {
   (e: 'update:columns', val: number): void
   (e: 'startDrag', val: StartDragEvent): void
   (e: 'select'): void
+  (e: 'select-resizing'): void
   (e: 'startResize', val: StartResizeEvent): void
   (e: 'remove'): void
   (e: 'dropStart', val: { ele: HTMLElement | undefined; remove: () => void | undefined }): void
@@ -224,12 +225,19 @@ function dragstart(e: MouseEvent) {
 }
 
 // 选中
-function select(e: MouseEvent) {
-  if (resizableDefault.value) {
+function selectAndResizing(e: MouseEvent) {
+  if (!readonlyParsed.value) {
     e.stopPropagation()
 
     // 通知父组件 选中子组件
     emit('select')
+  }
+
+  if (resizableDefault.value) {
+    e.stopPropagation()
+
+    // 通知父组件 选中子组件
+    emit('select-resizing')
   }
 }
 
@@ -325,7 +333,7 @@ const hover = computed(() => {
     }"
     :style="style"
     @mousedown="(e: MouseEvent) => (dragHandlerParsed ? undefined : dragstart(e))"
-    @click="select"
+    @click="selectAndResizing"
     @mouseover.capture="mouseover"
     @mouseleave.capture="mouseleave"
     ref="itemEle"
@@ -333,6 +341,10 @@ const hover = computed(() => {
     <div class="grid-drag-resize__item__group" :style="{ overflow: overflowParsed }">
       <slot></slot>
     </div>
+    <b class="grid-drag-resize__item__border grid-drag-resize__item__border--top"></b>
+    <b class="grid-drag-resize__item__border grid-drag-resize__item__border--bottom"></b>
+    <b class="grid-drag-resize__item__border grid-drag-resize__item__border--left"></b>
+    <b class="grid-drag-resize__item__border grid-drag-resize__item__border--right"></b>
     <i
       class="grid-drag-resize__item__adjust grid-drag-resize__item__adjust--top"
       :style="{ top: `${-adjustDistance}px` }"

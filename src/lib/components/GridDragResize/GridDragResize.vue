@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<GridDragResizeProps>(), {
   children: () => [],
   tagName: 'div',
   //
-  // 未传递，保留 undefined
+  // ^ 未传递，保留 undefined
   readonly: undefined,
   draggable: undefined,
   resizable: undefined,
@@ -38,6 +38,8 @@ type Emit = {
   (e: 'update:columns', val: number): void
   (e: 'update:children', val: GridDragResizeProps['children']): void
   (e: 'update:droppingChild', val: GridDragResizeItemProps | undefined): void
+  (e: 'update:selectedChild', val: GridDragResizeItemProps | undefined): void
+  (e: 'select', val: GridDragResizeItemProps | undefined): void
 }
 
 const emit = defineEmits<Emit>()
@@ -159,6 +161,7 @@ let stateInject = inject<{
   hoverEle: Ref<HTMLElement | undefined>
   dragging: Ref<boolean>
   resizing: Ref<boolean>
+  selectedChild: Ref<GridDragResizeItemProps | undefined>
 } | null>(StateInjectSymbol, null)
 if (stateInject === null) {
   stateInject = {
@@ -170,7 +173,8 @@ if (stateInject === null) {
     droppingEle: ref(), // 当前正在承接 drop 的 GridDragResize 的 ele
     hoverEle: ref(), // hover 目标
     dragging: ref(false), // dragging 状态
-    resizing: ref(false) // dragging 状态
+    resizing: ref(false), // dragging 状态
+    selectedChild: ref(props.selectedChild)
   }
 }
 provide(StateInjectSymbol, stateInject)
@@ -359,8 +363,8 @@ let clickStartX = 0,
 let clickOffsetX = 0,
   clickOffsetY = 0
 
-// 当前选中子组件的数据项
-const selectingChild: Ref<GridDragResizeItemProps | undefined> = ref()
+// 当前调整大小子的数据项
+const resizingChild: Ref<GridDragResizeItemProps | undefined> = ref()
 
 // 当前调整大小子组件的数据项（初始状态）
 const resizingChildBefore: Ref<GridDragResizeItemProps | undefined> = ref()
@@ -444,8 +448,6 @@ function calcDragStartEndByPos(opts: {
   expandable: boolean
 }) {
   let { size, gap, span, max, pos, expandable } = opts
-
-  console.log(pos)
 
   // 虚拟地在 grid 四边补充二分之一的 gap 距离
   // 如此，通过计算 拖动位置（相对于组件）与 大小+间隙 的倍数即可
@@ -608,7 +610,7 @@ function resizingStart(...args: any[] | unknown[]) {
   document.body.style.cursor = cursor
 
   // 缓存状态
-  resizingChildBefore.value = { ...selectingChild.value }
+  resizingChildBefore.value = { ...resizingChild.value }
 }
 
 // 更新拖动信息
@@ -723,7 +725,7 @@ function dragMove(e: MouseEvent) {
     resizeOffsetClientColumn = e.clientX - resizeStartClientX
     resizeOffsetClientRow = e.clientY - resizeStartClientY
 
-    if (selectingChild.value) {
+    if (resizingChild.value) {
       // 行 向
       if (resizingChildDirection.value.startsWith('top')) {
         let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
@@ -736,9 +738,9 @@ function dragMove(e: MouseEvent) {
           target: 'start',
           expandable: rowExpandableParsed.value
         })
-        selectingChild.value.rowStart = rowStart
-        selectingChild.value.rowEnd = rowEnd
-        selectingChild.value.rows = rowEnd - rowStart
+        resizingChild.value.rowStart = rowStart
+        resizingChild.value.rowEnd = rowEnd
+        resizingChild.value.rows = rowEnd - rowStart
       } else if (resizingChildDirection.value.startsWith('bottom')) {
         let { start: rowStart, end: rowEnd } = calcResizeStartEnd({
           size: rowSize.value,
@@ -750,9 +752,9 @@ function dragMove(e: MouseEvent) {
           target: 'end',
           expandable: rowExpandableParsed.value
         })
-        selectingChild.value.rowStart = rowStart
-        selectingChild.value.rowEnd = rowEnd
-        selectingChild.value.rows = rowEnd - rowStart
+        resizingChild.value.rowStart = rowStart
+        resizingChild.value.rowEnd = rowEnd
+        resizingChild.value.rows = rowEnd - rowStart
 
         if (rowExpandableParsed.value) {
           // 向下扩展
@@ -772,9 +774,9 @@ function dragMove(e: MouseEvent) {
           target: 'start',
           expandable: columnExpandableParsed.value
         })
-        selectingChild.value.columnStart = columnStart
-        selectingChild.value.columnEnd = columnEnd
-        selectingChild.value.columns = columnEnd - columnStart
+        resizingChild.value.columnStart = columnStart
+        resizingChild.value.columnEnd = columnEnd
+        resizingChild.value.columns = columnEnd - columnStart
       } else if (resizingChildDirection.value.endsWith('right')) {
         let { start: columnStart, end: columnEnd } = calcResizeStartEnd({
           size: columnSize.value,
@@ -786,9 +788,9 @@ function dragMove(e: MouseEvent) {
           target: 'end',
           expandable: columnExpandableParsed.value
         })
-        selectingChild.value.columnStart = columnStart
-        selectingChild.value.columnEnd = columnEnd
-        selectingChild.value.columns = columnEnd - columnStart
+        resizingChild.value.columnStart = columnStart
+        resizingChild.value.columnEnd = columnEnd
+        resizingChild.value.columns = columnEnd - columnStart
 
         if (columnExpandableParsed.value) {
           // 向右扩展
@@ -819,7 +821,12 @@ function dragEnd(e: MouseEvent) {
 function clearSelection() {
   // 判断真实 click
   if (Math.abs(clickOffsetX) < 5 && Math.abs(clickOffsetY) < 5) {
-    selectingChild.value = undefined
+    if (stateInject) {
+      stateInject.selectedChild.value = undefined
+      emit('update:selectedChild', undefined)
+      emit('select', undefined)
+    }
+    resizingChild.value = undefined
   }
 
   // 状态重置
@@ -832,7 +839,18 @@ function clearSelection() {
 // 选择
 function select(child: GridDragResizeItemProps) {
   if (Math.abs(clickOffsetX) < 5 && Math.abs(clickOffsetY) < 5) {
-    selectingChild.value = child
+    if (stateInject) {
+      stateInject.selectedChild.value = child
+      emit('update:selectedChild', child)
+      emit('select', child)
+    }
+  }
+}
+
+// 选择 调整大小
+function selectResizing(child: GridDragResizeItemProps) {
+  if (Math.abs(clickOffsetX) < 5 && Math.abs(clickOffsetY) < 5) {
+    resizingChild.value = child
 
     draggingChild.value = undefined
     draggingChildBefore.value = undefined
@@ -1153,13 +1171,15 @@ function childDropEnd() {
       <GridDragResizeItem
         :class="{
           'grid-drag-resize__item--dragging': draggingChild === child,
-          'grid-drag-resize__item--selected': selectingChild === child
+          'grid-drag-resize__item--selected': stateInject?.selectedChild.value === child,
+          'grid-drag-resize__item--resizing':
+            stateInject?.selectedChild.value === child && resizingChild === child
         }"
         :style="{
           zIndex:
             draggingChild === child
               ? childrenParsed.length + 2
-              : selectingChild === child
+              : stateInject?.selectedChild.value === child
                 ? childrenParsed.length + 1
                 : idx + 1,
           cursor: resizingChildCursor
@@ -1173,6 +1193,7 @@ function childDropEnd() {
         v-model:columns="child.columns"
         @startDrag="startDrag($event, child)"
         @select="select(child)"
+        @selectResizing="selectResizing(child)"
         @startResize="resizingStart"
         @remove="remove(child)"
         @dropStart="dropStart($event, child)"

@@ -8,7 +8,7 @@ import { ref, h, type Ref } from 'vue'
 import { GridDragResize } from '@/lib/components/GridDragResize'
 import type {
   GridDragResizeProps,
-  GridDragResizeItemProps
+  GridDragResizeItemProps,
 } from '@/lib/components/GridDragResize/types'
 
 import ComponentA from '@/demo/components/ComponentA.vue'
@@ -32,7 +32,7 @@ function candidateRender(
   } else {
     return h('div', { class: 'demo-item', style: { background } }, [
       h('div', `${props.columns ?? columns}x${props.rows ?? rows}`),
-      h('div', `${props.data.test}`)
+      h('div', `${props.data.test}`),
     ])
   }
 }
@@ -41,9 +41,9 @@ function candidateRender(
 function createCandidate(
   columns = 1,
   rows = 1,
-  columnStart = 1,
-  rowStart = 1,
-  background = '#fff'
+  background = '#fff',
+  columnStart?: number,
+  rowStart?: number
 ) {
   return {
     columns,
@@ -54,87 +54,76 @@ function createCandidate(
       return candidateRender(columns, rows, background, props)
     },
     data: {
-      test: ''
-    }
+      test: '',
+      background,
+    },
   } as GridDragResizeItemProps
 }
 
 // 待拖入内容
 const candidate: Ref<GridDragResizeProps['children']> = ref([
-  createCandidate(1, 1, 1, 1, '#E09F6D'),
-  createCandidate(2, 1, 2, 1, '#6c35de'),
-  createCandidate(3, 1, 1, 2, '#ffc7ff'),
-  createCandidate(2, 2, 4, 1, '#282828'),
+  createCandidate(1, 1, '#E09F6D'),
+  createCandidate(2, 1, '#6c35de'),
+  createCandidate(2, 2, '#282828'),
+  createCandidate(3, 1, '#ffc7ff'),
   {
-    rowStart: 1,
     columns: 2,
-    columnStart: 6,
     removable: false,
     render: () => h(ComponentA),
     data: {
-      name: 'A'
-    }
+      name: 'A',
+    },
   },
   {
-    rowStart: 2,
     columns: 2,
-    columnStart: 6,
     draggable: false,
     render: () => h(ComponentB),
     data: {
-      name: 'B'
-    }
+      name: 'B',
+    },
   },
   {
-    rowStart: 3,
     columns: 2,
-    columnStart: 6,
     resizable: false,
     render: () => h(ComponentC),
     data: {
-      name: 'C'
-    }
+      name: 'C',
+    },
   },
   {
-    rowStart: 4,
     columns: 2,
-    columnStart: 6,
     droppableOut: false,
     render: () => h(ComponentD),
     data: {
-      name: 'D'
-    }
+      name: 'D',
+    },
   },
   {
     rows: 2,
-    rowStart: 5,
     columns: 2,
-    columnStart: 6,
     dragHandler: '.demo-item>button',
     render: () =>
-      h('div', { class: 'demo-item', style: { background: '#eb9c64' } }, [h('button', 'Drag here')])
+      h('div', { class: 'demo-item', style: { background: '#eb9c64' } }, [
+        h('button', 'Drag here'),
+      ]),
   },
   {
     rows: 2,
-    rowStart: 7,
     columns: 2,
-    columnStart: 6,
     dropOutHandler: '.demo-item>button',
     render: () =>
       h('div', { class: 'demo-item', style: { background: '#58BEE6' } }, [
-        h('button', 'Drop out here')
-      ])
+        h('button', 'Drop out here'),
+      ]),
   },
   {
     rows: 2,
-    rowStart: 9,
     columns: 2,
-    columnStart: 6,
     removeHandler: '.demo-item>button',
     render: () =>
       h('div', { class: 'demo-item', style: { background: '#B73929' } }, [
-        h('button', 'Remove here')
-      ])
+        h('button', 'Remove here'),
+      ]),
   },
   {
     columns: 5,
@@ -145,11 +134,11 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
       className: 'group',
       columns: 3,
       rows: 3,
-      children: []
+      children: [],
     },
     data: {
-      name: 'Group 3 x 3'
-    }
+      name: 'Group 3 x 3',
+    },
   },
   {
     columns: 5,
@@ -161,11 +150,11 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
       columns: 3,
       rows: 3,
       children: [],
-      droppableIn: false
+      droppableIn: false,
     },
     data: {
-      name: 'Group but undroppable in'
-    }
+      name: 'Group but undroppable in',
+    },
   },
   {
     columns: 5,
@@ -177,12 +166,12 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
       className: 'group-readonly',
       columns: 3,
       rows: 2,
-      children: [createCandidate(1, 1, 1, 2, '#E09F6D'), createCandidate(1, 1, 3, 2, '#E09F6D')]
+      children: [createCandidate(1, 1, '#E09F6D', 1, 2), createCandidate(1, 1, '#E09F6D', 3, 2)],
     },
     data: {
-      name: 'Group but readonly'
-    }
-  }
+      name: 'Group but readonly',
+    },
+  },
 ])
 
 // 已拖入内容
@@ -194,9 +183,9 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     columnEnd: 8,
     render: () => h(ComponentG),
     data: {
-      name: 'Component G'
-    }
-  }
+      name: 'Component G',
+    },
+  },
 ])
 
 // 拖入之前进行处理（异步）
@@ -207,7 +196,7 @@ async function beforeDrop(child: GridDragResizeItemProps): Promise<GridDragResiz
         child.data = {
           ...(child.data ?? {}),
           test: 'o_o',
-          time: Date.now()
+          time: Date.now(),
         }
         resolve(child)
       }, 100)
@@ -235,6 +224,7 @@ function select(props: GridDragResizeItemProps | undefined) {
         :row-size="50"
         :gap="10"
         overflow="hidden"
+        :columns="7"
         rowExpandable
         columnExpandable
         v-model:children="candidate"

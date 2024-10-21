@@ -5,7 +5,7 @@ import type {
   GridDragResizeProps,
   GridDragResizeItemProps,
   StartResizeEvent,
-  StartDragEvent
+  StartDragEvent,
 } from './types'
 
 import { ParentInjectSymbol, ChildInjectSymbol, StateInjectSymbol } from './const'
@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
   resizable: undefined,
   removable: undefined,
   droppableIn: undefined,
-  droppableOut: undefined
+  droppableOut: undefined,
 })
 
 const columnsParsed = computed(() => props.columns || 1)
@@ -93,7 +93,7 @@ if (debugParsed.value) {
   console.log(parentInject?.props.value)
 }
 
-const providePropsRef = ref({
+const providePropsRef = computed(() => ({
   ...props,
   //
   dragHandler: dragHandlerParsed.value,
@@ -108,11 +108,11 @@ const providePropsRef = ref({
   removable: removableParsed.value,
   droppableOut: droppableOutParsed.value,
   //
-  debug: debugParsed.value
-})
+  debug: debugParsed.value,
+}))
 
 provide(ChildInjectSymbol, {
-  props: providePropsRef
+  props: providePropsRef,
 })
 
 type Emit = {
@@ -146,46 +146,90 @@ watch(
     }
   },
   {
-    immediate: true
+    immediate: true,
   }
 )
 
 watchEffect(() => {
-  if (props.columnStart === void 0 || props.columnStart < 1) {
-    emit('update:columnStart', 1)
+  let columnStart = props.columnStart
+  let columnEnd = props.columnEnd
+  let columns = props.columns
+  let rowStart = props.rowStart
+  let rowEnd = props.rowEnd
+  let rows = props.rows
+
+  if (props.data?.background === '#6c35de') {
+    props
   }
 
-  if (props.columnEnd === void 0 || props.columnEnd < props.columnStart) {
-    if (props.columns === void 0 || props.columns < 1) {
-      emit('update:columnEnd', props.columnStart + 1)
-    } else {
-      emit('update:columnEnd', props.columnStart + props.columns)
+  if (
+    (columnStart < 1 && columnEnd < 1) ||
+    (columnStart > 0 && columnEnd > 0 && columnEnd <= columnStart)
+  ) {
+    columnStart = 0
+    columnEnd = 0
+  }
+
+  if (columns < 1) {
+    columns = 1
+  }
+
+  if ((rowStart < 1 && rowEnd < 1) || (rowEnd <= rowStart && rowStart > 0 && rowEnd > 1)) {
+    rowStart = 0
+    rowEnd = 0
+  }
+
+  if (rows < 1) {
+    rows = 1
+  }
+
+  if (columnStart < 1 && columnEnd < 1 && rowStart < 1 && rowEnd < 1) {
+    // ! 留给 parent 计算
+  } else {
+    if (columnStart < 1) {
+      columnStart = 1
+    }
+
+    if (columnEnd < columnStart) {
+      if (columns < 1) {
+        columnEnd = columnStart + 1
+      } else {
+        columnEnd = columnStart + columns
+      }
+    }
+
+    if (rowStart < 1) {
+      rowStart = 1
+    }
+
+    if (rowEnd < rowStart) {
+      if (rows < 1) {
+        rowEnd = rowStart + 1
+      } else {
+        rowEnd = rowStart + rows
+      }
+    }
+
+    if (columns < 1 || columnEnd - columnStart) {
+      if (columnStart !== void 0 && columnEnd !== void 0) {
+        columns = columnEnd - columnStart
+      }
+    }
+
+    if (rows < 1 || rows > rowEnd - rowStart) {
+      if (rowEnd !== void 0 && rowStart !== void 0) {
+        rows = rowEnd - rowStart
+      }
     }
   }
 
-  if (props.rowStart === void 0 || props.rowStart < 1) {
-    emit('update:rowStart', 1)
-  }
+  emit('update:columnStart', columnStart)
+  emit('update:columnEnd', columnEnd)
+  emit('update:columns', columns)
 
-  if (props.rowEnd === void 0 || props.rowEnd < props.rowStart) {
-    if (props.rows === void 0 || props.rows < 1) {
-      emit('update:rowEnd', props.rowStart + 1)
-    } else {
-      emit('update:rowEnd', props.rowStart + props.rows)
-    }
-  }
-
-  if (props.columns === void 0 || props.columns < 1 || props.columnEnd - props.columnStart) {
-    if (props.columnStart !== void 0 && props.columnEnd !== void 0) {
-      emit('update:columns', props.columnEnd - props.columnStart)
-    }
-  }
-
-  if (props.rows === void 0 || props.rows < 1 || props.rows > props.rowEnd - props.rowStart) {
-    if (props.rowEnd !== void 0 && props.rowStart !== void 0) {
-      emit('update:rows', props.rowEnd - props.rowStart)
-    }
-  }
+  emit('update:rowStart', rowStart)
+  emit('update:rowEnd', rowEnd)
+  emit('update:rows', rows)
 })
 
 // 样式
@@ -194,7 +238,7 @@ const style = computed(() => {
     'grid-column-start': columnStartParsed.value,
     'grid-column-end': columnEndParsed.value,
     'grid-row-start': rowStartParsed.value,
-    'grid-row-end': rowEndParsed.value
+    'grid-row-end': rowEndParsed.value,
   }
 })
 
@@ -280,8 +324,8 @@ function dragstart(e: MouseEvent) {
           x: 0,
           y: 0,
           bottom: 0,
-          right: 0
-        } as DOMRect)
+          right: 0,
+        } as DOMRect),
     })
   }
 }
@@ -318,10 +362,10 @@ function resizeStart(e: MouseEvent, direction: string) {
           x: 0,
           y: 0,
           bottom: 0,
-          right: 0
+          right: 0,
         } as DOMRect),
       cursor: e.target instanceof HTMLElement ? getComputedStyle(e.target).cursor : '',
-      direction
+      direction,
     })
   }
 }
@@ -359,7 +403,7 @@ function dropStart() {
     ele: itemEle.value,
     remove: () => {
       removableDefault.value && emit('remove')
-    }
+    },
   })
 }
 
@@ -391,7 +435,7 @@ const hover = computed(() => {
       'grid-drag-resize__item--draggable': draggableDefault,
       'grid-drag-resize__item--draggable-full': draggableDefault && !dragHandlerParsed,
       'grid-drag-resize__item--hover':
-        hover && !stateInject?.dragging.value && !stateInject?.resizing.value
+        hover && !stateInject?.dragging.value && !stateInject?.resizing.value,
     }"
     :style="style"
     @mousedown="(e: MouseEvent) => (dragHandlerParsed ? undefined : dragstart(e))"

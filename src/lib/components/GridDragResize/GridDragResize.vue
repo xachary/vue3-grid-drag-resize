@@ -5,7 +5,7 @@ import type {
   GridDragResizeProps,
   GridDragResizeItemProps,
   StartResizeEvent,
-  StartDragEvent
+  StartDragEvent,
 } from './types'
 
 import GridDragResizeItem from './GridDragResizeItem.vue'
@@ -30,7 +30,7 @@ const props = withDefaults(defineProps<GridDragResizeProps>(), {
   resizable: undefined,
   removable: undefined,
   droppableIn: undefined,
-  droppableOut: undefined
+  droppableOut: undefined,
 })
 
 type Emit = {
@@ -54,7 +54,7 @@ const rootEle: Ref<HTMLElement | undefined> = ref()
 
 // 给子组件穿透转递组件 Props
 const parentInject = inject<{ props: Ref<GridDragResizeProps> }>(ParentInjectSymbol, {
-  props: ref(props)
+  props: ref(props),
 })
 // 给子组件穿透转递组件 Props
 const childInject = inject<{ props: Ref<GridDragResizeItemProps> } | undefined>(
@@ -128,7 +128,7 @@ const beforeDropParsed = computed(() => props.beforeDrop ?? parentInject.props.v
 const classNameParsed = computed(() => props.className || parentInject.props.value.className)
 const tagNameParsed = computed(() => props.tagName || parentInject.props.value.tagName)
 
-const providePropsRef = ref({
+const providePropsRef = computed(() => ({
   ...props,
   //
   dragHandler: dragHandlerParsed.value,
@@ -150,11 +150,11 @@ const providePropsRef = ref({
   before: beforeDropParsed.value,
   //
   className: classNameParsed.value,
-  tagName: tagNameParsed.value
-})
+  tagName: tagNameParsed.value,
+}))
 
 provide(ParentInjectSymbol, {
-  props: providePropsRef
+  props: providePropsRef,
 })
 
 // 默认值处理
@@ -188,7 +188,7 @@ if (stateInject === null) {
     hoverEle: ref(), // hover 目标
     dragging: ref(false), // dragging 状态
     resizing: ref(false), // dragging 状态
-    selectedChild: ref(props.selectedChild)
+    selectedChild: ref(props.selectedChild),
   }
 }
 provide(StateInjectSymbol, stateInject)
@@ -286,7 +286,7 @@ watch(
     childrenParsed.value = [...props.children]
   },
   {
-    deep: true
+    deep: true,
   }
 )
 
@@ -309,16 +309,13 @@ function calcMaxCount(target: string, min?: number, more: GridDragResizeItemProp
 
   return min === void 0 ? calc : min < calc ? calc : min
 }
-
-const rows = ref(1)
-const columns = ref(1)
-
+const rows = ref(props.rows)
+const columns = ref(props.columns)
 watch(
   () => [props.rows, props.columns, childrenParsed.value],
   () => {
     rows.value = calcMaxCount('rows', rowsParsed.value)
     columns.value = calcMaxCount('columns', columnsParsed.value)
-
     if (rows.value !== rowsParsed.value) {
       emit('update:rows', rows.value)
     }
@@ -329,7 +326,88 @@ watch(
   },
   {
     immediate: true,
-    deep: true
+  }
+)
+
+// ! 自动计算（书写习惯：从左向右、从上向下）
+watch(
+  () => childrenParsed.value,
+  () => {
+    // 一个个计算
+    let target = childrenParsed.value.find(
+      (o) =>
+        [o.columns, o.columnStart, o.columnEnd, o.rows, o.rowStart, o.rowEnd].every(
+          (o) => o !== void 0
+        ) &&
+        o.columns! > 0 &&
+        o.columnStart! < 1 &&
+        o.columnEnd! < 1 &&
+        o.rows! > 0 &&
+        o.rowStart! < 1 &&
+        o.rowEnd! < 1
+    )
+
+    // 开始计算
+    if (target) {
+      let readyItems = childrenParsed.value.filter(
+        (o) =>
+          [o.columnStart, o.columnEnd, o.rowStart, o.rowEnd].every((o) => o !== void 0) &&
+          o.columnEnd! > o.columnStart! &&
+          o.rowEnd! > o.rowStart!
+      )
+
+      let on = true
+      let columnStart = 1,
+        columnEnd = columnStart + target.columns!,
+        rowStart = 1,
+        rowEnd = rowStart + target.rows!
+
+      for (; on; rowStart++) {
+        rowEnd = rowStart + target.rows!
+
+        columnStart = 1
+        for (; columnStart + target.columns! <= columnsParsed.value + 1 && on; columnStart++) {
+          columnEnd = columnStart + target.columns!
+
+          //
+          let cross = false
+          for (const item of readyItems) {
+            if (
+              !(
+                !(
+                  (columnStart >= item.columnStart! && columnStart < item.columnEnd!) ||
+                  (columnEnd > item.columnStart! && columnEnd <= item.columnEnd!)
+                ) ||
+                !(
+                  (rowStart >= item.rowStart! && rowStart < item.rowEnd!) ||
+                  (rowEnd > item.rowStart! && rowEnd <= item.rowEnd!)
+                )
+              )
+            ) {
+              cross = true
+              break
+            }
+          }
+          if (!cross) {
+            on = false
+          }
+        }
+      }
+
+      if (!on) {
+        columnStart = columnStart - 1
+        rowStart = rowStart - 1
+
+        target.columnStart = columnStart
+        target.columnEnd = columnEnd
+
+        target.rowStart = rowStart
+        target.rowEnd = rowEnd
+      }
+    }
+  },
+  {
+    immediate: true,
   }
 )
 
@@ -338,7 +416,7 @@ const style = computed(() => {
   return {
     'grid-template-columns': gridTemplateParse(columns.value, props.columnSize),
     'grid-template-rows': gridTemplateParse(rows.value, props.rowSize),
-    'grid-gap': gapParsed.value > 0 ? `${gapParsed.value}px ${gapParsed.value}px` : ''
+    'grid-gap': gapParsed.value > 0 ? `${gapParsed.value}px ${gapParsed.value}px` : '',
   }
 })
 
@@ -350,7 +428,7 @@ const columnSize = computed(() => {
     x: 0,
     y: 0,
     bottom: 0,
-    right: 0
+    right: 0,
   }
   return (
     props.columnSize ?? (rootRect.width - gapParsed.value * (columns.value - 1)) / columns.value
@@ -365,7 +443,7 @@ const rowSize = computed(() => {
     x: 0,
     y: 0,
     bottom: 0,
-    right: 0
+    right: 0,
   }
   return props.rowSize ?? (rootRect.height - gapParsed.value * (rows.value - 1)) / rows.value
 })
@@ -447,7 +525,7 @@ function calcDragStartEndByOffset(opts: {
 
   return {
     start,
-    end: start + span
+    end: start + span,
   }
 }
 
@@ -478,7 +556,7 @@ function calcDragStartEndByPos(opts: {
 
   return {
     start,
-    end: start + span
+    end: start + span,
   }
 }
 
@@ -510,7 +588,7 @@ function calcResizeStartEnd(opts: {
 
     return {
       start,
-      end: endBefore
+      end: endBefore,
     }
   } else {
     let end = endBefore + offsetStart
@@ -527,7 +605,7 @@ function calcResizeStartEnd(opts: {
 
     return {
       start: startBefore,
-      end
+      end,
     }
   }
 }
@@ -691,7 +769,7 @@ function dragMove(e: MouseEvent) {
       offset: dragOffsetClientRow,
       startBefore: draggingChildBefore.value?.rowStart ?? 1,
       direction: rowDirection,
-      expandable: rowExpandableParsed.value
+      expandable: rowExpandableParsed.value,
     })
 
     if (rowExpandableParsed.value) {
@@ -708,7 +786,7 @@ function dragMove(e: MouseEvent) {
       offset: dragOffsetClientColumn,
       startBefore: draggingChildBefore.value?.columnStart ?? 1,
       direction: columnDirection,
-      expandable: columnExpandableParsed.value
+      expandable: columnExpandableParsed.value,
     })
 
     if (columnExpandableParsed.value) {
@@ -741,7 +819,7 @@ function dragMove(e: MouseEvent) {
           startBefore: resizingChildBefore.value?.rowStart ?? 1,
           endBefore: resizingChildBefore.value?.rowEnd ?? 1,
           target: 'start',
-          expandable: rowExpandableParsed.value
+          expandable: rowExpandableParsed.value,
         })
         resizingChild.value.rowStart = rowStart
         resizingChild.value.rowEnd = rowEnd
@@ -755,7 +833,7 @@ function dragMove(e: MouseEvent) {
           startBefore: resizingChildBefore.value?.rowStart ?? 1,
           endBefore: resizingChildBefore.value?.rowEnd ?? 1,
           target: 'end',
-          expandable: rowExpandableParsed.value
+          expandable: rowExpandableParsed.value,
         })
         resizingChild.value.rowStart = rowStart
         resizingChild.value.rowEnd = rowEnd
@@ -777,7 +855,7 @@ function dragMove(e: MouseEvent) {
           startBefore: resizingChildBefore.value?.columnStart ?? 1,
           endBefore: resizingChildBefore.value?.columnEnd ?? 1,
           target: 'start',
-          expandable: columnExpandableParsed.value
+          expandable: columnExpandableParsed.value,
         })
         resizingChild.value.columnStart = columnStart
         resizingChild.value.columnEnd = columnEnd
@@ -791,7 +869,7 @@ function dragMove(e: MouseEvent) {
           startBefore: resizingChildBefore.value?.columnStart ?? 1,
           endBefore: resizingChildBefore.value?.columnEnd ?? 1,
           target: 'end',
-          expandable: columnExpandableParsed.value
+          expandable: columnExpandableParsed.value,
         })
         resizingChild.value.columnStart = columnStart
         resizingChild.value.columnEnd = columnEnd
@@ -912,7 +990,7 @@ function dropover(e: DragEvent) {
         x: 0,
         y: 0,
         bottom: 0,
-        right: 0
+        right: 0,
       }
 
       // 相对于 组件 的鼠标位置（并考虑 相对于 当前拖动子组件 的鼠标位置）
@@ -937,7 +1015,7 @@ function dropover(e: DragEvent) {
         span: rowSpan,
         max: rows.value ?? 1,
         pos: posY,
-        expandable: rowExpandableParsed.value
+        expandable: rowExpandableParsed.value,
       })
 
       // 更新 当前拖入子组件的数据项
@@ -956,7 +1034,7 @@ function dropover(e: DragEvent) {
         span: columnSpan,
         max: columns.value ?? 1,
         pos: posX,
-        expandable: columnExpandableParsed.value
+        expandable: columnExpandableParsed.value,
       })
 
       // 更新 当前拖入子组件的数据项
@@ -1100,7 +1178,7 @@ const droppingRowColumn = computed(() => {
     columnStart: droppingChildParsed?.value?.columnStart ?? 1,
     columnEnd: droppingChildParsed?.value?.columnEnd ?? 2,
     rowStart: droppingChildParsed?.value?.rowStart ?? 1,
-    rowEnd: droppingChildParsed?.value?.rowEnd ?? 2
+    rowEnd: droppingChildParsed?.value?.rowEnd ?? 2,
   }
   return rowColumn
 })
@@ -1160,7 +1238,7 @@ function childDropEnd() {
     :class="[
       ...(classNameParsed ? [classNameParsed] : []),
       ...(sub ? ['grid-drag-resize--sub'] : []),
-      ...(droppingChildParsed && dropping ? ['grid-drag-resize--dropping'] : [])
+      ...(droppingChildParsed && dropping ? ['grid-drag-resize--dropping'] : []),
     ]"
     :style="style"
     ref="rootEle"
@@ -1178,7 +1256,7 @@ function childDropEnd() {
           'grid-drag-resize__item--dragging': draggingChild === child,
           'grid-drag-resize__item--selected': stateInject?.selectedChild.value === child,
           'grid-drag-resize__item--resizing':
-            stateInject?.selectedChild.value === child && resizingChild === child
+            stateInject?.selectedChild.value === child && resizingChild === child,
         }"
         :style="{
           zIndex:
@@ -1187,7 +1265,7 @@ function childDropEnd() {
               : stateInject?.selectedChild.value === child
                 ? childrenParsed.length + 1
                 : idx + 1,
-          cursor: resizingChildCursor
+          cursor: resizingChildCursor,
         }"
         v-bind="child"
         v-model:column-start="child.columnStart"
@@ -1228,7 +1306,7 @@ function childDropEnd() {
     class="grid-drag-resize"
     :class="[
       ...(classNameParsed ? [classNameParsed] : []),
-      ...(sub ? ['grid-drag-resize--sub'] : [])
+      ...(sub ? ['grid-drag-resize--sub'] : []),
     ]"
     ref="rootEle"
     v-else

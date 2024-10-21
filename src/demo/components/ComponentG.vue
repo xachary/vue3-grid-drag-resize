@@ -47,7 +47,7 @@ import { ref, h, type Ref } from 'vue'
 import { GridDragResize } from '@/lib/components/GridDragResize'
 import type {
   GridDragResizeProps,
-  GridDragResizeItemProps
+  GridDragResizeItemProps,
 } from '@/lib/components/GridDragResize/types'
 
 import ComponentH from '@/demo/components/ComponentH.vue'
@@ -55,40 +55,37 @@ import ComponentH from '@/demo/components/ComponentH.vue'
 // 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
   {
-    rowStart: 1,
-    rowEnd: 2,
-    columnStart: 1,
-    columnEnd: 2,
-    render: () => h('div', { class: 'demo-item', style: { background: '#0085ff' } }, 'Child 1')
-  },
-  {
     rowStart: 2,
     rowEnd: 3,
-    columnStart: 2,
-    columnEnd: 3,
-    render: () => h('div', { class: 'demo-item', style: { background: '#c2402a' } }, 'Child 2')
+    columnStart: 1,
+    columnEnd: 2,
+    render: () => h('div', { class: 'demo-item', style: { background: '#0085ff' } }, 'Child 1'),
   },
   {
-    rowStart: 3,
-    rowEnd: 4,
-    columnStart: 1,
-    columnEnd: 3,
-    render: () => h('div', { class: 'demo-item', style: { background: '#FF6347' } }, 'Child 3')
+    rowStart: 1,
+    rowEnd: 2,
+    columnStart: 2,
+    columnEnd: 4,
+    render: () => h('div', { class: 'demo-item', style: { background: '#c2402a' } }, 'Child 2'),
+  },
+  {
+    columns: 2,
+    render: () => h('div', { class: 'demo-item', style: { background: '#FF6347' } }, 'Child 3'),
   },
   {
     rowStart: 2,
     rowEnd: 5,
     columnStart: 3,
     columnEnd: 5,
-    render: () => h(ComponentH)
-  }
+    render: () => h(ComponentH),
+  },
 ])
 
 // 拖入之前进行处理（同步）
 function beforeDrop(child: GridDragResizeItemProps): GridDragResizeItemProps {
   child.data = {
     ...(child.data ?? {}),
-    time: Date.now()
+    time: Date.now(),
   }
 
   return child

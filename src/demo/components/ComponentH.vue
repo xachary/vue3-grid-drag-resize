@@ -46,32 +46,28 @@ import { ref, h, type Ref } from 'vue'
 import { GridDragResize } from '@/lib/components/GridDragResize'
 import type {
   GridDragResizeProps,
-  GridDragResizeItemProps
+  GridDragResizeItemProps,
 } from '@/lib/components/GridDragResize/types'
 
 // 已拖入内容
 const children: Ref<GridDragResizeProps['children']> = ref([
   {
-    rowStart: 1,
-    rowEnd: 2,
-    columnStart: 1,
-    columnEnd: 2,
-    render: () => h('div', { class: 'demo-item', style: { background: '#8e5c6a' } }, 'A')
+    render: () => h('div', { class: 'demo-item', style: { background: '#8e5c6a' } }, 'A'),
   },
   {
     rowStart: 2,
     rowEnd: 3,
     columnStart: 2,
     columnEnd: 3,
-    render: () => h('div', { class: 'demo-item', style: { background: '#F2BAC9' } }, 'B')
-  }
+    render: () => h('div', { class: 'demo-item', style: { background: '#F2BAC9' } }, 'B'),
+  },
 ])
 
 // 拖入之前进行处理（同步）
 function beforeDrop(child: GridDragResizeItemProps): GridDragResizeItemProps {
   child.data = {
     ...(child.data ?? {}),
-    time: Date.now()
+    time: Date.now(),
   }
 
   return child

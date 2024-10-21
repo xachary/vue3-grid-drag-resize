@@ -942,29 +942,29 @@ function selectResizing(child: GridDragResizeItemProps) {
   }
 }
 
-if (sub) {
-  // 补充 鼠标超出区域时 计算是否为点击
-  window.addEventListener('mousedown', (e: MouseEvent) => {
-    // 更新 点击开始位置
-    clickStartX = e.clientX
-    clickStartY = e.clientY
-  })
-  window.addEventListener('mouseup', (e: MouseEvent) => {
-    // 计算 点击拖动偏移量
-    clickOffsetX = e.clientX - clickStartX
-    clickOffsetY = e.clientY - clickStartY
+// if (sub) {
+//   // 补充 鼠标超出区域时 计算是否为点击
+//   window.addEventListener('mousedown', (e: MouseEvent) => {
+//     // 更新 点击开始位置
+//     clickStartX = e.clientX
+//     clickStartY = e.clientY
+//   })
+//   window.addEventListener('mouseup', (e: MouseEvent) => {
+//     // 计算 点击拖动偏移量
+//     clickOffsetX = e.clientX - clickStartX
+//     clickOffsetY = e.clientY - clickStartY
 
-    // 状态重置
-    {
-      resizingReset()
-      dragReset()
-    }
-  })
-} else {
-  window.addEventListener('mousedown', dragStart)
-  window.addEventListener('mousemove', dragMove)
-  window.addEventListener('mouseup', dragEnd)
-}
+//     // 状态重置
+//     {
+//       resizingReset()
+//       dragReset()
+//     }
+//   })
+// } else {
+window.addEventListener('mousedown', dragStart)
+window.addEventListener('mousemove', dragMove)
+window.addEventListener('mouseup', dragEnd)
+// }
 
 // 点击空白区域，清空选择
 window.addEventListener('click', clearSelection)

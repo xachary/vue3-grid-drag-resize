@@ -334,7 +334,7 @@ watch(
   () => childrenParsed.value,
   () => {
     // 一个个计算
-    let target = childrenParsed.value.find(
+    const target = childrenParsed.value.find(
       (o) =>
         [o.columns, o.columnStart, o.columnEnd, o.rows, o.rowStart, o.rowEnd].every(
           (o) => o !== void 0
@@ -349,7 +349,7 @@ watch(
 
     // 开始计算
     if (target) {
-      let readyItems = childrenParsed.value.filter(
+      const readyItems = childrenParsed.value.filter(
         (o) =>
           [o.columnStart, o.columnEnd, o.rowStart, o.rowEnd].every((o) => o !== void 0) &&
           o.columnEnd! > o.columnStart! &&
@@ -507,9 +507,9 @@ function calcDragStartEndByOffset(opts: {
   direction: number
   expandable: boolean
 }) {
-  let { size, gap, span, max, offset, startBefore, expandable } = opts
+  const { size, gap, span, max, offset, startBefore, expandable } = opts
 
-  let offsetStart = Math.round(offset / (size + gap))
+  const offsetStart = Math.round(offset / (size + gap))
 
   let start = startBefore + offsetStart
 
@@ -538,7 +538,7 @@ function calcDragStartEndByPos(opts: {
   pos: number
   expandable: boolean
 }) {
-  let { size, gap, span, max, pos, expandable } = opts
+  const { size, gap, span, max, pos, expandable } = opts
 
   // 虚拟地在 grid 四边补充二分之一的 gap 距离
   // 如此，通过计算 拖动位置（相对于组件）与 大小+间隙 的倍数即可
@@ -571,9 +571,9 @@ function calcResizeStartEnd(opts: {
   target: 'start' | 'end'
   expandable: boolean
 }) {
-  let { size, gap, max, offset, startBefore, endBefore, target, expandable } = opts
+  const { size, gap, max, offset, startBefore, endBefore, target, expandable } = opts
 
-  let offsetStart = Math.round(offset / (size + gap))
+  const offsetStart = Math.round(offset / (size + gap))
 
   if (target === 'start') {
     let start = startBefore + offsetStart

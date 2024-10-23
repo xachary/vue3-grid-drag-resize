@@ -2,7 +2,7 @@
 
 ## 配置项
 
-> GridDragResizeCoommonProps
+> GridDragResizeCommonProps
 >
 > 这些配置在嵌套过程中，会从外到内传递继承。
 

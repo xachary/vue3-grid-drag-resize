@@ -158,10 +158,6 @@ watchEffect(() => {
   let rowEnd = props.rowEnd
   let rows = props.rows
 
-  if (props.data?.background === '#6c35de') {
-    props
-  }
-
   if (
     (columnStart < 1 && columnEnd < 1) ||
     (columnStart > 0 && columnEnd > 0 && columnEnd <= columnStart)

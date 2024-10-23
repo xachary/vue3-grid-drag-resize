@@ -2,7 +2,7 @@
 
 ## Props
 
-> GridDragResizeCoommonProps
+> GridDragResizeCommonProps
 >
 > These props are inherited from the outside to the inside during the nesting group.
 

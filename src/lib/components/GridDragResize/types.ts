@@ -1,7 +1,7 @@
 import type { VNode } from 'vue'
 
 // ! 这些配置在嵌套过程中，会从外到内传递继承
-export interface GridDragResizeCoommonProps {
+export interface GridDragResizeCommonProps {
   overflow?: string // CSS overflow
   dragHandler?: string // 拖动锚点（querySelector）
   dropOutHandler?: string // 拖出锚点（querySelector）
@@ -19,7 +19,7 @@ export interface GridDragResizeCoommonProps {
 }
 
 // 子组件的 Props
-export interface GridDragResizeItemProps<T = any> extends GridDragResizeCoommonProps {
+export interface GridDragResizeItemProps<T = any> extends GridDragResizeCommonProps {
   columns?: number // 列数
   rows?: number // 行数
   //
@@ -36,7 +36,7 @@ export interface GridDragResizeItemProps<T = any> extends GridDragResizeCoommonP
 }
 
 // 组件的 Props
-export interface GridDragResizeProps<T = any> extends GridDragResizeCoommonProps {
+export interface GridDragResizeProps<T = any> extends GridDragResizeCommonProps {
   columns?: number // 列数
   rows?: number // 行数
   gap?: number // 间隙

@@ -13,9 +13,9 @@ export default defineConfig({
   themeConfig: {
     socialLinks: [
       { icon: 'github', link: 'https://github.com/xachary/vue3-grid-drag-resize' },
-      { icon: 'npm', link: 'https://www.npmjs.com/package/vue3-grid-drag-resize' }
+      { icon: 'npm', link: 'https://www.npmjs.com/package/vue3-grid-drag-resize' },
     ],
-    logo: '/favicon-48x48.jpeg'
+    logo: '/favicon-48x48.jpeg',
   },
   locales: {
     root: {
@@ -27,7 +27,8 @@ export default defineConfig({
           { text: '快速上手', link: '/guide/intro' },
           { text: 'API', link: '/api/index' },
           { text: '示例', link: 'https://xachary.github.io/vue3-grid-drag-resize/demo' },
-          { text: '请我喝杯&#129380;!', link: '/donate' }
+          { text: 'React 版本', link: 'https://github.com/xachary/react-grid-drag-resize' },
+          { text: '请我喝杯&#129380;!', link: '/donate' },
         ],
         sidebar: {
           '/guide/': [
@@ -36,23 +37,23 @@ export default defineConfig({
               items: [
                 { text: '概览', link: '/guide/intro' },
                 { text: '安装', link: '/guide/install' },
-                { text: '使用', link: '/guide/usage' }
-              ]
-            }
+                { text: '使用', link: '/guide/usage' },
+              ],
+            },
           ],
           '/api/': [
             {
               text: 'API',
-              items: [{ text: 'GridDragResize', link: '/api/index' }]
-            }
-          ]
+              items: [{ text: 'GridDragResize', link: '/api/index' }],
+            },
+          ],
         },
         outlineTitle: '导航',
         docFooter: {
           prev: '上一页',
-          next: '下一页'
-        }
-      }
+          next: '下一页',
+        },
+      },
     },
     en: {
       label: 'English',
@@ -63,7 +64,8 @@ export default defineConfig({
           { text: 'Guide', link: '/en/guide/intro' },
           { text: 'API', link: '/en/api/index' },
           { text: 'Demo', link: 'https://xachary.github.io/vue3-grid-drag-resize/demo' },
-          { text: 'Buy me a &#129380;!', link: '/donate' }
+          { text: 'React version', link: 'https://github.com/xachary/react-grid-drag-resize' },
+          { text: 'Buy me a &#129380;!', link: '/donate' },
         ],
         sidebar: {
           '/en/guide/': [
@@ -72,23 +74,23 @@ export default defineConfig({
               items: [
                 { text: 'Introduction', link: '/en/guide/intro' },
                 { text: 'Install', link: '/en/guide/install' },
-                { text: 'Usage', link: '/en/guide/usage' }
-              ]
-            }
+                { text: 'Usage', link: '/en/guide/usage' },
+              ],
+            },
           ],
           '/en/api/': [
             {
               text: 'API',
-              items: [{ text: 'GridDragResize', link: '/en/api/index' }]
-            }
-          ]
+              items: [{ text: 'GridDragResize', link: '/en/api/index' }],
+            },
+          ],
         },
         outlineTitle: 'Navigate',
         docFooter: {
           prev: 'Previous page',
-          next: 'Next page'
-        }
-      }
-    }
-  }
+          next: 'Next page',
+        },
+      },
+    },
+  },
 })

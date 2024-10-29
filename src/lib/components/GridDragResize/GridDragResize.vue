@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, provide, inject, watch, type Ref } from 'vue'
+import { ref, computed, provide, inject, watch, type Ref, onUnmounted } from 'vue'
 
 import type {
   GridDragResizeProps,
@@ -147,7 +147,7 @@ const providePropsRef = computed(() => ({
   //
   droppableIn: droppableInParsed.value,
   //
-  before: beforeDropParsed.value,
+  beforeDrop: beforeDropParsed.value,
   //
   className: classNameParsed.value,
   tagName: tagNameParsed.value,
@@ -509,7 +509,7 @@ function calcDragStartEndByOffset(opts: {
 }) {
   const { size, gap, span, max, offset, startBefore, expandable } = opts
 
-  const offsetStart = Math.round(offset / (size + gap))
+  const offsetStart = size + gap ? Math.round(offset / (size + gap)) : 0
 
   let start = startBefore + offsetStart
 
@@ -542,7 +542,7 @@ function calcDragStartEndByPos(opts: {
 
   // 虚拟地在 grid 四边补充二分之一的 gap 距离
   // 如此，通过计算 拖动位置（相对于组件）与 大小+间隙 的倍数即可
-  let start = Math.ceil((pos + gap / 2) / (size + gap))
+  let start = size + gap ? Math.ceil((pos + gap / 2) / (size + gap)) : 0
 
   if (start < 1) {
     start = 1
@@ -573,7 +573,7 @@ function calcResizeStartEnd(opts: {
 }) {
   const { size, gap, max, offset, startBefore, endBefore, target, expandable } = opts
 
-  const offsetStart = Math.round(offset / (size + gap))
+  const offsetStart = size + gap ? Math.round(offset / (size + gap)) : 0
 
   if (target === 'start') {
     let start = startBefore + offsetStart
@@ -803,7 +803,7 @@ function dragMove(e: MouseEvent) {
     // 滚动跟随
     scrollIntoViewIfNeeded(draggingChildEle.value)
   }
-  if (stateInject?.resizing.value) {
+  if (stateInject?.resizing.value && resizingChild.value) {
     // 计算 调整大小拖动偏移量
     resizeOffsetClientColumn = e.clientX - resizeStartClientX
     resizeOffsetClientRow = e.clientY - resizeStartClientY
@@ -942,35 +942,15 @@ function selectResizing(child: GridDragResizeItemProps) {
   }
 }
 
-// if (sub) {
-//   // 补充 鼠标超出区域时 计算是否为点击
-//   window.addEventListener('mousedown', (e: MouseEvent) => {
-//     // 更新 点击开始位置
-//     clickStartX = e.clientX
-//     clickStartY = e.clientY
-//   })
-//   window.addEventListener('mouseup', (e: MouseEvent) => {
-//     // 计算 点击拖动偏移量
-//     clickOffsetX = e.clientX - clickStartX
-//     clickOffsetY = e.clientY - clickStartY
-
-//     // 状态重置
-//     {
-//       resizingReset()
-//       dragReset()
-//     }
-//   })
-// } else {
 window.addEventListener('mousedown', dragStart)
 window.addEventListener('mousemove', dragMove)
 window.addEventListener('mouseup', dragEnd)
-// }
 
 // 点击空白区域，清空选择
 window.addEventListener('click', clearSelection)
 
 // 拖入中
-function dropover(e: DragEvent) {
+function dropOver(e: DragEvent) {
   if (droppableInDefault.value) {
     e.stopPropagation()
     e.preventDefault()
@@ -1092,11 +1072,21 @@ function drop(e: DragEvent) {
 
 if (!sub) {
   // 鼠标处理事件（处理拖入中的扩展）
-  window.addEventListener('dragover', dropover)
+  window.addEventListener('dragover', dropOver)
 }
 
+onUnmounted(() => {
+  window.removeEventListener('mousedown', dragStart)
+  window.removeEventListener('mousemove', dragMove)
+  window.removeEventListener('mouseup', dragEnd)
+  window.removeEventListener('click', clearSelection)
+  if (!sub) {
+    window.removeEventListener('dragover', dropOver)
+  }
+})
+
 // 是否阻止事件传递
-const sholdStop = computed(() => {
+const shouldStop = computed(() => {
   if (rootEle.value && stateInject) {
     if (stateInject.actionEle.value) {
       // 通过“contains”、“判断是否为自身”两种方式判断：
@@ -1119,7 +1109,7 @@ let draggingBlank = false
 function subDragStart(e: MouseEvent) {
   draggingBlank = e.target === rootEle.value
 
-  if (sub && sholdStop.value && !draggingBlank) {
+  if (sub && shouldStop.value && !draggingBlank) {
     e.stopPropagation()
 
     dragStart(e)
@@ -1127,7 +1117,7 @@ function subDragStart(e: MouseEvent) {
 }
 
 function subDragMove(e: MouseEvent) {
-  if (sub && sholdStop.value && !draggingBlank) {
+  if (sub && shouldStop.value && !draggingBlank) {
     e.stopPropagation()
 
     dragMove(e)
@@ -1135,7 +1125,7 @@ function subDragMove(e: MouseEvent) {
 }
 
 function subDragEnd(e: MouseEvent) {
-  if (sub && sholdStop.value && !draggingBlank) {
+  if (sub && shouldStop.value && !draggingBlank) {
     e.stopPropagation()
 
     dragEnd(e)
@@ -1183,11 +1173,11 @@ const droppingRowColumn = computed(() => {
   return rowColumn
 })
 
-function subDropover(e: DragEvent) {
+function subDropOver(e: DragEvent) {
   if (sub && droppableInDefault.value) {
     e.stopPropagation()
 
-    dropover(e)
+    dropOver(e)
   }
 }
 
@@ -1242,7 +1232,7 @@ function childDropEnd() {
     ]"
     :style="style"
     ref="rootEle"
-    @dragover="subDropover"
+    @dragover="subDropOver"
     @drop="drop"
     @mousedown="subDragStart"
     @mousemove="subDragMove"

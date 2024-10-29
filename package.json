@@ -1,6 +1,6 @@
 {
   "name": "vue3-grid-drag-resize",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "type": "module",
   "files": [
     "dist"
@@ -13,7 +13,7 @@
     "url": "https://github.com/xachary/vue3-grid-drag-resize"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 7173",
     "build": "run-p type-check \"build-only {@}\" --",
     "build-demo": "run-p type-check \"build-only --mode demo {@}\" --",
     "preview": "vite preview",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "vue": "^3.4.21",
-    "vue3-grid-drag-resize": "^0.10.1"
+    "vue3-grid-drag-resize": "^0.10.2"
   },
   "devDependencies": {
     "@commitlint/cli": "19.2.1",

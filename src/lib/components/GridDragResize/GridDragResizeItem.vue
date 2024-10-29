@@ -74,11 +74,7 @@ const removableParsed = computed(() =>
   readonlyParsed.value ? false : props.removable ?? parentInject?.props.value.removable
 )
 const droppableOutParsed = computed(() =>
-  readonlyParsed.value
-    ? false
-    : parentInject?.props.value?.droppableOut ??
-      props.droppableOut ??
-      parentInject?.props.value.droppableOut
+  readonlyParsed.value ? false : props.droppableOut ?? parentInject?.props.value.droppableOut
 )
 //
 const debugParsed = computed(() => props.debug ?? parentInject?.props.value.debug)

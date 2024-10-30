@@ -78,6 +78,9 @@ const children: Ref<GridDragResizeProps['children']> = ref([
     columnStart: 3,
     columnEnd: 5,
     render: () => h(ComponentH),
+    data: {
+      name: 'Component H',
+    },
   },
 ])
 

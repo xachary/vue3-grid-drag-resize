@@ -202,13 +202,13 @@ watchEffect(() => {
       }
     }
 
-    if (columns < 1 || columnEnd - columnStart) {
+    if (columns < 1 || columns < columnEnd - columnStart) {
       if (columnStart !== void 0 && columnEnd !== void 0) {
         columns = columnEnd - columnStart
       }
     }
 
-    if (rows < 1 || rows > rowEnd - rowStart) {
+    if (rows < 1 || rows < rowEnd - rowStart) {
       if (rowEnd !== void 0 && rowStart !== void 0) {
         rows = rowEnd - rowStart
       }

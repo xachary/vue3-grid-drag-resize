@@ -68,6 +68,10 @@ Drag and resize element in grid.
 
 ## 相关信息 | Info
 
+[仓库](https://github.com/xachary/vue3-grid-drag-resize) | [Repository](https://github.com/xachary/vue3-grid-drag-resize)
+
+[React 版本](https://github.com/xachary/react-grid-drag-resize) | [React version](https://github.com/xachary/react-grid-drag-resize)
+
 [文档](https://xachary.github.io/vue3-grid-drag-resize/) | [Docs](https://xachary.github.io/vue3-grid-drag-resize/en/)
 
 [在线示例](https://xachary.github.io/vue3-grid-drag-resize/demo/index.html) | [Live Demo](https://xachary.github.io/vue3-grid-drag-resize/demo/index.html)

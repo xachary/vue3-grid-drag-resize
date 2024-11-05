@@ -430,9 +430,21 @@ const columnSize = computed(() => {
     bottom: 0,
     right: 0,
   }
-  return (
-    props.columnSize ?? (rootRect.width - gapParsed.value * (columns.value - 1)) / columns.value
-  )
+
+  let contentWidth = rootRect.width
+
+  if (rootEle?.value) {
+    contentWidth =
+      contentWidth -
+      [
+        parseInt(window.getComputedStyle(rootEle?.value).paddingLeft),
+        parseInt(window.getComputedStyle(rootEle?.value).paddingRight),
+      ]
+        .filter((o) => !isNaN(o))
+        .reduce((sum, item) => sum + item, 0)
+  }
+
+  return props.columnSize ?? (contentWidth - gapParsed.value * (columns.value - 1)) / columns.value
 })
 
 // 行高
@@ -445,7 +457,20 @@ const rowSize = computed(() => {
     bottom: 0,
     right: 0,
   }
-  return props.rowSize ?? (rootRect.height - gapParsed.value * (rows.value - 1)) / rows.value
+  let contentHeight = rootRect.height
+
+  if (rootEle?.value) {
+    contentHeight =
+      contentHeight -
+      [
+        parseInt(window.getComputedStyle(rootEle?.value).paddingTop),
+        parseInt(window.getComputedStyle(rootEle?.value).paddingBottom),
+      ]
+        .filter((o) => !isNaN(o))
+        .reduce((sum, item) => sum + item, 0)
+  }
+
+  return props.rowSize ?? (contentHeight - gapParsed.value * (rows.value - 1)) / rows.value
 })
 
 // 点击开始位置

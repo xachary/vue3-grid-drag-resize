@@ -392,6 +392,9 @@ watch(
             on = false
           }
         }
+        if (columnStart + target.columns! > columnsParsed.value + 1) {
+          on = false
+        }
       }
 
       if (!on) {

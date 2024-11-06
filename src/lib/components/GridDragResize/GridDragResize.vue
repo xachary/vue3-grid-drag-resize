@@ -304,7 +304,9 @@ function calcMaxCount(target: string, min?: number, more: GridDragResizeItemProp
         max = end - 1
       }
     }
-    return max
+
+    const count = { rows: child.rows, columns: child.columns }[target] ?? 1
+    return Math.max(max, count)
   }, 1)
 
   return min === void 0 ? calc : min < calc ? calc : min
@@ -366,7 +368,7 @@ watch(
         rowEnd = rowStart + target.rows!
 
         columnStart = 1
-        for (; columnStart + target.columns! <= columnsParsed.value + 1 && on; columnStart++) {
+        for (; columnStart + target.columns! <= columns.value + 1 && on; columnStart++) {
           columnEnd = columnStart + target.columns!
 
           //
@@ -391,9 +393,6 @@ watch(
           if (!cross) {
             on = false
           }
-        }
-        if (columnStart + target.columns! > columnsParsed.value + 1) {
-          on = false
         }
       }
 

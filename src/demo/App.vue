@@ -185,7 +185,7 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
       droppableIn: false,
     },
     data: {
-      name: 'This row size is 150px fixed',
+      name: 'This row size is 300px fixed',
     },
   },
 ])
@@ -393,7 +393,7 @@ body {
   border: 1px solid #f00;
 
   &::before {
-    content: 'This row size is 150px fixed';
+    content: 'This row size is 300px fixed';
     position: absolute;
     top: 50%;
     left: 50%;

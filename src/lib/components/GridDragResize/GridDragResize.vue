@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, provide, inject, watch, type Ref, onUnmounted } from 'vue'
+import { ref, computed, provide, inject, watch, type Ref, onUnmounted, watchEffect } from 'vue'
 
 import type {
   GridDragResizeProps,
@@ -255,30 +255,6 @@ function stateInjectActionDown(v: boolean) {
   }
 }
 
-// // 判断是否处于 draggable 的节点内部
-// watch(
-//   () => [props.readonly, rootEle.value],
-//   () => {
-//     let underDraggable = false
-//     if (rootEle.value) {
-//       let parent = rootEle.value.parentElement
-//       while (parent && !parent.draggable) {
-//         parent = parent.parentElement
-//       }
-//       if (parent) {
-//         underDraggable = true
-//       }
-//     }
-//     readonlyParsed.value = props.readonly || underDraggable
-
-//     // 更新
-//     propsParsed.value = { ...props, readonly: readonlyParsed.value }
-//   },
-//   {
-//     immediate: true
-//   }
-// )
-
 // 同步外部 children 变化
 watch(
   () => props.children,
@@ -290,9 +266,21 @@ watch(
   }
 )
 
+// grid 模版 扩展
+function gridTemplateExpand(template: string, count: number, size?: number) {
+  const list = calcTemplate(template)
+  const patch = count - list.length
+  const item = Number.isInteger(size) ? `${size}px` : '1fr'
+  return template + (patch > 0 ? ` repeat(${patch},${item})` : '')
+}
+
 // 转换为 grid 模版
-function gridTemplateParse(count: number, size?: number) {
-  return `repeat(${count},${Number.isInteger(size) ? `${size}px` : '1fr'})`
+function gridTemplateParse(count: number, expand: boolean, size?: number, template?: string) {
+  return template
+    ? expand
+      ? gridTemplateExpand(template, count, size)
+      : template
+    : `repeat(${count},${Number.isInteger(size) ? `${size}px` : '1fr'})`
 }
 
 // 如果没定义 行数/列数，根据 children 计算合适的 行数/列数
@@ -316,8 +304,16 @@ const columns = ref(props.columns)
 watch(
   () => [props.rows, props.columns, childrenParsed.value],
   () => {
-    rows.value = calcMaxCount('rows', rowsParsed.value)
-    columns.value = calcMaxCount('columns', columnsParsed.value)
+    rows.value = calcMaxCount(
+      'rows',
+      Math.max(rowsParsed.value, calcTemplate(props.rowTemplate ?? '').length)
+    )
+
+    columns.value = calcMaxCount(
+      'columns',
+      Math.max(columnsParsed.value, calcTemplate(props.columnTemplate ?? '').length)
+    )
+
     if (rows.value !== rowsParsed.value) {
       emit('update:rows', rows.value)
     }
@@ -416,14 +412,34 @@ watch(
 // grid 样式
 const style = computed(() => {
   return {
-    'grid-template-columns': gridTemplateParse(columns.value, props.columnSize),
-    'grid-template-rows': gridTemplateParse(rows.value, props.rowSize),
+    'grid-template-columns': gridTemplateParse(
+      columns.value,
+      props.columnExpandable,
+      props.columnSize,
+      props.columnTemplate
+    ),
+    'grid-template-rows': gridTemplateParse(
+      rows.value,
+      props.rowExpandable,
+      props.rowSize,
+      props.rowTemplate
+    ),
     'grid-gap': gapParsed.value > 0 ? `${gapParsed.value}px ${gapParsed.value}px` : '',
   }
 })
 
+// 计算 行、列 大小
+function calcSize(size: number, count: number, gap: number, list: string[]) {
+  const fixedSize = list.filter((o) => /\d+px/.test(o))
+
+  const fixedTotal = fixedSize.map((o) => parseInt(o) + gap).reduce((sum, num) => sum + num, 0)
+
+  return (size - fixedTotal - gap * (count - 1 - fixedSize.length)) / (count - fixedSize.length)
+}
+
 // 列宽
-const columnSize = computed(() => {
+const columnSize = ref(0)
+watchEffect(() => {
   const rootRect = rootEle?.value?.getBoundingClientRect() ?? {
     height: 0,
     width: 0,
@@ -446,11 +462,19 @@ const columnSize = computed(() => {
         .reduce((sum, item) => sum + item, 0)
   }
 
-  return props.columnSize ?? (contentWidth - gapParsed.value * (columns.value - 1)) / columns.value
+  columnSize.value =
+    props.columnSize ||
+    calcSize(
+      contentWidth,
+      columns.value,
+      gapParsed.value,
+      props.columnTemplate ? calcTemplate(props.columnTemplate) : []
+    )
 })
 
 // 行高
-const rowSize = computed(() => {
+const rowSize = ref(0)
+watchEffect(() => {
   const rootRect = rootEle?.value?.getBoundingClientRect() ?? {
     height: 0,
     width: 0,
@@ -459,6 +483,7 @@ const rowSize = computed(() => {
     bottom: 0,
     right: 0,
   }
+
   let contentHeight = rootRect.height
 
   if (rootEle?.value) {
@@ -472,7 +497,14 @@ const rowSize = computed(() => {
         .reduce((sum, item) => sum + item, 0)
   }
 
-  return props.rowSize ?? (contentHeight - gapParsed.value * (rows.value - 1)) / rows.value
+  rowSize.value =
+    props.rowSize ||
+    calcSize(
+      contentHeight,
+      rows.value,
+      gapParsed.value,
+      props.rowTemplate ? calcTemplate(props.rowTemplate) : []
+    )
 })
 
 // 点击开始位置
@@ -523,6 +555,26 @@ let dragOffsetClientRow = 0,
 let rowDirection = 0,
   columnDirection = 0
 
+// 计算 grid template 每一项
+function calcTemplateItem(item: string) {
+  const repeat = item.match(/repeat\((\d+),(\d+(fr|px))\)/)
+  if (repeat) {
+    return new Array(parseInt(repeat[1])).fill(repeat[2])
+  }
+  return [item]
+}
+
+// 计算 grid template
+function calcTemplate(template: string) {
+  const items = template.trim().replace(/ {2,}/, ' ').replace(/, /, ',').split(' ')
+  const list = items
+    .map((o) => calcTemplateItem(o))
+    .reduce((res, arr) => {
+      return res.concat(arr)
+    }, [])
+  return list as string[]
+}
+
 // 根据鼠标拖动偏移量，计算列/行方向上，移动后最新的位置和大小
 function calcDragStartEndByOffset(opts: {
   size: number
@@ -533,26 +585,86 @@ function calcDragStartEndByOffset(opts: {
   startBefore: number
   direction: number
   expandable: boolean
+  template?: string
 }) {
-  const { size, gap, span, max, offset, startBefore, expandable } = opts
+  const { size, gap, span, max, offset, startBefore, expandable, template } = opts
 
-  const offsetStart = size + gap ? Math.round(offset / (size + gap)) : 0
+  if (template) {
+    // 解析
+    const list = calcTemplate(template)
 
-  let start = startBefore + offsetStart
-
-  if (start < 1) {
-    start = 1
-  }
-
-  if (!expandable) {
-    if (start + span > max) {
-      start = max - span + 1
+    const listParsed = list.map((o) => (/\d+px/.test(o) ? parseInt(o) : size))
+    let sum = 0
+    let i = 0
+    for (; i < listParsed.length && i < startBefore; i++) {
+      if (i > startBefore) {
+        break
+      }
+      sum += listParsed[i] + gap
     }
-  }
 
-  return {
-    start,
-    end: start + span,
+    if (offset > 0) {
+      let sum2 = sum
+
+      for (; i < listParsed.length; i++) {
+        sum2 += listParsed[i] + gap
+        if (sum + offset < sum2) {
+          break
+        }
+      }
+
+      if (expandable && sum + offset > sum2) {
+        const more = Math.round((sum + offset - sum2) / (size + gap))
+        i += more
+      }
+
+      const start = i
+
+      return {
+        start: start,
+        end: start + span,
+      }
+    } else {
+      let sum2 = 0
+      let j = startBefore - 2
+      let x = 0
+      for (; j >= 0; j--, x++) {
+        sum2 += listParsed[j] + gap
+        if (sum2 > Math.abs(offset)) {
+          break
+        }
+      }
+
+      let start = startBefore - x
+
+      if (start < 1) {
+        start = 1
+      }
+
+      return {
+        start: start,
+        end: start + span,
+      }
+    }
+  } else {
+    const offsetStart = size + gap ? Math.round(offset / (size + gap)) : 0
+
+    let start = startBefore + offsetStart
+
+    if (start < 1) {
+      start = 1
+    }
+
+    if (!expandable) {
+      if (start + span > max) {
+        start = max - span + 1
+      }
+    }
+
+    return {
+      start,
+      end: start + span,
+    }
   }
 }
 
@@ -564,26 +676,54 @@ function calcDragStartEndByPos(opts: {
   max: number
   pos: number
   expandable: boolean
+  template?: string
 }) {
-  const { size, gap, span, max, pos, expandable } = opts
+  const { size, gap, span, max, pos, expandable, template } = opts
 
-  // 虚拟地在 grid 四边补充二分之一的 gap 距离
-  // 如此，通过计算 拖动位置（相对于组件）与 大小+间隙 的倍数即可
-  let start = size + gap ? Math.ceil((pos + gap / 2) / (size + gap)) : 0
+  if (template) {
+    // 解析
+    const list = calcTemplate(template)
 
-  if (start < 1) {
-    start = 1
-  }
-
-  if (!expandable) {
-    if (start + span > max) {
-      start = max - span + 1
+    const listParsed = list.map((o) => (/\d+px/.test(o) ? parseInt(o) : size))
+    let sum = 0
+    let i = 0
+    for (; i < listParsed.length; i++) {
+      sum += listParsed[i] + gap
+      if (pos < sum) {
+        break
+      }
     }
-  }
 
-  return {
-    start,
-    end: start + span,
+    if (expandable && pos - sum > 0) {
+      const more = Math.floor((pos - sum) / (size + gap))
+      i += more
+    }
+
+    const start = i + 1
+
+    return {
+      start,
+      end: start + span,
+    }
+  } else {
+    // 虚拟地在 grid 四边补充二分之一的 gap 距离
+    // 如此，通过计算 拖动位置（相对于组件）与 大小+间隙 的倍数即可
+    let start = size + gap ? Math.ceil((pos + gap / 2) / (size + gap)) : 0
+
+    if (start < 1) {
+      start = 1
+    }
+
+    if (!expandable) {
+      if (start + span > max) {
+        start = max - span + 1
+      }
+    }
+
+    return {
+      start,
+      end: start + span,
+    }
   }
 }
 
@@ -597,42 +737,157 @@ function calcResizeStartEnd(opts: {
   endBefore: number
   target: 'start' | 'end'
   expandable: boolean
+  template?: string
 }) {
-  const { size, gap, max, offset, startBefore, endBefore, target, expandable } = opts
+  const { size, gap, max, offset, startBefore, endBefore, target, expandable, template } = opts
 
-  const offsetStart = size + gap ? Math.round(offset / (size + gap)) : 0
+  if (template) {
+    // 解析
+    const list = calcTemplate(template)
 
-  if (target === 'start') {
-    let start = startBefore + offsetStart
+    const listParsed = list.map((o) => (/\d+px/.test(o) ? parseInt(o) : size))
 
-    if (start < 1) {
-      start = 1
-    }
+    if (target === 'start') {
+      if (offset > 0) {
+        let sum = 0
+        let i = 0
+        for (; i < listParsed.length && i < startBefore - 1; i++) {
+          if (i > startBefore - 1) {
+            break
+          }
+          sum += listParsed[i] + gap
+        }
 
-    if (start >= endBefore) {
-      start = endBefore - 1
-    }
+        let sum2 = sum
 
-    return {
-      start,
-      end: endBefore,
-    }
-  } else {
-    let end = endBefore + offsetStart
+        for (; i < listParsed.length; i++) {
+          sum2 += listParsed[i] + gap
+          if (sum + offset < sum2) {
+            break
+          }
+        }
 
-    if (!expandable) {
-      if (end > max) {
-        end = max + 1
+        let start = i + 1
+
+        if (start + 1 > endBefore) {
+          start = endBefore - 1
+        }
+
+        return {
+          start: start,
+          end: endBefore,
+        }
+      } else {
+        let sum2 = 0
+        let j = startBefore - 2
+        let x = 0
+        for (; j >= 0; j--, x++) {
+          sum2 += listParsed[j] + gap
+          if (sum2 > Math.abs(offset)) {
+            break
+          }
+        }
+
+        let start = startBefore - x
+
+        if (start + 1 > endBefore) {
+          start = endBefore - 1
+        }
+
+        return {
+          start,
+          end: endBefore,
+        }
+      }
+    } else {
+      if (offset > 0) {
+        let sum = 0
+        let i = 0
+        for (; i < listParsed.length && i < endBefore - 1; i++) {
+          if (i > endBefore - 1) {
+            break
+          }
+          sum += listParsed[i] + gap
+        }
+
+        let sum2 = sum
+
+        for (; i < listParsed.length; i++) {
+          sum2 += listParsed[i] + gap
+          if (sum + offset < sum2) {
+            break
+          }
+        }
+
+        if (expandable && sum + offset > sum2) {
+          const more = Math.round((sum + offset - sum2) / (size + gap))
+          i += more
+        }
+
+        const end = i + 1
+
+        return {
+          start: startBefore,
+          end,
+        }
+      } else {
+        let sum2 = 0
+        let j = endBefore - 2
+        let x = 0
+        for (; j >= 0; j--, x++) {
+          sum2 += listParsed[j] + gap
+          if (sum2 > Math.abs(offset)) {
+            break
+          }
+        }
+
+        let end = endBefore - x
+
+        if (end < startBefore) {
+          end = startBefore
+        }
+
+        return {
+          start: startBefore,
+          end,
+        }
       }
     }
+  } else {
+    const offsetStart = size + gap ? Math.round(offset / (size + gap)) : 0
 
-    if (end <= startBefore) {
-      end = startBefore + 1
-    }
+    if (target === 'start') {
+      let start = startBefore + offsetStart
 
-    return {
-      start: startBefore,
-      end,
+      if (start < 1) {
+        start = 1
+      }
+
+      if (start >= endBefore) {
+        start = endBefore - 1
+      }
+
+      return {
+        start,
+        end: endBefore,
+      }
+    } else {
+      let end = endBefore + offsetStart
+
+      if (!expandable) {
+        if (end > max) {
+          end = max + 1
+        }
+      }
+
+      if (end <= startBefore) {
+        end = startBefore + 1
+      }
+
+      return {
+        start: startBefore,
+        end,
+      }
     }
   }
 }
@@ -739,6 +994,10 @@ function updateDrag(child: GridDragResizeItemProps, rect: DOMRect, target: HTMLE
   draggingChildEle.value = target
 }
 
+// grid 模版 缓存记录
+let dragRowTemplate = props.rowTemplate
+let dragColumnTemplate = props.columnTemplate
+
 // 拖动开始
 function dragStart(e: MouseEvent) {
   // 更新 点击开始位置
@@ -757,6 +1016,14 @@ function dragStart(e: MouseEvent) {
       // 记录 拖动开始位置
       dragStartClientX = e.clientX
       dragStartClientY = e.clientY
+
+      // 缓存 grid 模版
+      dragRowTemplate = props.rowTemplate
+        ? gridTemplateExpand(props.rowTemplate, rows.value, rowSize.value)
+        : ''
+      dragColumnTemplate = props.columnTemplate
+        ? gridTemplateExpand(props.columnTemplate, columns.value, columnSize.value)
+        : ''
     }
   }
 }
@@ -797,6 +1064,7 @@ function dragMove(e: MouseEvent) {
       startBefore: draggingChildBefore.value?.rowStart ?? 1,
       direction: rowDirection,
       expandable: rowExpandableParsed.value,
+      template: dragRowTemplate,
     })
 
     if (rowExpandableParsed.value) {
@@ -814,6 +1082,7 @@ function dragMove(e: MouseEvent) {
       startBefore: draggingChildBefore.value?.columnStart ?? 1,
       direction: columnDirection,
       expandable: columnExpandableParsed.value,
+      template: dragColumnTemplate,
     })
 
     if (columnExpandableParsed.value) {
@@ -847,6 +1116,7 @@ function dragMove(e: MouseEvent) {
           endBefore: resizingChildBefore.value?.rowEnd ?? 1,
           target: 'start',
           expandable: rowExpandableParsed.value,
+          template: dragRowTemplate,
         })
         resizingChild.value.rowStart = rowStart
         resizingChild.value.rowEnd = rowEnd
@@ -861,6 +1131,7 @@ function dragMove(e: MouseEvent) {
           endBefore: resizingChildBefore.value?.rowEnd ?? 1,
           target: 'end',
           expandable: rowExpandableParsed.value,
+          template: dragRowTemplate,
         })
         resizingChild.value.rowStart = rowStart
         resizingChild.value.rowEnd = rowEnd
@@ -883,6 +1154,7 @@ function dragMove(e: MouseEvent) {
           endBefore: resizingChildBefore.value?.columnEnd ?? 1,
           target: 'start',
           expandable: columnExpandableParsed.value,
+          template: dragColumnTemplate,
         })
         resizingChild.value.columnStart = columnStart
         resizingChild.value.columnEnd = columnEnd
@@ -897,6 +1169,7 @@ function dragMove(e: MouseEvent) {
           endBefore: resizingChildBefore.value?.columnEnd ?? 1,
           target: 'end',
           expandable: columnExpandableParsed.value,
+          template: dragColumnTemplate,
         })
         resizingChild.value.columnStart = columnStart
         resizingChild.value.columnEnd = columnEnd
@@ -1023,6 +1296,7 @@ function dropOver(e: DragEvent) {
         max: rows.value ?? 1,
         pos: posY,
         expandable: rowExpandableParsed.value,
+        template: dropRowTemplate,
       })
 
       // 更新 当前拖入子组件的数据项
@@ -1042,6 +1316,7 @@ function dropOver(e: DragEvent) {
         max: columns.value ?? 1,
         pos: posX,
         expandable: columnExpandableParsed.value,
+        template: dropColumnTemplate,
       })
 
       // 更新 当前拖入子组件的数据项
@@ -1180,6 +1455,10 @@ function remove(child: GridDragResizeItemProps) {
   }
 }
 
+// grid 模版 缓存记录
+let dropRowTemplate = props.rowTemplate
+let dropColumnTemplate = props.columnTemplate
+
 function dropStart(
   val: {
     ele: HTMLElement | undefined
@@ -1188,6 +1467,14 @@ function dropStart(
   child: GridDragResizeItemProps
 ) {
   childDropStart(child, val)
+
+  // 缓存 grid 模版
+  dropRowTemplate = props.rowTemplate
+    ? gridTemplateExpand(props.rowTemplate, rows.value, rowSize.value)
+    : ''
+  dropColumnTemplate = props.columnTemplate
+    ? gridTemplateExpand(props.columnTemplate, columns.value, columnSize.value)
+    : ''
 }
 
 const droppingRowColumn = computed(() => {

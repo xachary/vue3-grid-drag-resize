@@ -172,6 +172,22 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
       name: 'Group but readonly',
     },
   },
+  {
+    columns: 7,
+    rows: 1,
+    columnStart: 1,
+    rowStart: 11,
+    child: {
+      className: 'fixed-size-row',
+      columns: 3,
+      rows: 3,
+      children: [],
+      droppableIn: false,
+    },
+    data: {
+      name: 'This row size is 150px fixed',
+    },
+  },
 ])
 
 // 已拖入内容
@@ -222,6 +238,7 @@ function select(props: GridDragResizeItemProps | undefined) {
       <GridDragResize
         :column-size="50"
         :row-size="50"
+        :row-template="`repeat(10, 50px) 300px`"
         :gap="10"
         overflow="hidden"
         :columns="7"
@@ -366,6 +383,22 @@ body {
     top: 0%;
     left: 0%;
     width: 100%;
+    color: #999;
+    text-align: center;
+  }
+}
+
+.fixed-size-row {
+  padding: 10px;
+  border: 1px solid #f00;
+
+  &::before {
+    content: 'This row size is 150px fixed';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
     color: #999;
     text-align: center;
   }

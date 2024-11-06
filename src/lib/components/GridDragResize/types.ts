@@ -42,6 +42,8 @@ export interface GridDragResizeProps<T = any> extends GridDragResizeCommonProps 
   gap?: number // 间隙
   columnSize?: number // 列宽，undefined 相当于 1fr
   rowSize?: number // 行高，undefined 相当于 1fr
+  columnTemplate?: string // grid 模板 列
+  rowTemplate?: string // grid 模板 行
   //
   columnExpandable?: boolean // 允许向右扩展列数
   rowExpandable?: boolean // 允许向下扩展行数

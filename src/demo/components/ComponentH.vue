@@ -6,6 +6,7 @@
     <footer>
       <GridDragResize
         :columns="2"
+        :column-template="`repeat(2,1fr) 30px`"
         :rows="2"
         :gap="4"
         :beforeDrop="beforeDrop"

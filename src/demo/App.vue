@@ -173,7 +173,7 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
     },
   },
   {
-    columns: 7,
+    columns: 4,
     rows: 1,
     columnStart: 1,
     rowStart: 11,
@@ -187,6 +187,17 @@ const candidate: Ref<GridDragResizeProps['children']> = ref([
     data: {
       name: 'This row size is 300px fixed',
     },
+  },
+  {
+    columns: 3,
+    rows: 1,
+    columnStart: 5,
+    rowStart: 11,
+    render: () =>
+      h('div', { class: 'demo-item', style: { background: '#eee' } }, [
+        h('button', ['Masked', h('br'), '(Stop mouse event)', h('br'), '(Can`t click me)']),
+      ]),
+    mask: true,
   },
 ])
 

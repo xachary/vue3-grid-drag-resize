@@ -19,6 +19,8 @@ const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
   rowStart: 0,
   rowEnd: 0,
   //
+  mask: false,
+  //
   // ^ 未传递，保留 undefined
   readonly: undefined,
   draggable: undefined,
@@ -235,6 +237,7 @@ const style = computed(() => {
 })
 
 const itemEle: Ref<HTMLElement | undefined> = ref()
+const maskEle: Ref<HTMLElement | undefined> = ref()
 
 // dragHandler 定位、处理、事件绑定
 watchEffect(() => {
@@ -416,7 +419,9 @@ function mouseleave() {
 }
 
 const hover = computed(() => {
-  return stateInject?.hoverEle.value === itemEle.value
+  return (
+    stateInject?.hoverEle.value === itemEle.value || stateInject?.hoverEle.value === maskEle.value
+  )
 })
 </script>
 
@@ -439,6 +444,15 @@ const hover = computed(() => {
     <div class="grid-drag-resize__item__group" :style="{ overflow: overflowParsed }">
       <slot></slot>
     </div>
+    <div
+      class="grid-drag-resize__item__mask"
+      @mousedown="(e: MouseEvent) => (dragHandlerParsed ? undefined : dragstart(e))"
+      @click="selectAndResizing"
+      @mouseover.capture="mouseover"
+      @mouseleave.capture="mouseleave"
+      ref="maskEle"
+      v-if="props.mask"
+    ></div>
     <b class="grid-drag-resize__item__border grid-drag-resize__item__border--top"></b>
     <b class="grid-drag-resize__item__border grid-drag-resize__item__border--bottom"></b>
     <b class="grid-drag-resize__item__border grid-drag-resize__item__border--left"></b>

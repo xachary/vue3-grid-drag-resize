@@ -1,4 +1,4 @@
-import type { VNode } from 'vue'
+import type { VNodeTypes } from 'vue'
 
 // ! 这些配置在嵌套过程中，会从外到内传递继承
 export interface GridDragResizeCommonProps {
@@ -29,7 +29,7 @@ export interface GridDragResizeItemProps<T = any> extends GridDragResizeCommonPr
   rowStart?: number // CSS rowStart
   rowEnd?: number // CSS rowEnd
   //
-  render?: () => VNode // 显示内容
+  render?: () => VNodeTypes // 显示内容
   //
   data?: T // 数据项
   //

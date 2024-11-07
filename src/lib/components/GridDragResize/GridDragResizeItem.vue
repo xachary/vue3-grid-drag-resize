@@ -19,8 +19,6 @@ const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
   rowStart: 0,
   rowEnd: 0,
   //
-  mask: false,
-  //
   // ^ 未传递，保留 undefined
   readonly: undefined,
   draggable: undefined,
@@ -28,6 +26,7 @@ const props = withDefaults(defineProps<GridDragResizeItemProps>(), {
   removable: undefined,
   droppableIn: undefined,
   droppableOut: undefined,
+  mask: undefined,
 })
 
 const columnsParsed = computed(() => props.columns || 1)
@@ -78,6 +77,7 @@ const removableParsed = computed(() =>
 const droppableOutParsed = computed(() =>
   readonlyParsed.value ? false : props.droppableOut ?? parentInject?.props.value.droppableOut
 )
+const maskParsed = computed(() => props.mask ?? parentInject?.props.value.mask)
 //
 const debugParsed = computed(() => props.debug ?? parentInject?.props.value.debug)
 
@@ -86,6 +86,7 @@ const draggableDefault = computed(() => draggableParsed.value ?? true)
 const resizableDefault = computed(() => resizableParsed.value ?? true)
 const removableDefault = computed(() => removableParsed.value ?? true)
 const droppableOutDefault = computed(() => droppableOutParsed.value ?? true)
+const maskDefault = computed(() => maskParsed.value ?? false)
 
 if (debugParsed.value) {
   console.log(parentInject?.props.value)
@@ -105,6 +106,7 @@ const providePropsRef = computed(() => ({
   resizable: resizableParsed.value,
   removable: removableParsed.value,
   droppableOut: droppableOutParsed.value,
+  mask: maskParsed.value,
   //
   debug: debugParsed.value,
 }))
@@ -420,7 +422,8 @@ function mouseleave() {
 
 const hover = computed(() => {
   return (
-    stateInject?.hoverEle.value === itemEle.value || stateInject?.hoverEle.value === maskEle.value
+    stateInject?.hoverEle.value !== void 0 &&
+    (stateInject?.hoverEle.value === itemEle.value || stateInject?.hoverEle.value === maskEle.value)
   )
 })
 </script>
@@ -451,7 +454,7 @@ const hover = computed(() => {
       @mouseover.capture="mouseover"
       @mouseleave.capture="mouseleave"
       ref="maskEle"
-      v-if="props.mask"
+      v-if="maskDefault && !props.child"
     ></div>
     <b class="grid-drag-resize__item__border grid-drag-resize__item__border--top"></b>
     <b class="grid-drag-resize__item__border grid-drag-resize__item__border--bottom"></b>

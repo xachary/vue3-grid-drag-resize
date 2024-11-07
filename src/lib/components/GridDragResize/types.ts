@@ -14,6 +14,7 @@ export interface GridDragResizeCommonProps {
   removable?: boolean // 是否移除
   droppableIn?: boolean // 是否可拖入
   droppableOut?: boolean // 是否可拖出
+  mask?: boolean // 蒙版，阻止 render 内部鼠标交互
   //
   debug?: boolean
 }
@@ -27,8 +28,6 @@ export interface GridDragResizeItemProps<T = any> extends GridDragResizeCommonPr
   columnEnd?: number // CSS columnEnd
   rowStart?: number // CSS rowStart
   rowEnd?: number // CSS rowEnd
-  //
-  mask?: boolean // 蒙版，阻止 render 内部鼠标交互
   //
   render?: () => VNode // 显示内容
   //

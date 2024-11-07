@@ -31,6 +31,7 @@ const props = withDefaults(defineProps<GridDragResizeProps>(), {
   removable: undefined,
   droppableIn: undefined,
   droppableOut: undefined,
+  mask: undefined,
 })
 
 type Emit = {
@@ -114,6 +115,9 @@ const droppableOutParsed = computed(() =>
       childInject?.props.value.droppableOut ??
       parentInject.props.value.droppableOut
 )
+const maskParsed = computed(
+  () => props.mask ?? childInject?.props.value.mask ?? parentInject.props.value.mask
+)
 //
 const debugParsed = computed(
   () => props.debug ?? childInject?.props.value.debug ?? parentInject.props.value.debug
@@ -142,6 +146,7 @@ const providePropsRef = computed(() => ({
   resizable: resizableParsed.value,
   removable: removableParsed.value,
   droppableOut: droppableOutParsed.value,
+  mask: maskParsed.value,
   //
   debug: debugParsed.value,
   //

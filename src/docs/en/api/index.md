@@ -18,6 +18,7 @@
 | removable      | boolean | true      | Removable                                                 | 0.2.0  |
 | droppableIn    | boolean | true      | Droppable in                                              | 0.7.0  |
 | droppableOut   | boolean | true      | Droppable out                                             | 0.7.0  |
+| mask           | boolean | undefined | Mask to stop inner mouse event                            | 0.12.0 |
 
 > GridDragResizeProps&lt;T&gt;
 
@@ -49,15 +50,14 @@
 
 > GridDragResizeItemProps&lt;T&gt;
 
-| Name                  | Type                         | Default   | Desc                           | Version |
-| :-------------------- | :--------------------------- | :-------- | :----------------------------- | :------ |
-| columns (v-model)     | number                       | 1         | Number of columns              | 0.0.17  |
-| rows (v-model)        | number                       | 1         | Number of rows                 | 0.0.17  |
-| columnStart (v-model) | number                       | 1         | CSS columnStart                | 0.0.17  |
-| columnEnd (v-model)   | number                       | 2         | CSS columnEnd                  | 0.0.17  |
-| rowStart (v-model)    | number                       | 1         | CSS rowStart                   | 0.0.17  |
-| rowEnd (v-model)      | number                       | 2         | CSS rowEnd                     | 0.0.17  |
-| mask                  | boolean                      | undefined | Mask to stop inner mouse event | 0.12.0  |
-| render                | () => VNode                  | undefined | Content                        | 0.0.17  |
-| data                  | T                            | undefined | Data                           | 0.0.17  |
-| child                 | GridDragResizeProps&lt;T&gt; | undefined | Sub GridDragResize             | 0.4.0   |
+| Name                  | Type                         | Default   | Desc               | Version |
+| :-------------------- | :--------------------------- | :-------- | :----------------- | :------ |
+| columns (v-model)     | number                       | 1         | Number of columns  | 0.0.17  |
+| rows (v-model)        | number                       | 1         | Number of rows     | 0.0.17  |
+| columnStart (v-model) | number                       | 1         | CSS columnStart    | 0.0.17  |
+| columnEnd (v-model)   | number                       | 2         | CSS columnEnd      | 0.0.17  |
+| rowStart (v-model)    | number                       | 1         | CSS rowStart       | 0.0.17  |
+| rowEnd (v-model)      | number                       | 2         | CSS rowEnd         | 0.0.17  |
+| render                | () => VNode                  | undefined | Content            | 0.0.17  |
+| data                  | T                            | undefined | Data               | 0.0.17  |
+| child                 | GridDragResizeProps&lt;T&gt; | undefined | Sub GridDragResize | 0.4.0   |

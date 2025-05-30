@@ -37,6 +37,7 @@
 | droppingChild (v-model) | GridDragResizeItemProps                                                                                                     | undefined | Child which is dropping                                             | 0.2.6   |
 | selectedChild (v-model) | GridDragResizeItemProps                                                                                                     | undefined | Child selected                                                      | 0.8.0   |
 | beforeDrop              | (prop:<br>GridDragResizeItemProps)<br>=&gt;<br>GridDragResizeItemProps \|<br>Promise&lt;<br>GridDragResizeItemProps<br>&gt; | undefined | Update prop before drop                                             | 0.7.0   |
+| beforeEmptyClick        | (props:any)=&gt;boolean                                                                                                     | undefined | clear selection by logic                                            | 0.13.0  |
 | className               | string                                                                                                                      | undefined | Add CSS Class                                                       | 0.4.0   |
 | tagName                 | string                                                                                                                      | 'div'     | Root element TagName                                                | 0.7.0   |
 

@@ -57,6 +57,7 @@ export interface GridDragResizeProps<T = any> extends GridDragResizeCommonProps 
   beforeDrop?: (
     before: GridDragResizeItemProps
   ) => GridDragResizeItemProps | Promise<GridDragResizeItemProps> // 拖入之前进行处理
+  beforeEmptyClick?: (e: MouseEvent) => boolean // 是否允许清空选择
   //
   className?: string // 附加 CSS Class
   tagName?: string // 根 HTML 标签

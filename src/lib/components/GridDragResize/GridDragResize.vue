@@ -128,6 +128,9 @@ const droppableInParsed = computed(() =>
 )
 //
 const beforeDropParsed = computed(() => props.beforeDrop ?? parentInject.props.value.beforeDrop)
+const beforeEmptyClickParsed = computed(
+  () => props.beforeEmptyClick ?? parentInject.props.value.beforeEmptyClick
+)
 //
 const classNameParsed = computed(() => props.className || parentInject.props.value.className)
 const tagNameParsed = computed(() => props.tagName || parentInject.props.value.tagName)
@@ -153,6 +156,7 @@ const providePropsRef = computed(() => ({
   droppableIn: droppableInParsed.value,
   //
   beforeDrop: beforeDropParsed.value,
+  beforeEmptyClick: beforeEmptyClickParsed.value,
   //
   className: classNameParsed.value,
   tagName: tagNameParsed.value,
@@ -1261,7 +1265,15 @@ window.addEventListener('mousemove', dragMove)
 window.addEventListener('mouseup', dragEnd)
 
 // 点击空白区域，清空选择
-window.addEventListener('click', clearSelection)
+window.addEventListener('click', (e) => {
+  if (props.beforeEmptyClick) {
+    if (props.beforeEmptyClick(e)) {
+      clearSelection()
+    }
+  } else {
+    clearSelection()
+  }
+})
 
 // 拖入中
 function dropOver(e: DragEvent) {

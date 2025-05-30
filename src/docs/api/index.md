@@ -58,6 +58,6 @@
 | columnEnd (v-model)   | number                       | 2         | CSS columnEnd     | 0.0.17 |
 | rowStart (v-model)    | number                       | 1         | CSS rowStart      | 0.0.17 |
 | rowEnd (v-model)      | number                       | 2         | CSS rowEnd        | 0.0.17 |
-| render                | () => VNode                  | undefined | 显示内容          | 0.0.17 |
+| render                | (props?: any) => VNode       | undefined | 显示内容          | 0.0.17 |
 | data                  | T                            | undefined | 数据项            | 0.0.17 |
 | child                 | GridDragResizeProps&lt;T&gt; | undefined | 子 GridDragResize | 0.4.0  |

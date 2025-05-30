@@ -29,7 +29,7 @@ export interface GridDragResizeItemProps<T = any> extends GridDragResizeCommonPr
   rowStart?: number // CSS rowStart
   rowEnd?: number // CSS rowEnd
   //
-  render?: () => VNodeTypes // 显示内容
+  render?: (props?: any) => VNodeTypes // 显示内容
   //
   data?: T // 数据项
   //
